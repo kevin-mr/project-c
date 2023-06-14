@@ -1,22 +1,33 @@
-﻿<div>
+﻿@inject IJSRuntime JSRuntime
+
+<div>
     <MudTabs>
         <MudTabPanel Text="Raw">
             <MudText Typo="Typo.body2">
-                <div class="ma-3">
-                    @Body
-                </div>
+                <div class="ma-3" @ref="JsonEditorContainer"></div>
             </MudText>
         </MudTabPanel>
         <MudTabPanel Text="Pretty">
             <MudText Typo="Typo.body1">
-                <div class="ma-3">
-                    @Body
-                </div>
+                <div></div>
             </MudText>
         </MudTabPanel>
     </MudTabs>
 </div>
 
 @code {
-    public string Body = "{ name: 'Kevin' }";
+    [Parameter]
+    public string Body { get; set; } = string.Empty;
+
+    ElementReference JsonEditorContainer;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("BlazorInterop.LoadJsonEditor", JsonEditorContainer, Body);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
 }

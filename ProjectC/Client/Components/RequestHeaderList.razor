@@ -1,5 +1,5 @@
 ﻿<div>
-    <MudTable Items="RequestHeaders">
+    <MudTable Items="Headers">
         <HeaderContent>
             <MudTh>
                 Header
@@ -17,9 +17,6 @@
 
 
 @code {
-    public List<RequestHeader> RequestHeaders = new List<RequestHeader>
-    {
-        new RequestHeader{ Name = "Content-Type", Value = "application/json"},
-        new RequestHeader{ Name = "Content-Size", Value = "size"}
-    };
+    [Parameter]
+    public IEnumerable<RequestHeaderDto> Headers { get; set; } = new List<RequestHeaderDto>();
 }

@@ -1,18 +1,16 @@
 ﻿<div>
-    @foreach (var request in Requests)
+    @foreach (var item in Items)
     {
         <MudList>
             <MudListItem>
-                <RequestListItem Request=@request></RequestListItem>
+                <RequestListItem Request=@item></RequestListItem>
             </MudListItem>
         </MudList>
     }
+
 </div>
 
 @code {
-    public List<Request> Requests = new List<Request>
-    {
-        new Request{ Name = "Requet 1", ArrivalDate = DateTime.Now },
-        new Request{ Name = "Requet 2", ArrivalDate = DateTime.Now }
-    };
+    [Parameter]
+    public List<RequestItemDto> Items { get; set; } = new List<RequestItemDto>();
 }

@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.ResponseCompression;
+using ProjectC.Server.Hubs;
+using ProjectC.Server.Services;
+
 namespace ProjectC
 {
     public class Program
@@ -8,9 +12,16 @@ namespace ProjectC
 
             // Add services to the container.
 
-            builder.Services
-                .AddControllersWithViews();
+            builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
+            builder.Services.AddSignalR();
+            builder.Services.AddResponseCompression(opts =>
+            {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" }
+                );
+            });
+            builder.Services.AddSingleton<IRequestInspectorService, RequestInspectorService>();
 
             var app = builder.Build();
 
@@ -25,6 +36,8 @@ namespace ProjectC
                 app.UseHsts();
             }
 
+            app.UseResponseCompression();
+
             app.UseHttpsRedirection();
 
             app.UseBlazorFrameworkFiles();
@@ -34,6 +47,9 @@ namespace ProjectC
 
             app.MapRazorPages();
             app.MapControllers();
+
+            app.MapHub<RequestHistoryHub>("/request-history");
+
             app.MapFallbackToFile("index.html");
 
             app.Run();

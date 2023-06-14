@@ -1,4 +1,6 @@
 ﻿@page "/"
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.SignalR.Client
 
 <MudGrid Spacing="2" Class="mt-5">
     <MudItem sm="6">
@@ -6,24 +8,63 @@
             History
         </MudText>
         <MudPaper>
-            <RequestList></RequestList>
+            <RequestList Items=@requestItems></RequestList>
         </MudPaper>
     </MudItem>
     <MudItem sm="6">
-        <MudText Typo="Typo.h4" Class="ma-2">
-            Headers
-        </MudText>
-        <MudPaper>
-            <RequestHeaderList></RequestHeaderList>
-        </MudPaper>
-        <MudText Typo="Typo.h4" Class="ma-2">
-            Body
-        </MudText>
-        <MudPaper>
-            <RequestBody></RequestBody>
-        </MudPaper>
+        @if (requestSelected is not null)
+        {
+            <MudText Typo="Typo.h4" Class="ma-2">
+                Headers
+            </MudText>
+            <MudPaper>
+                <RequestHeaderList Headers=@requestSelected.Headers></RequestHeaderList>
+            </MudPaper>
+            <MudText Typo="Typo.h4" Class="ma-2">
+                Body
+            </MudText>
+            <MudPaper>
+                <RequestBody Body=@requestSelected.Body></RequestBody>
+            </MudPaper>
+        }
     </MudItem>
 </MudGrid>
 
 @code {
+    private HubConnection? hubConnection;
+    private List<RequestItemDto> requestItems = new List<RequestItemDto>();
+    private RequestDto? requestSelected;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/request-history"))
+            .Build();
+
+        hubConnection.On<RequestDto>("NewRequestCaught", (request) =>
+        {
+            if(request is not null)
+            {
+                requestSelected = request;
+                requestItems.Add(new RequestItemDto
+                {
+                    Method = request.Method,
+                    ArrivalDate = request.ArrivalDate
+                });
+                StateHasChanged();
+            }
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    private bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+    private async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
 }

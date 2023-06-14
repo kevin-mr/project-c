@@ -1,8 +1,8 @@
 ﻿namespace ProjectC.Shared.Models
 {
-    public class Request
+    public class RequestItemDto
     {
-        public string Name { get; set; } = string.Empty;
+        public string Method { get; set; } = string.Empty;
         public DateTime ArrivalDate { get; set; }
     }
 }

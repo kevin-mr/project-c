@@ -1,12 +1,12 @@
-﻿@if (Request is not null)
+﻿@if (request is not null)
 {
     <div class="d-flex justify-space-between">
-        <div>@Request.Name</div>
-        <div>@Request.ArrivalDate.ToShortDateString()</div>
+        <div>@request.Method</div>
+        <div>@request.ArrivalDate.ToLongTimeString()</div>
     </div>
 }
 
 @code {
     [Parameter]
-    public Request? Request { get; set; }
+    public RequestItemDto? request { get; set; }
 }
