@@ -1,0 +1,25 @@
+﻿<div>
+    <MudTable Items="RequestHeaders">
+        <HeaderContent>
+            <MudTh>
+                Header
+            </MudTh>
+            <MudTh>
+                Value
+            </MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Header">@context.Name</MudTd>
+            <MudTd DataLabel="Value">@context.Value</MudTd>
+        </RowTemplate>
+    </MudTable>
+</div>
+
+
+@code {
+    public List<RequestHeader> RequestHeaders = new List<RequestHeader>
+    {
+        new RequestHeader{ Name = "Content-Type", Value = "application/json"},
+        new RequestHeader{ Name = "Content-Size", Value = "size"}
+    };
+}

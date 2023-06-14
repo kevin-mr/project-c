@@ -1,0 +1,18 @@
+﻿<div>
+    @foreach (var request in Requests)
+    {
+        <MudList>
+            <MudListItem>
+                <RequestListItem Request=@request></RequestListItem>
+            </MudListItem>
+        </MudList>
+    }
+</div>
+
+@code {
+    public List<Request> Requests = new List<Request>
+    {
+        new Request{ Name = "Requet 1", ArrivalDate = DateTime.Now },
+        new Request{ Name = "Requet 2", ArrivalDate = DateTime.Now }
+    };
+}

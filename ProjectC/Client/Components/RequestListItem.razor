@@ -1,0 +1,12 @@
+﻿@if (Request is not null)
+{
+    <div class="d-flex justify-space-between">
+        <div>@Request.Name</div>
+        <div>@Request.ArrivalDate.ToShortDateString()</div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Request? Request { get; set; }
+}

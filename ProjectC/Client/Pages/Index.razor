@@ -1,9 +1,29 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+<MudGrid Spacing="2" Class="mt-5">
+    <MudItem sm="6">
+        <MudText Typo="Typo.h4" Class="ma-2">
+            History
+        </MudText>
+        <MudPaper>
+            <RequestList></RequestList>
+        </MudPaper>
+    </MudItem>
+    <MudItem sm="6">
+        <MudText Typo="Typo.h4" Class="ma-2">
+            Headers
+        </MudText>
+        <MudPaper>
+            <RequestHeaderList></RequestHeaderList>
+        </MudPaper>
+        <MudText Typo="Typo.h4" Class="ma-2">
+            Body
+        </MudText>
+        <MudPaper>
+            <RequestBody></RequestBody>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+}
