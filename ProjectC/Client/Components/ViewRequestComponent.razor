@@ -1,0 +1,21 @@
+﻿<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 80%; overflow-y: scroll">
+            <MudText Typo="Typo.h5" Class="ma-2">
+                Headers
+            </MudText>
+            <RequestHeadersComponent Headers="Request.Headers"></RequestHeadersComponent>
+            <div class="mt-5">
+                <MudText Typo="Typo.h5" Class="ma-2">
+                    Body
+                </MudText>
+                <RequestBodyComponent Body=@Request.JsonBody></RequestBodyComponent>
+            </div>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [Parameter] 
+    public RequestDto Request { get; set; } = new RequestDto();
+}

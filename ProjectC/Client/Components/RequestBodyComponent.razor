@@ -1,0 +1,40 @@
+﻿@inject IJSRuntime JSRuntime
+@using System.Text.Json
+
+<MudTabs>
+    <MudTabPanel>
+        <TabContent>
+            Raw
+        </TabContent>
+        <ChildContent>
+            <MudText Typo="Typo.body1">@Body</MudText>
+        </ChildContent>
+    </MudTabPanel>
+    <MudTabPanel>
+        <TabContent>
+            Pretty
+        </TabContent>
+        <ChildContent>
+            <pre>
+                @(JsonSerializer.Serialize(Body, new JsonSerializerOptions() { WriteIndented = true }))
+            </pre>
+        </ChildContent>
+    </MudTabPanel>
+</MudTabs>
+
+@code {
+    [Parameter]
+    public string Body { get; set; } = string.Empty;
+
+    //ElementReference JsonEditorContainer;
+
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    if (firstRender)
+    //    {
+    //        await JSRuntime.InvokeVoidAsync("BlazorInterop.LoadJsonEditor", JsonEditorContainer, Body);
+    //    }
+
+    //    await base.OnAfterRenderAsync(firstRender);
+    //}
+}

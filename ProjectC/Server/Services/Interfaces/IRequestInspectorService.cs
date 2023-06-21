@@ -1,6 +1,6 @@
 ﻿using ProjectC.Shared.Models;
 
-namespace ProjectC.Server.Services
+namespace ProjectC.Server.Services.Interfaces
 {
     public interface IRequestInspectorService
     {

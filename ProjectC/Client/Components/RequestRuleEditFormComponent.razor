@@ -1,0 +1,56 @@
+﻿@using AutoMapper; 
+@inject HttpClient Http
+@inject IMapper mapper
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 80%; overflow-y: scroll">
+            <EditForm Model="@RequestRule">
+                <MudSelect @bind-Value="RequestRule.Method"
+                           Label="Method"
+                           Variant="Variant.Text">
+                    <MudSelectItem Value="@RequestRuleMethodDto.GET">GET</MudSelectItem>
+                    <MudSelectItem Value="@RequestRuleMethodDto.POST">POST</MudSelectItem>
+                    <MudSelectItem Value="@RequestRuleMethodDto.PUT">PUT</MudSelectItem>
+                    <MudSelectItem Value="@RequestRuleMethodDto.DELETE">DELETE</MudSelectItem>
+                </MudSelect>
+                <MudTextField @bind-Value="RequestRule.Path"
+                              Label="Path"
+                              Variant="Variant.Text" />
+                <MudTextField @bind-Value="RequestRule.ResponseBody"
+                              Label="Body"
+                              Variant="Variant.Text"
+                              Lines="5" />
+            </EditForm>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Class="ml-auto"
+                   OnClick="Save">
+            Save
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    public MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter] 
+    public RequestRuleDto RequestRule { get; set; } = new RequestRuleDto();
+
+    private async Task Save()
+    {
+        if (RequestRule.Id != 0)
+        {
+            await Http.PutAsJsonAsync<EditRequestRuleDto>("api/v1/request", mapper.Map<EditRequestRuleDto>(RequestRule));
+        }
+        else
+        {
+            await Http.PostAsJsonAsync<CreateRequestRuleDto>("api/v1/request", mapper.Map<CreateRequestRuleDto>(RequestRule));
+        }
+        MudDialog?.Close(DialogResult.Ok(true));
+    }
+}

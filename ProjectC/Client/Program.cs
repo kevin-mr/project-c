@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
+using ProjectC.Shared.Mapper;
+using System.Reflection;
 
 namespace ProjectC.Client
 {
@@ -16,6 +18,7 @@ namespace ProjectC.Client
             builder.Services.AddScoped(
                 sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) }
             );
+            builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(RequestRuleDtoProfile)));
 
             await builder.Build().RunAsync();
         }

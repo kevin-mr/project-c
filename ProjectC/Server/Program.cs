@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using ProjectC.Server.Data;
 using ProjectC.Server.Hubs;
 using ProjectC.Server.Services;
+using ProjectC.Server.Services.Interfaces;
+using System.Reflection;
 
 namespace ProjectC
 {
@@ -14,6 +16,8 @@ namespace ProjectC
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
+
+            //SignalR
             builder.Services.AddSignalR();
             builder.Services.AddResponseCompression(opts =>
             {
@@ -21,10 +25,18 @@ namespace ProjectC
                     new[] { "application/octet-stream" }
                 );
             });
+
+            //Database
             builder.Services.AddDbContext<ProjectCDbContext>(
                 options =>
                     options.UseSqlServer(builder.Configuration.GetConnectionString("ProjectC-DB"))
             );
+
+            //AutoMapper
+            builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+            //Services
+            builder.Services.AddTransient<IRequestRuleService, RequestRuleService>();
             builder.Services.AddSingleton<IRequestInspectorService, RequestInspectorService>();
             builder.Services.AddTransient<IMockServerService, MockServerService>();
 
@@ -48,16 +60,21 @@ namespace ProjectC
             app.Use(
                 async (context, next) =>
                 {
-                    if (context.Request.Path.StartsWithSegments("/custom"))
+                    if (context.Request.Path.StartsWithSegments(MockServerService.CUSTOM_PREFIX))
                     {
                         var mockServerService =
                             context.RequestServices.GetRequiredService<IMockServerService>();
                         if (mockServerService is not null)
                         {
-                            var request = await mockServerService.FindRequest(context.Request);
-                            if (request is not null)
+                            var requestRule = await mockServerService.FindRequestRule(
+                                context.Request
+                            );
+                            if (requestRule is not null)
                             {
-                                await context.Response.WriteAsync(request.Body);
+                                await mockServerService.BuildRequestRuleResponse(
+                                    context,
+                                    requestRule
+                                );
                                 return;
                             }
                         }
@@ -69,20 +86,10 @@ namespace ProjectC
 
             app.UseRouting();
 
-            app.Use(
-                async (context, next) =>
-                {
-                    Console.WriteLine(
-                        $"After. Endpoint: {context.GetEndpoint()?.DisplayName ?? "(null)"}"
-                    );
-                    await next(context);
-                }
-            );
-
             app.MapRazorPages();
             app.MapControllers();
 
-            app.MapHub<RequestHistoryHub>("/request-history");
+            app.MapHub<RequestsHub>("/requests");
 
             app.MapFallbackToFile("index.html");
 

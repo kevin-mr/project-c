@@ -1,6 +1,6 @@
 ﻿namespace ProjectC.Shared.Models
 {
-    public enum RequestMethod
+    public enum RequestRuleMethodDto
     {
         GET,
         POST,

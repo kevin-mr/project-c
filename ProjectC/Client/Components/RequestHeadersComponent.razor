@@ -1,0 +1,11 @@
+﻿<MudTable Items="Headers">
+    <RowTemplate>
+        <MudTd DataLabel="Header">@context.Key</MudTd>
+        <MudTd DataLabel="Value">@context.Value</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    [Parameter]
+    public IDictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
+}

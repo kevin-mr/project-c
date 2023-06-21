@@ -1,0 +1,21 @@
+﻿@if (Request is not null)
+{
+    <div class="d-flex justify-space-between">
+        <div>@Request.Method</div>
+        <div>@Request.ArrivedSecondsAge<span class="ml-1">Seconds Ago</span></div>
+        <MudIcon Icon="@Icons.Material.Filled.Preview" Title="View" @onclick="@(async () => await View())"/>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public RequestDto? Request { get; set; }
+
+    [Parameter]
+    public EventCallback OnView { get; set; }
+
+    private async Task View()
+    {
+        await OnView.InvokeAsync();
+    }
+}
