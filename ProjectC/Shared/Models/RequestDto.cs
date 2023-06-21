@@ -2,6 +2,7 @@
 {
     public class RequestDto
     {
+        public int Id { get; set; }
         public string Method { get; set; }
         public IEnumerable<RequestHeaderDto> Headers { get; set; }
         public string Body { get; set; }

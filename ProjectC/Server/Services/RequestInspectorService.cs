@@ -6,6 +6,8 @@ namespace ProjectC.Server.Services
 {
     public class RequestInspectorService : IRequestInspectorService
     {
+        private int _index = 0;
+
         public RequestInspectorService() { }
 
         public async Task<RequestDto> BuildRequestAsync(HttpRequest httpRequest)
@@ -18,6 +20,7 @@ namespace ProjectC.Server.Services
 
             var request = new RequestDto
             {
+                Id = _index++,
                 Method = httpRequest.Method,
                 Headers = new List<RequestHeaderDto>
                 {
@@ -34,7 +37,8 @@ namespace ProjectC.Server.Services
                         Value = httpRequest.Headers.ContentType.ToString()
                     }
                 },
-                Body = JsonFormatter.Format(stringBuilder.ToString())
+                Body = JsonFormatter.Format(stringBuilder.ToString()),
+                ArrivalDate = DateTime.Now,
             };
 
             return request;

@@ -3,7 +3,7 @@
     {
         <MudList>
             <MudListItem>
-                <RequestListItem Request=@item></RequestListItem>
+                <RequestListItem OnClick="ChangeSelectedItem" Request=@item></RequestListItem>
             </MudListItem>
         </MudList>
     }
@@ -13,4 +13,12 @@
 @code {
     [Parameter]
     public List<RequestItemDto> Items { get; set; } = new List<RequestItemDto>();
+
+    [Parameter]
+    public EventCallback<RequestItemDto> OnSelectedItem { get; set; }
+
+    private async Task ChangeSelectedItem(RequestItemDto requestItem)
+    {
+        await OnSelectedItem.InvokeAsync(requestItem);
+    }
 }

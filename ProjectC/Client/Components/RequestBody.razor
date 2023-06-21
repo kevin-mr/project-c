@@ -2,15 +2,21 @@
 
 <div>
     <MudTabs>
-        <MudTabPanel Text="Raw">
-            <MudText Typo="Typo.body2">
-                <div class="ma-3" @ref="JsonEditorContainer"></div>
-            </MudText>
+        <MudTabPanel>
+            <TabContent>
+                Raw
+            </TabContent>
+            <ChildContent>
+                <div class="ma-3">@Body</div>
+            </ChildContent>
         </MudTabPanel>
-        <MudTabPanel Text="Pretty">
-            <MudText Typo="Typo.body1">
-                <div></div>
-            </MudText>
+        <MudTabPanel>
+            <TabContent>
+                Pretty
+            </TabContent>
+            <ChildContent>
+                <div class="ma-3">@Body</div>
+            </ChildContent>
         </MudTabPanel>
     </MudTabs>
 </div>
@@ -19,15 +25,15 @@
     [Parameter]
     public string Body { get; set; } = string.Empty;
 
-    ElementReference JsonEditorContainer;
+    //ElementReference JsonEditorContainer;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSRuntime.InvokeVoidAsync("BlazorInterop.LoadJsonEditor", JsonEditorContainer, Body);
-        }
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    if (firstRender)
+    //    {
+    //        await JSRuntime.InvokeVoidAsync("BlazorInterop.LoadJsonEditor", JsonEditorContainer, Body);
+    //    }
 
-        await base.OnAfterRenderAsync(firstRender);
-    }
+    //    await base.OnAfterRenderAsync(firstRender);
+    //}
 }

@@ -1,12 +1,20 @@
-﻿@if (request is not null)
+﻿@if (Request is not null)
 {
-    <div class="d-flex justify-space-between">
-        <div>@request.Method</div>
-        <div>@request.ArrivalDate.ToLongTimeString()</div>
+    <div class="d-flex justify-space-between" @onclick="@(e => Clicked(Request))">
+        <div>@Request.Method</div>
+        <div>@Request.ArrivalDate.ToLongTimeString()</div>
     </div>
 }
 
 @code {
     [Parameter]
-    public RequestItemDto? request { get; set; }
+    public RequestItemDto? Request { get; set; }
+
+    [Parameter]
+    public EventCallback<RequestItemDto> OnClick { get; set; }
+
+    private async Task Clicked(RequestItemDto requestItem)
+    {
+        await OnClick.InvokeAsync(requestItem);
+    }
 }

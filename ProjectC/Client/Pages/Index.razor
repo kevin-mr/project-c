@@ -8,7 +8,7 @@
             History
         </MudText>
         <MudPaper>
-            <RequestList Items=@requestItems></RequestList>
+            <RequestList Items=@requestItems OnSelectedItem="SelectedItemChanged"></RequestList>
         </MudPaper>
     </MudItem>
     <MudItem sm="6">
@@ -32,8 +32,16 @@
 
 @code {
     private HubConnection? hubConnection;
-    private List<RequestItemDto> requestItems = new List<RequestItemDto>();
     private RequestDto? requestSelected;
+    private List<RequestDto> requests = new List<RequestDto>();
+    private List<RequestItemDto> requestItems => requests
+        .Select(x => new RequestItemDto
+        {
+            Id = x.Id,
+            Method = x.Method,
+            ArrivalDate = x.ArrivalDate
+        })
+        .ToList();
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,11 +54,7 @@
             if(request is not null)
             {
                 requestSelected = request;
-                requestItems.Add(new RequestItemDto
-                {
-                    Method = request.Method,
-                    ArrivalDate = request.ArrivalDate
-                });
+                requests.Add(request);
                 StateHasChanged();
             }
         });
@@ -65,6 +69,16 @@
         if (hubConnection is not null)
         {
             await hubConnection.DisposeAsync();
+        }
+    }
+
+    private void SelectedItemChanged(RequestItemDto requestItem)
+    {
+        var request = requests.FirstOrDefault(x => x.Id == requestItem.Id);
+        if(request is not null)
+        {
+            requestSelected = request;
+            StateHasChanged();
         }
     }
 }
