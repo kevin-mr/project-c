@@ -42,5 +42,11 @@ namespace ProjectC.Server.Controllers
 
             return requestRuleService.UpdateAsync(request);
         }
+
+        [HttpDelete("{id}")]
+        public Task DeleteAsync(int id)
+        {
+            return requestRuleService.DeleteAsync(id);
+        }
     }
 }

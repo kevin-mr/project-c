@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject IDialogService DialogService
+@using ProjectC.Client.Components;
 
 <div class="d-flex justify-end mt-5">
     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddRequestRule">Add Rule</MudButton>
@@ -7,15 +8,15 @@
 
 <MudGrid Spacing="2" Class="mt-5">
     <MudItem sm="6">
-        <RequestsComponent></RequestsComponent>
+        <RequestEventsComponent></RequestEventsComponent>
     </MudItem>
     <MudItem sm="6">
-        <RequestRulesComponent @ref="CustomRequestList"></RequestRulesComponent>
+        <RequestRulesComponent @ref="RequestRulesComponent"></RequestRulesComponent>
     </MudItem>
 </MudGrid>
 
 @code {
-    private RequestRulesComponent? CustomRequestList;
+    private RequestRulesComponent? RequestRulesComponent;
 
     private async Task AddRequestRule()
     {
@@ -25,14 +26,15 @@
             FullWidth = true,
             MaxWidth = MaxWidth.Small,
         };
+
         var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>("Request Rule", options);
         var result = await dialog.Result;
 
         if (!result.Canceled)
         {
-            if(CustomRequestList is not null)
+            if (RequestRulesComponent is not null)
             {
-                await CustomRequestList.RefreshRequestRulesAsync();
+                await RequestRulesComponent.RefreshRequestRulesAsync();
             }
         }
     }

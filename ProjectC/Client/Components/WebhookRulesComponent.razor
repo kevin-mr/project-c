@@ -1,0 +1,57 @@
+﻿@inject HttpClient Http
+@inject IDialogService DialogService
+
+<div>
+    @foreach (var webhookRule in WebhookRules)
+    {
+        <MudPaper>
+            <MudList>
+                <MudListItem>
+                    <WebhookRuleComponent WebhookRule=@webhookRule OnEdit="@(async () => await EditAsync(webhookRule))"></WebhookRuleComponent>
+                </MudListItem>
+            </MudList>
+        </MudPaper>
+    }
+</div>
+
+@code {
+    private WebhookRuleDto[] WebhookRules = Array.Empty<WebhookRuleDto>();
+
+    private async Task EditAsync(WebhookRuleDto webhookRule)
+    {
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            CloseButton = true,
+            FullWidth = true,
+            MaxWidth = MaxWidth.Small,
+        };
+        var parameters = new DialogParameters
+        {
+            ["WebhookRule"] = webhookRule
+        };
+        var dialog = await DialogService.ShowAsync<WebhookRuleEditFormComponent>("Request Rule", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWebhookRulesAsync();
+        }
+    }
+
+    public async Task RefreshWebhookRulesAsync()
+    {
+        var webhookRules = await Http.GetFromJsonAsync<WebhookRuleDto[]>("api/v1/webhook");
+        if (webhookRules is not null)
+        {
+            WebhookRules = webhookRules;
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshWebhookRulesAsync();
+        await base.OnInitializedAsync();
+    }
+}

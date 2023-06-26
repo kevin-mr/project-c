@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ProjectC.Server.Data;
 using ProjectC.Server.Data.Entities;
@@ -10,19 +9,23 @@ namespace ProjectC.Server.Services
 {
     public class MockServerService : IMockServerService
     {
-        public static readonly string CUSTOM_PREFIX = "/custom";
+        public static readonly string MOCK_SERVER_PREFIX = "/mockserver";
+        public static readonly string WEBHOOK_PREFIX = "/webhook";
         private readonly ProjectCDbContext context;
-        private readonly IHubContext<RequestsHub> hubContext;
+        private readonly IHubContext<RequestsHub> requestHubContext;
+        private readonly IHubContext<WebhookHub> webhookHubContext;
         private readonly IRequestInspectorService requestInspectorService;
 
         public MockServerService(
             ProjectCDbContext context,
-            IHubContext<RequestsHub> hubContext,
+            IHubContext<RequestsHub> requestHubContext,
+            IHubContext<WebhookHub> webhookHubContext,
             IRequestInspectorService requestInspectorService
         )
         {
             this.context = context;
-            this.hubContext = hubContext;
+            this.requestHubContext = requestHubContext;
+            this.webhookHubContext = webhookHubContext;
             this.requestInspectorService = requestInspectorService;
         }
 
@@ -33,10 +36,25 @@ namespace ProjectC.Server.Services
                 return null;
             }
 
-            var method = GetRequestMethod(request.Method);
-            var path = request.Path.Value.Remove(0, CUSTOM_PREFIX.Length);
+            var method = GetRequestRuleMethod(request.Method);
+            var path = request.Path.Value.Remove(0, MOCK_SERVER_PREFIX.Length);
 
             return await context.RequestRule.FirstOrDefaultAsync(
+                x => x.Method == method && x.Path == path
+            );
+        }
+
+        public async Task<WebhookRule?> FindWebhookRule(HttpRequest request)
+        {
+            if (!request.Path.HasValue)
+            {
+                return null;
+            }
+
+            var method = GetWebhookRuleMethod(request.Method);
+            var path = request.Path.Value.Remove(0, WEBHOOK_PREFIX.Length);
+
+            return await context.WebhookRule.FirstOrDefaultAsync(
                 x => x.Method == method && x.Path == path
             );
         }
@@ -46,10 +64,16 @@ namespace ProjectC.Server.Services
             await context.Response.WriteAsync(requestRule.ResponseBody);
 
             var request = await requestInspectorService.BuildRequestAsync(context.Request);
-            await hubContext.Clients.All.SendAsync("NewRequestCaught", request);
+            await requestHubContext.Clients.All.SendAsync("WebhookRuleEventCaught", request);
         }
 
-        private static RequestRuleMethod GetRequestMethod(string method)
+        public async Task BuildWebhookRuleResponse(HttpContext context, WebhookRule webhookRule)
+        {
+            var request = await requestInspectorService.BuildRequestAsync(context.Request);
+            await webhookHubContext.Clients.All.SendAsync("WebhookRuleEventCaught", request);
+        }
+
+        private static RequestRuleMethod GetRequestRuleMethod(string method)
         {
             return method switch
             {
@@ -57,6 +81,16 @@ namespace ProjectC.Server.Services
                 "POST" => RequestRuleMethod.POST,
                 "PUT" => RequestRuleMethod.PUT,
                 "DELETE" => RequestRuleMethod.DELETE,
+                _ => throw new Exception("Invalid Method"),
+            };
+        }
+
+        private static WebhookRuleMethod GetWebhookRuleMethod(string method)
+        {
+            return method switch
+            {
+                "POST" => WebhookRuleMethod.POST,
+                "PUT" => WebhookRuleMethod.PUT,
                 _ => throw new Exception("Invalid Method"),
             };
         }

@@ -7,5 +7,6 @@ namespace ProjectC.Server.Services.Interfaces
         Task<IEnumerable<RequestRule>> GetAsync();
         Task CreateAsync(RequestRule request);
         Task UpdateAsync(RequestRule request);
+        Task DeleteAsync(int id);
     }
 }

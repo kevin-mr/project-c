@@ -5,9 +5,9 @@ using ProjectC.Shared.Models;
 
 namespace ProjectC.Server.Mappers
 {
-    public class RequestRuleDtoProfile : Profile
+    public class RequestRuleProfile : Profile
     {
-        public RequestRuleDtoProfile()
+        public RequestRuleProfile()
         {
             CreateMap<RequestRule, RequestRuleDto>().ReverseMap();
 

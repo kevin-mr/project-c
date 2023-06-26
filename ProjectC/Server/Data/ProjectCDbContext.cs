@@ -6,6 +6,7 @@ namespace ProjectC.Server.Data
     public class ProjectCDbContext : DbContext
     {
         public DbSet<RequestRule> RequestRule { get; set; }
+        public DbSet<WebhookRule> WebhookRule { get; set; }
 
         public ProjectCDbContext(DbContextOptions<ProjectCDbContext> options)
             : base(options) { }
@@ -28,6 +29,16 @@ namespace ProjectC.Server.Data
                 .HasConversion(
                     x => x.ToString(),
                     x => (RequestRuleMethod)Enum.Parse(typeof(RequestRuleMethod), x)
+                );
+
+            modelBuilder.Entity<WebhookRule>().ToTable("WebhookRule");
+
+            modelBuilder
+                .Entity<WebhookRule>()
+                .Property(x => x.Method)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => (WebhookRuleMethod)Enum.Parse(typeof(WebhookRuleMethod), x)
                 );
 
             base.OnModelCreating(modelBuilder);

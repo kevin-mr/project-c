@@ -1,0 +1,64 @@
+﻿@inject IDialogService DialogService
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.SignalR.Client
+
+<div>
+    @foreach (var request in Requests)
+    {
+        <MudList>
+            <MudListItem>
+                <RequestComponent Request=@request OnView="@(async () => await ViewAsync(request))"></RequestComponent>
+            </MudListItem>
+        </MudList>
+    }
+
+</div>
+
+@code {
+    private HubConnection? hubConnection;
+    private List<RequestDto> Requests = new List<RequestDto>();
+
+    private async Task ViewAsync(RequestDto request)
+    {
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            CloseButton = true,
+            FullWidth = true,
+            MaxWidth = MaxWidth.Small,
+        };
+        var parameters = new DialogParameters
+        {
+            ["Request"] = request
+        };
+        await DialogService.ShowAsync<ViewRequestComponent>("Request", parameters, options);
+    }
+
+    private bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+    private async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/webhook-rule-events"))
+            .Build();
+
+        hubConnection.On<RequestDto>("WebhookRuleEventCaught", (request) =>
+        {
+            if (request is not null)
+            {
+                Requests.Add(request);
+                StateHasChanged();
+            }
+        });
+
+        await hubConnection.StartAsync();
+    }
+}

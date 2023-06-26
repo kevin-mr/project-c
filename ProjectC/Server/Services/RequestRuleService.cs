@@ -19,23 +19,33 @@ namespace ProjectC.Server.Services
             return await context.RequestRule.ToArrayAsync();
         }
 
-        public async Task CreateAsync(RequestRule request)
+        public async Task CreateAsync(RequestRule requestRule)
         {
-            context.RequestRule.Add(request);
+            context.RequestRule.Add(requestRule);
             await context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(RequestRule request)
+        public async Task UpdateAsync(RequestRule requestRule)
         {
             var currentRequestRule =
-                await context.RequestRule.FirstOrDefaultAsync(x => x.Id == request.Id)
+                await context.RequestRule.FirstOrDefaultAsync(x => x.Id == requestRule.Id)
                 ?? throw new Exception("Request rule not found");
 
-            currentRequestRule.Path = request.Path;
-            currentRequestRule.Method = request.Method;
-            currentRequestRule.ResponseBody = request.ResponseBody;
+            currentRequestRule.Path = requestRule.Path;
+            currentRequestRule.Method = requestRule.Method;
+            currentRequestRule.ResponseBody = requestRule.ResponseBody;
 
             await context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var requestRule = await context.RequestRule.FirstOrDefaultAsync(x => x.Id == id);
+            if (requestRule is not null)
+            {
+                context.RequestRule.Remove(requestRule);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

@@ -19,4 +19,12 @@
     <ProjectReference Include="..\Shared\ProjectC.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components\WebhookRuleEditFormComponent.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\WebhookRuleEditFormComponent.razor" />
+  </ItemGroup>
+
 </Project>

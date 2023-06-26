@@ -4,6 +4,7 @@
     {
         public RequestRule()
         {
+            Id = 0;
             Method = RequestRuleMethod.GET;
             Path = string.Empty;
             Description = string.Empty;

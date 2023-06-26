@@ -5,9 +5,9 @@ namespace ProjectC.Server.Hubs
 {
     public class RequestsHub : Hub
     {
-        public async Task SendMessage(RequestDto request)
+        public async Task NotifyRequestRuleEventCaught(RequestDto requestRuleEvent)
         {
-            await Clients.All.SendAsync("NewRequestCaught", request);
+            await Clients.All.SendAsync("RequestRuleEventCaught", requestRuleEvent);
         }
     }
 }

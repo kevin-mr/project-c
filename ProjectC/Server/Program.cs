@@ -39,6 +39,7 @@ namespace ProjectC
             builder.Services.AddTransient<IRequestRuleService, RequestRuleService>();
             builder.Services.AddSingleton<IRequestInspectorService, RequestInspectorService>();
             builder.Services.AddTransient<IMockServerService, MockServerService>();
+            builder.Services.AddTransient<IWebookRuleService, WebookRuleService>();
 
             var app = builder.Build();
 
@@ -60,7 +61,11 @@ namespace ProjectC
             app.Use(
                 async (context, next) =>
                 {
-                    if (context.Request.Path.StartsWithSegments(MockServerService.CUSTOM_PREFIX))
+                    if (
+                        context.Request.Path.StartsWithSegments(
+                            MockServerService.MOCK_SERVER_PREFIX
+                        )
+                    )
                     {
                         var mockServerService =
                             context.RequestServices.GetRequiredService<IMockServerService>();
@@ -79,6 +84,27 @@ namespace ProjectC
                             }
                         }
                     }
+                    else if (
+                        context.Request.Path.StartsWithSegments(MockServerService.WEBHOOK_PREFIX)
+                    )
+                    {
+                        var mockServerService =
+                            context.RequestServices.GetRequiredService<IMockServerService>();
+                        if (mockServerService is not null)
+                        {
+                            var webhookRule = await mockServerService.FindWebhookRule(
+                                context.Request
+                            );
+                            if (webhookRule is not null)
+                            {
+                                await mockServerService.BuildWebhookRuleResponse(
+                                    context,
+                                    webhookRule
+                                );
+                                return;
+                            }
+                        }
+                    }
 
                     await next(context);
                 }
@@ -89,7 +115,8 @@ namespace ProjectC
             app.MapRazorPages();
             app.MapControllers();
 
-            app.MapHub<RequestsHub>("/requests");
+            app.MapHub<RequestsHub>("/request-rule-events");
+            app.MapHub<WebhookHub>("/webhook-rule-events");
 
             app.MapFallbackToFile("index.html");
 

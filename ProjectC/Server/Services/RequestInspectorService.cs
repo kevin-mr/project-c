@@ -1,7 +1,7 @@
-﻿using JsonFormatterPlus;
-using ProjectC.Server.Services.Interfaces;
+﻿using ProjectC.Server.Services.Interfaces;
 using ProjectC.Shared.Models;
 using System.Text;
+using System.Text.Json;
 
 namespace ProjectC.Server.Services
 {
@@ -25,16 +25,19 @@ namespace ProjectC.Server.Services
                 Method = request.Method,
                 Headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
                 ArrivalDate = DateTime.Now,
+                Body = stringBuilder.ToString()
             };
 
             try
             {
-                //requestDto.JsonBody = JsonFormatter.Format(stringBuilder.ToString());
-                requestDto.JsonBody = stringBuilder.ToString();
+                requestDto.JsonBody = JsonSerializer.Serialize(
+                    requestDto.Body,
+                    new JsonSerializerOptions() { WriteIndented = true }
+                );
             }
             catch (Exception)
             {
-                requestDto.JsonBody = stringBuilder.ToString();
+                requestDto.JsonBody = requestDto.Body;
             }
 
             return requestDto;

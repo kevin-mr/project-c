@@ -1,31 +1,31 @@
-﻿@using AutoMapper; 
+﻿@using AutoMapper;
 @inject HttpClient Http
 @inject IMapper mapper
 
 <MudDialog DisableSidePadding="true">
     <DialogContent>
         <MudContainer Style="max-height: 80%; overflow-y: scroll">
-            <EditForm Model="@RequestRule">
-                <MudSelect @bind-Value="RequestRule.Method"
+            <EditForm Model="@WebhookRule">
+                <MudSelect @bind-Value="WebhookRule.Method"
                            Label="Method"
                            Variant="Variant.Text">
-                    <MudSelectItem Value="@RequestRuleMethodDto.GET">GET</MudSelectItem>
-                    <MudSelectItem Value="@RequestRuleMethodDto.POST">POST</MudSelectItem>
-                    <MudSelectItem Value="@RequestRuleMethodDto.PUT">PUT</MudSelectItem>
-                    <MudSelectItem Value="@RequestRuleMethodDto.DELETE">DELETE</MudSelectItem>
+                    <MudSelectItem Value="@WebhookRuleMethodDto.POST">POST</MudSelectItem>
+                    <MudSelectItem Value="@WebhookRuleMethodDto.PUT">PUT</MudSelectItem>
                 </MudSelect>
-                <MudTextField @bind-Value="RequestRule.Path"
+                <MudTextField @bind-Value="WebhookRule.Path"
                               Label="Path"
                               Variant="Variant.Text" />
-                <MudTextField @bind-Value="RequestRule.ResponseBody"
-                              Label="Body"
-                              Variant="Variant.Text"
-                              Lines="5" />
+                <MudTextField @bind-Value="WebhookRule.Description"
+                              Label="Description"
+                              Variant="Variant.Text" />
+                <MudTextField @bind-Value="WebhookRule.RedirectUrl"
+                              Label="Redirect Url"
+                              Variant="Variant.Text" />
             </EditForm>
         </MudContainer>
     </DialogContent>
     <DialogActions>
-        @if (RequestRule.Id != 0)
+        @if (WebhookRule.Id != 0)
         {
             <MudButton Variant="Variant.Filled"
                        Color="Color.Error"
@@ -47,24 +47,24 @@
     public MudDialogInstance? MudDialog { get; set; }
 
     [Parameter]
-    public RequestRuleDto RequestRule { get; set; } = new RequestRuleDto();
+    public WebhookRuleDto WebhookRule { get; set; } = new WebhookRuleDto();
 
     private async Task Save()
     {
-        if (RequestRule.Id != 0)
+        if (WebhookRule.Id != 0)
         {
-            await Http.PutAsJsonAsync<EditRequestRuleDto>("api/v1/request", mapper.Map<EditRequestRuleDto>(RequestRule));
+            await Http.PutAsJsonAsync<EditWebhookRuleDto>("api/v1/webhook", mapper.Map<EditWebhookRuleDto>(WebhookRule));
         }
         else
         {
-            await Http.PostAsJsonAsync<CreateRequestRuleDto>("api/v1/request", mapper.Map<CreateRequestRuleDto>(RequestRule));
+            await Http.PostAsJsonAsync<CreateWebhookRuleDto>("api/v1/webhook", mapper.Map<CreateWebhookRuleDto>(WebhookRule));
         }
         MudDialog?.Close(DialogResult.Ok(true));
     }
 
     private async Task Delete()
     {
-        await Http.DeleteAsync($"api/v1/request/{RequestRule.Id}");
+        await Http.DeleteAsync($"api/v1/webhook/{WebhookRule.Id}");
         MudDialog?.Close(DialogResult.Ok(true));
     }
 }

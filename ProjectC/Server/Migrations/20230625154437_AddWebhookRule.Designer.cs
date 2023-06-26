@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectC.Server.Data;
 
@@ -10,9 +11,11 @@ using ProjectC.Server.Data;
 namespace ProjectC.Server.Migrations
 {
     [DbContext(typeof(ProjectCDbContext))]
-    partial class ProjectCDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230625154437_AddWebhookRule")]
+    partial class AddWebhookRule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,9 +82,6 @@ namespace ProjectC.Server.Migrations
 
                     b.Property<string>("Path")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RedirectUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
