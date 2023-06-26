@@ -9,5 +9,10 @@ namespace ProjectC.Server.Hubs
         {
             await Clients.All.SendAsync("WebhookRuleEventCaught", webhookEventDto);
         }
+
+        public async Task NotifyWebhookRuleEventToRedirect(WebhookEventDto webhookEventDto)
+        {
+            await Clients.All.SendAsync("WebhookRuleEventToRedirect", webhookEventDto);
+        }
     }
 }

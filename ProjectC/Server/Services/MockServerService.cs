@@ -4,6 +4,7 @@ using ProjectC.Server.Data;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Hubs;
 using ProjectC.Server.Services.Interfaces;
+using ProjectC.Shared.Models;
 
 namespace ProjectC.Server.Services
 {
@@ -71,6 +72,14 @@ namespace ProjectC.Server.Services
         {
             var request = await requestInspectorService.BuildRequestAsync(context.Request);
             await webhookHubContext.Clients.All.SendAsync("WebhookRuleEventCaught", request);
+            await webhookHubContext.Clients.All.SendAsync(
+                "WebhookRuleEventToRedirect",
+                new WebhookEventDto
+                {
+                    Request = context.Request,
+                    RedirectUrl = webhookRule.RedirectUrl ?? string.Empty,
+                }
+            );
         }
 
         private static RequestRuleMethod GetRequestRuleMethod(string method)
