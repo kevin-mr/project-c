@@ -1,4 +1,5 @@
-﻿using ProjectC.Server.Services.Interfaces;
+﻿using ProjectC.Server.Data.Entities;
+using ProjectC.Server.Services.Interfaces;
 using ProjectC.Shared.Models;
 using System.Text;
 using System.Text.Json;
@@ -24,8 +25,8 @@ namespace ProjectC.Server.Services
                 Id = index++,
                 Method = request.Method,
                 Headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
+                Body = stringBuilder.ToString(),
                 ArrivalDate = DateTime.Now,
-                Body = stringBuilder.ToString()
             };
 
             try
@@ -41,6 +42,32 @@ namespace ProjectC.Server.Services
             }
 
             return requestDto;
+        }
+
+        public async Task<WebhookEventDto> BuildWebhookEventAsync(
+            HttpRequest request,
+            string redirectUrl
+        )
+        {
+            var stringBuilder = new StringBuilder();
+            using (var reader = new StreamReader(request.Body))
+            {
+                stringBuilder.AppendLine(await reader.ReadToEndAsync());
+            }
+
+            return new WebhookEventDto
+            {
+                Scheme = request.Scheme,
+                Host = request.Host.Host,
+                Port = request.Host.Port ?? throw new Exception("Invalid port"),
+                PathBase = request.PathBase,
+                Path = request.Path,
+                Method = request.Method,
+                Headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToArray()),
+                ContentType = request.ContentType,
+                RedirectUrl = redirectUrl,
+                Body = stringBuilder.ToString()
+            };
         }
     }
 }

@@ -4,6 +4,6 @@ namespace ProjectC.CLI.Services.Interfaces
 {
     public interface IWebhookService
     {
-        void RedirectWebhookEvent(WebhookEventDto webhookEventDto);
+        Task RedirectWebhookEventAsync(WebhookEventDto webhookEvent);
     }
 }

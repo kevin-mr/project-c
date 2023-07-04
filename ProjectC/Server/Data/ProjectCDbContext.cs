@@ -23,14 +23,6 @@ namespace ProjectC.Server.Data
                     x => (RequestRuleMethod)Enum.Parse(typeof(RequestRuleMethod), x)
                 );
 
-            modelBuilder
-                .Entity<RequestRule>()
-                .Property(x => x.ResponseMethod)
-                .HasConversion(
-                    x => x.ToString(),
-                    x => (RequestRuleMethod)Enum.Parse(typeof(RequestRuleMethod), x)
-                );
-
             modelBuilder.Entity<WebhookRule>().ToTable("WebhookRule");
 
             modelBuilder

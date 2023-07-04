@@ -5,7 +5,6 @@ using Microsoft.Extensions.Hosting;
 using ProjectC.CLI.Services;
 using ProjectC.CLI.Services.Interfaces;
 using ProjectC.Shared.Models;
-using static System.Net.WebRequestMethods;
 
 namespace ProjectC.CLI
 {
@@ -26,16 +25,16 @@ namespace ProjectC.CLI
             var webhookService = host.Services.GetService<IWebhookService>();
 
             var hubConnection = new HubConnectionBuilder()
-                .WithUrl($"{config["redirect-to"]}/webhook-rule-events")
+                .WithUrl("https://localhost:7026/webhook-rule-events")
                 .Build();
 
             hubConnection.On<WebhookEventDto>(
                 "WebhookRuleEventToRedirect",
-                (webhookEvent) =>
+                async (webhookEvent) =>
                 {
-                    if (webhookEvent is not null)
+                    if (webhookEvent is not null && webhookService is not null)
                     {
-                        webhookService?.RedirectWebhookEvent(webhookEvent);
+                        await webhookService.RedirectWebhookEventAsync(webhookEvent);
                     }
                 }
             );
@@ -44,7 +43,7 @@ namespace ProjectC.CLI
             {
                 await hubConnection.StartAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

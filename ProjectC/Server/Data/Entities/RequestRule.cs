@@ -8,7 +8,7 @@
             Method = RequestRuleMethod.GET;
             Path = string.Empty;
             Description = string.Empty;
-            ResponseMethod = RequestRuleMethod.GET;
+            ResponseStatus = 200;
             ResponseHeaders = string.Empty;
             ResponseBody = string.Empty;
             ResponseDelay = 0;
@@ -19,9 +19,9 @@
         public string Path { get; set; }
         public string Description { get; set; }
 
-        public RequestRuleMethod ResponseMethod { get; set; }
+        public int ResponseStatus { get; set; }
+        public int ResponseDelay { get; set; }
         public string ResponseHeaders { get; set; }
         public string ResponseBody { get; set; }
-        public int ResponseDelay { get; set; }
     }
 }

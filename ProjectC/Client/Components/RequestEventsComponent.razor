@@ -46,8 +46,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var url = Navigation.ToAbsoluteUri("/request-rule-events");
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/request-rule-events"))
+            .WithUrl(url)
             .Build();
 
         hubConnection.On<RequestDto>("RequestRuleEventCaught", (request) =>

@@ -62,24 +62,33 @@ namespace ProjectC.Server.Services
 
         public async Task BuildRequestRuleResponse(HttpContext context, RequestRule requestRule)
         {
+            if (requestRule.ResponseDelay > 0)
+            {
+                Thread.Sleep(requestRule.ResponseDelay);
+            }
+
+            context.Response.StatusCode = requestRule.ResponseStatus;
             await context.Response.WriteAsync(requestRule.ResponseBody);
 
             var request = await requestInspectorService.BuildRequestAsync(context.Request);
-            await requestHubContext.Clients.All.SendAsync("WebhookRuleEventCaught", request);
+            await requestHubContext.Clients.All.SendAsync("RequestRuleEventCaught", request);
         }
 
         public async Task BuildWebhookRuleResponse(HttpContext context, WebhookRule webhookRule)
         {
             var request = await requestInspectorService.BuildRequestAsync(context.Request);
             await webhookHubContext.Clients.All.SendAsync("WebhookRuleEventCaught", request);
-            await webhookHubContext.Clients.All.SendAsync(
-                "WebhookRuleEventToRedirect",
-                new WebhookEventDto
-                {
-                    Request = context.Request,
-                    RedirectUrl = webhookRule.RedirectUrl ?? string.Empty,
-                }
-            );
+            if (!string.IsNullOrEmpty(webhookRule.RedirectUrl))
+            {
+                var webhookEvent = await requestInspectorService.BuildWebhookEventAsync(
+                    context.Request,
+                    webhookRule.RedirectUrl
+                );
+                await webhookHubContext.Clients.All.SendAsync(
+                    "WebhookRuleEventToRedirect",
+                    webhookEvent
+                );
+            }
         }
 
         private static RequestRuleMethod GetRequestRuleMethod(string method)

@@ -6,6 +6,9 @@
     <DialogContent>
         <MudContainer Style="max-height: 80%; overflow-y: scroll">
             <EditForm Model="@RequestRule">
+                <MudTextField @bind-Value="RequestRule.Path"
+                              Label="Path"
+                              Variant="Variant.Text" />
                 <MudSelect @bind-Value="RequestRule.Method"
                            Label="Method"
                            Variant="Variant.Text">
@@ -14,8 +17,11 @@
                     <MudSelectItem Value="@RequestRuleMethodDto.PUT">PUT</MudSelectItem>
                     <MudSelectItem Value="@RequestRuleMethodDto.DELETE">DELETE</MudSelectItem>
                 </MudSelect>
-                <MudTextField @bind-Value="RequestRule.Path"
-                              Label="Path"
+                <MudNumericField @bind-Value="RequestRule.ResponseStatus"
+                              Label="Status"
+                              Variant="Variant.Text" />
+                <MudNumericField @bind-Value="RequestRule.ResponseDelay"
+                              Label="Delay"
                               Variant="Variant.Text" />
                 <MudTextField @bind-Value="RequestRule.ResponseBody"
                               Label="Body"

@@ -33,6 +33,8 @@ namespace ProjectC.Server.Services
 
             currentRequestRule.Path = requestRule.Path;
             currentRequestRule.Method = requestRule.Method;
+            currentRequestRule.ResponseStatus = requestRule.ResponseStatus;
+            currentRequestRule.ResponseDelay = requestRule.ResponseDelay;
             currentRequestRule.ResponseBody = requestRule.ResponseBody;
 
             await context.SaveChangesAsync();
