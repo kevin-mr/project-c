@@ -7,34 +7,20 @@
     <DialogContent>
         <div class="pa-5">
             <MudContainer Style="max-height: 80%; overflow-y: scroll">
-                <MudForm Model="@WebhookRule" @ref=Form Validation="@(WebhookRuleValidator.ValidateValue)">
-                    <MudSelect @bind-Value="WebhookRule.Method"
-                               Label="Method"
-                               Variant="Variant.Text">
-                        <MudSelectItem Value="@WebhookRuleMethodDto.POST">POST</MudSelectItem>
-                        <MudSelectItem Value="@WebhookRuleMethodDto.PUT">PUT</MudSelectItem>
-                    </MudSelect>
-                    <MudTextField @bind-Value="WebhookRule.Path"
-                                  Label="Path"
-                                  For="@(() => WebhookRule.Path)"
+                <EditForm Model="@Workflow" @ref=Form Validation="@(WorkflowValidator.ValidateValue)">
+                    <MudTextField @bind-Value="Workflow.Name"
+                                  Label="Name"
                                   Variant="Variant.Text" />
-                    <MudTextField @bind-Value="WebhookRule.Description"
-                                  Label="Description"
-                                  For="@(() => WebhookRule.Description)"
-                                  Variant="Variant.Text" />
-                    <MudTextField @bind-Value="WebhookRule.RedirectUrl"
-                                  Label="Redirect Url"
-                                  Variant="Variant.Text" />
-                </MudForm>
+                </EditForm>
             </MudContainer>
         </div>
     </DialogContent>
     <DialogActions>
-        @if (WebhookRule.Id != 0)
+        @if (Workflow.Id != 0)
         {
             <MudButton Variant="Variant.Filled"
                        Color="Color.Error"
-                       Disabled="@Deleting"
+                       Disabled="Deleting"
                        OnClick="Delete">
                 @if (Deleting)
                 {
@@ -51,8 +37,7 @@
         }
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
-                   Class="ml-auto"
-                   Disabled="@Saving"
+                   Disabled="Saving"
                    OnClick="Save">
             @if (Saving)
             {
@@ -74,10 +59,10 @@
     public MudDialogInstance? MudDialog { get; set; }
 
     [Parameter]
-    public WebhookRuleDto WebhookRule { get; set; } = new WebhookRuleDto();
+    public WorkflowDto Workflow { get; set; } = new WorkflowDto();
 
     private MudForm? Form;
-    private WebhookRuleValidator WebhookRuleValidator = new WebhookRuleValidator();
+    private WorkflowValidator WorkflowValidator = new WorkflowValidator();
     private bool Deleting = false;
     private bool Saving = false;
 
@@ -100,30 +85,30 @@
             return;
         }
 
-        if (WebhookRule.Id != 0)
+        if (Workflow.Id != 0)
         {
-            var response = await Http.PutAsJsonAsync<EditWebhookRuleDto>("api/v1/webhook", mapper.Map<EditWebhookRuleDto>(WebhookRule));
+            var response = await Http.PutAsJsonAsync<EditWorkflowDto>("api/v1/workflow", mapper.Map<EditWorkflowDto>(Workflow));
             if (response.IsSuccessStatusCode)
             {
-                Snackbar.Add("Webhook rule successfully updated", Severity.Success);
+                Snackbar.Add("Workflow successfully updated", Severity.Success);
                 MudDialog?.Close(DialogResult.Ok(true));
             }
             else
             {
-                Snackbar.Add("Webhook rule couldn't be updated", Severity.Error);
+                Snackbar.Add("Workflow couldn't be updated", Severity.Error);
             }
         }
         else
         {
-            var response = await Http.PostAsJsonAsync<CreateWebhookRuleDto>("api/v1/webhook", mapper.Map<CreateWebhookRuleDto>(WebhookRule));
+            var response = await Http.PostAsJsonAsync<CreateWorkflowDto>("api/v1/workflow", mapper.Map<CreateWorkflowDto>(Workflow));
             if (response.IsSuccessStatusCode)
             {
-                Snackbar.Add("Webhook rule successfully created", Severity.Success);
+                Snackbar.Add("Workflow successfully created", Severity.Success);
                 MudDialog?.Close(DialogResult.Ok(true));
             }
             else
             {
-                Snackbar.Add("Webhook rule couldn't be created", Severity.Error);
+                Snackbar.Add("Workflow couldn't be created", Severity.Error);
             }
         }
 
@@ -132,17 +117,15 @@
 
     private async Task Delete()
     {
-        Deleting = true;
-
-        var response = await Http.DeleteAsync($"api/v1/webhook/{WebhookRule.Id}");
+        var response = await Http.DeleteAsync($"api/v1/workflow/{Workflow.Id}");
         if (response.IsSuccessStatusCode)
         {
-            Snackbar.Add("Webhook rule successfully deleted", Severity.Success);
+            Snackbar.Add("Workflow successfully deleted", Severity.Success);
             MudDialog?.Close(DialogResult.Ok(true));
         }
         else
         {
-            Snackbar.Add("Webhook rule couldn't be deleted", Severity.Error);
+            Snackbar.Add("Workflow couldn't be deleted", Severity.Error);
         }
 
         Deleting = false;

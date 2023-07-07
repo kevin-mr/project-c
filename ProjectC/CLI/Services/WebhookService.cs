@@ -38,7 +38,7 @@ namespace ProjectC.CLI.Services
             {
                 httpRequestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value);
             }
-            if (!string.IsNullOrEmpty(webhookEvent.Body))
+            if (string.IsNullOrEmpty(webhookEvent.Body))
             {
                 httpRequestMessage.Content = new StreamContent(
                     new MemoryStream(Encoding.UTF8.GetBytes(webhookEvent.Body))

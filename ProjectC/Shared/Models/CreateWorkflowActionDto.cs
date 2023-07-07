@@ -1,0 +1,26 @@
+﻿namespace ProjectC.Shared.Models
+{
+    public class CreateWorkflowActionDto
+    {
+        public CreateWorkflowActionDto()
+        {
+            Name = string.Empty;
+            ResponseStatus = 0;
+            ResponseDelay = 0;
+            ResponseHeaders = string.Empty;
+            ResponseBody = string.Empty;
+            WorkFlowId = 0;
+            RequestRuleId = 0;
+        }
+
+        public string Name { get; set; }
+
+        public int? ResponseStatus { get; set; }
+        public int? ResponseDelay { get; set; }
+        public string? ResponseHeaders { get; set; }
+        public string? ResponseBody { get; set; }
+
+        public int WorkFlowId { get; set; }
+        public int RequestRuleId { get; set; }
+    }
+}

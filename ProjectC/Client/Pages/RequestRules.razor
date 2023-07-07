@@ -1,0 +1,34 @@
+﻿@page "/request-rules"
+@inject IDialogService DialogService
+@using ProjectC.Client.Components;
+
+<div class="d-flex justify-end mt-5">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddRequestRule">Add Rule</MudButton>
+</div>
+
+<MudGrid Spacing="2" Class="mt-5">
+    <MudItem sm="6">
+        <RequestEventsComponent></RequestEventsComponent>
+    </MudItem>
+    <MudItem sm="6">
+        <RequestRulesComponent @ref="RequestRulesComponent"></RequestRulesComponent>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private RequestRulesComponent? RequestRulesComponent;
+
+    private async Task AddRequestRule()
+    {
+        var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>("Request Rule", DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            if (RequestRulesComponent is not null)
+            {
+                await RequestRulesComponent.RefreshRequestRulesAsync();
+            }
+        }
+    }
+}

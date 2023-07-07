@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using ProjectC.Server.Data;
@@ -5,6 +6,7 @@ using ProjectC.Server.Hubs;
 using ProjectC.Server.Services;
 using ProjectC.Server.Services.Interfaces;
 using System.Reflection;
+using FluentValidation;
 
 namespace ProjectC
 {
@@ -32,14 +34,17 @@ namespace ProjectC
                     options.UseSqlServer(builder.Configuration.GetConnectionString("ProjectC-DB"))
             );
 
-            //AutoMapper
+            //External Libraries
             builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             //Services
             builder.Services.AddTransient<IRequestRuleService, RequestRuleService>();
             builder.Services.AddSingleton<IRequestInspectorService, RequestInspectorService>();
             builder.Services.AddTransient<IMockServerService, MockServerService>();
             builder.Services.AddTransient<IWebookRuleService, WebookRuleService>();
+            builder.Services.AddTransient<IWorkflowService, WorkflowService>();
+            builder.Services.AddTransient<IWorkflowActionService, WorkflowActionService>();
 
             var app = builder.Build();
 

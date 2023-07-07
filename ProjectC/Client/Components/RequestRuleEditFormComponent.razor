@@ -1,49 +1,78 @@
-﻿@using AutoMapper; 
+﻿@using AutoMapper;
 @inject HttpClient Http
 @inject IMapper mapper
+@inject ISnackbar Snackbar
 
-<MudDialog DisableSidePadding="true">
+<MudDialog>
     <DialogContent>
-        <MudContainer Style="max-height: 80%; overflow-y: scroll">
-            <EditForm Model="@RequestRule">
-                <MudTextField @bind-Value="RequestRule.Path"
-                              Label="Path"
-                              Variant="Variant.Text" />
-                <MudSelect @bind-Value="RequestRule.Method"
-                           Label="Method"
-                           Variant="Variant.Text">
-                    <MudSelectItem Value="@RequestRuleMethodDto.GET">GET</MudSelectItem>
-                    <MudSelectItem Value="@RequestRuleMethodDto.POST">POST</MudSelectItem>
-                    <MudSelectItem Value="@RequestRuleMethodDto.PUT">PUT</MudSelectItem>
-                    <MudSelectItem Value="@RequestRuleMethodDto.DELETE">DELETE</MudSelectItem>
-                </MudSelect>
-                <MudNumericField @bind-Value="RequestRule.ResponseStatus"
-                              Label="Status"
-                              Variant="Variant.Text" />
-                <MudNumericField @bind-Value="RequestRule.ResponseDelay"
-                              Label="Delay"
-                              Variant="Variant.Text" />
-                <MudTextField @bind-Value="RequestRule.ResponseBody"
-                              Label="Body"
-                              Variant="Variant.Text"
-                              Lines="5" />
-            </EditForm>
-        </MudContainer>
+        <div class="pa-5">
+            <MudContainer Style="max-height: 80%; overflow-y: scroll">
+                <MudForm Model="@RequestRule" @ref=Form Validation="@(RequestRuleDtoValidator.ValidateValue)">
+                    <MudTextField @bind-Value="RequestRule.Path"
+                                  For="@(() => RequestRule.Path)"
+                                  Label="Path"
+                                  Variant="Variant.Text" />
+                    <MudSelect @bind-Value="RequestRule.Method"
+                               For="@(() => RequestRule.Method)"
+                               Label="Method"
+                               Variant="Variant.Text">
+                        <MudSelectItem Value="@RequestRuleMethodDto.GET">GET</MudSelectItem>
+                        <MudSelectItem Value="@RequestRuleMethodDto.POST">POST</MudSelectItem>
+                        <MudSelectItem Value="@RequestRuleMethodDto.PUT">PUT</MudSelectItem>
+                        <MudSelectItem Value="@RequestRuleMethodDto.DELETE">DELETE</MudSelectItem>
+                    </MudSelect>
+                    <MudNumericField @bind-Value="RequestRule.ResponseStatus"
+                                     For="@(() => RequestRule.ResponseStatus)"
+                                     Label="Status"
+                                     Variant="Variant.Text" />
+                    <MudNumericField @bind-Value="RequestRule.ResponseDelay"
+                                     For="@(() => RequestRule.ResponseDelay)"
+                                     Label="Delay"
+                                     Variant="Variant.Text" />
+                    <MudTextField @bind-Value="RequestRule.ResponseBody"
+                                  Label="Body"
+                                  Variant="Variant.Text"
+                                  Lines="5" />
+                </MudForm>
+            </MudContainer>
+        </div>
     </DialogContent>
     <DialogActions>
         @if (RequestRule.Id != 0)
         {
             <MudButton Variant="Variant.Filled"
                        Color="Color.Error"
+                       Disabled="@Deleting"
                        OnClick="Delete">
-                Delete
+                @if (Deleting)
+                {
+                    <div class="d-flex justify-space-between align-center">
+                        <div>Deleting</div>
+                        <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                    </div>
+                }
+                else
+                {
+                    <span>Delete</span>
+                }
             </MudButton>
         }
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
                    Class="ml-auto"
+                   Disabled="@Saving"
                    OnClick="Save">
-            Save
+            @if (Saving)
+            {
+                <div class="d-flex justify-space-between align-center">
+                    <div>Saving</div>
+                    <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                </div>
+            }
+            else
+            {
+                <span>Save</span>
+            }
         </MudButton>
     </DialogActions>
 </MudDialog>
@@ -55,22 +84,75 @@
     [Parameter]
     public RequestRuleDto RequestRule { get; set; } = new RequestRuleDto();
 
+    private MudForm? Form;
+    private RequestRuleDtoValidator RequestRuleDtoValidator = new RequestRuleDtoValidator();
+    private bool Deleting = false;
+    private bool Saving = false;
+
     private async Task Save()
     {
+        Saving = true;
+
+        if (Form is null)
+        {
+            Snackbar.Add("Form couldn't be loaded", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        await Form.Validate();
+        if (!Form.IsValid)
+        {
+            Snackbar.Add("Invalid request rule data", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
         if (RequestRule.Id != 0)
         {
-            await Http.PutAsJsonAsync<EditRequestRuleDto>("api/v1/request", mapper.Map<EditRequestRuleDto>(RequestRule));
+            var response = await Http.PutAsJsonAsync<EditRequestRuleDto>("api/v1/request", mapper.Map<EditRequestRuleDto>(RequestRule));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Request rule successfully updated", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Request rule couldn't be updated", Severity.Error);
+            }
         }
         else
         {
-            await Http.PostAsJsonAsync<CreateRequestRuleDto>("api/v1/request", mapper.Map<CreateRequestRuleDto>(RequestRule));
+            var response = await Http.PostAsJsonAsync<CreateRequestRuleDto>("api/v1/request", mapper.Map<CreateRequestRuleDto>(RequestRule));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Request rule successfully created", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Request rule couldn't be created", Severity.Error);
+            }
         }
-        MudDialog?.Close(DialogResult.Ok(true));
+
+        Saving = false;
     }
 
     private async Task Delete()
     {
-        await Http.DeleteAsync($"api/v1/request/{RequestRule.Id}");
-        MudDialog?.Close(DialogResult.Ok(true));
+        Deleting = true;
+
+        var response = await Http.DeleteAsync($"api/v1/request/{RequestRule.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Request rule successfully deleted", Severity.Success);
+            MudDialog?.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            Snackbar.Add("Request rule couldn't be deleted", Severity.Error);
+        }
+
+        Deleting = false;
     }
 }

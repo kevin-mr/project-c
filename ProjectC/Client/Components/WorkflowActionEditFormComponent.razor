@@ -1,0 +1,227 @@
+﻿@using AutoMapper;
+@inject HttpClient Http
+@inject IMapper mapper
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <div class="pa-5">
+            <MudContainer Style="max-height: 80%; overflow-y: scroll">
+                <MudForm Model="@WorkflowAction" @ref=Form Validation="@(WorkflowActionValidator.ValidateValue)">
+                    <MudAutocomplete @ref="RequestRuleMudAutocompleteComponent"
+                                     T="RequestRuleDto"
+                                     Label="Search Request Rule"
+                                     SearchFunc="@(async (value) => await Task.FromResult(SearchRequestRule(value)))"
+                                     Value="RequestRule"
+                                     Text="@RequestRule?.Path"
+                                     ValueChanged="@OnRequestRuleSelected">
+                        <ItemSelectedTemplate Context="requestRule">
+                            <MudText>
+                                @requestRule.Path
+                            </MudText>
+                        </ItemSelectedTemplate>
+                        <ItemTemplate Context="requestRule">
+                            <MudText>
+                                @requestRule.Path
+                            </MudText>
+                        </ItemTemplate>
+                    </MudAutocomplete>
+                    <div class="my-3">
+                        @if (RequestRule is not null)
+                        {
+                            <MudPaper Class="pa-3">
+                                <div class="d-flex justify-space-between">
+                                    <div>
+                                        <MudText>Path:</MudText>
+                                        <MudText Typo="Typo.body2">@RequestRule.Path</MudText>
+                                    </div>
+                                    <div>
+                                        <MudText>Method:</MudText>
+                                        <MudText Typo="Typo.body2">@RequestRule.MethodLabel</MudText>
+                                    </div>
+                                </div>
+                            </MudPaper>
+                        }
+                        <MudTextField @bind-Value="WorkflowAction.Name"
+                                      Label="Description"
+                                      Variant="Variant.Text" />
+                        <MudNumericField @bind-Value="WorkflowAction.ResponseStatus"
+                                         Label="Status"
+                                         Variant="Variant.Text" />
+                        <MudNumericField @bind-Value="WorkflowAction.ResponseDelay"
+                                         Label="Delay"
+                                         Variant="Variant.Text" />
+                        <MudTextField @bind-Value="WorkflowAction.ResponseBody"
+                                      Label="Body"
+                                      Variant="Variant.Text"
+                                      Lines="5" />
+                    </div>
+                </MudForm>
+            </MudContainer>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        @if (WorkflowAction.Id != 0)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Error"
+                       Disabled="@Deleting"
+                       OnClick="Delete">
+                @if (Deleting)
+                {
+                    <div class="d-flex justify-space-between align-center">
+                        <div>Deleting</div>
+                        <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                    </div>
+                }
+                else
+                {
+                    <span>Delete</span>
+                }
+            </MudButton>
+        }
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Disabled="@Saving"
+                   OnClick="Save">
+            @if (Saving)
+            {
+                <div class="d-flex justify-space-between align-center">
+                    <div>Saving</div>
+                    <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                </div>
+            }
+            else
+            {
+                <span>Save</span>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    public MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public WorkflowDto Workflow { get; set; } = new WorkflowDto();
+
+    [Parameter]
+    public WorkflowActionDto WorkflowAction { get; set; } = new WorkflowActionDto();
+
+    private RequestRuleDto[] RequestRules = Array.Empty<RequestRuleDto>();
+    private RequestRuleDto? RequestRule = null;
+    private MudAutocomplete<RequestRuleDto>? RequestRuleMudAutocompleteComponent;
+    private MudForm? Form;
+    private WorkflowActionValidator WorkflowActionValidator = new WorkflowActionValidator();
+    private bool Deleting = false;
+    private bool Saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var requestRules = await Http.GetFromJsonAsync<RequestRuleDto[]>("api/v1/request");
+        if (requestRules is not null)
+        {
+            RequestRules = requestRules;
+        }
+        if (WorkflowAction is not null && WorkflowAction.RequestRuleId > 0)
+        {
+            var requestRule = RequestRules.FirstOrDefault(x => x.Id == WorkflowAction.RequestRuleId);
+            if (requestRule is not null)
+            {
+                RequestRule = requestRule;
+            }
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Save()
+    {
+        Saving = true;
+
+        if (Form is null)
+        {
+            Snackbar.Add("Form couldn't be loaded", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        await Form.Validate();
+        if (!Form.IsValid)
+        {
+            Snackbar.Add("Invalid request rule data", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        if (WorkflowAction.Id != 0)
+        {
+            var response = await Http.PutAsJsonAsync<EditWorkflowActionDto>("api/v1/workflow-action", mapper.Map<EditWorkflowActionDto>(WorkflowAction));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Workflow action successfully updated", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Workflow action couldn't be updated", Severity.Error);
+            }
+        }
+        else
+        {
+            WorkflowAction.WorkFlowId = Workflow.Id;
+            var response = await Http.PostAsJsonAsync<CreateWorkflowActionDto>("api/v1/workflow-action", mapper.Map<CreateWorkflowActionDto>(WorkflowAction));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Workflow action successfully created", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Workflow action couldn't be created", Severity.Error);
+            }
+        }
+
+        Saving = false;
+    }
+
+    private async Task Delete()
+    {
+        Deleting = true;
+
+        var response = await Http.DeleteAsync($"api/v1/workflow-action/{WorkflowAction.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Workflow action successfully deleted", Severity.Success);
+            MudDialog?.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            Snackbar.Add("Workflow action couldn't be deleted", Severity.Error);
+        }
+
+        Deleting = false;
+    }
+
+    private IEnumerable<RequestRuleDto> SearchRequestRule(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return RequestRules;
+        }
+        return RequestRules.Where(x => x.Path.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private void OnRequestRuleSelected(RequestRuleDto requestRule)
+    {
+        RequestRule = requestRule;
+
+        WorkflowAction.RequestRuleId = RequestRule.Id;
+        WorkflowAction.ResponseStatus = RequestRule.ResponseStatus;
+        WorkflowAction.ResponseDelay = RequestRule.ResponseDelay;
+        WorkflowAction.ResponseBody = RequestRule.ResponseBody;
+
+        StateHasChanged();
+    }
+}

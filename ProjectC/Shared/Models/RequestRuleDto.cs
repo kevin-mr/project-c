@@ -5,7 +5,7 @@
         public RequestRuleDto()
         {
             Id = 0;
-            Method = RequestRuleMethodDto.GET;
+            Method = RequestRuleMethodDto.POST;
             Path = string.Empty;
             Description = string.Empty;
             ResponseStatus = 200;

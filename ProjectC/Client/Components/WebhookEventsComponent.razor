@@ -2,17 +2,14 @@
 @inject NavigationManager Navigation
 @using Microsoft.AspNetCore.SignalR.Client
 
-<div>
-    @foreach (var request in Requests)
-    {
-        <MudList>
-            <MudListItem>
-                <RequestComponent Request=@request OnView="@(async () => await ViewAsync(request))"></RequestComponent>
-            </MudListItem>
-        </MudList>
-    }
-
-</div>
+<MudList>
+@foreach (var request in Requests)
+{
+    <MudListItem>
+        <RequestComponent Request=@request OnView="@(async () => await ViewAsync(request))"></RequestComponent>
+    </MudListItem>
+}
+</MudList>
 
 @code {
     private HubConnection? hubConnection;

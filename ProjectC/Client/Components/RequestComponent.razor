@@ -1,8 +1,8 @@
 ﻿@if (Request is not null)
 {
     <div class="d-flex justify-space-between">
-        <div>@Request.Method</div>
-        <div>@Request.ArrivedSecondsAge<span class="ml-1">Seconds Ago</span></div>
+        <MudText>@Request.Method</MudText>
+        <MudText>@Request.ArrivedSecondsAge<span class="ml-1">Seconds Ago</span></MudText>
         <MudIcon Icon="@Icons.Material.Filled.Preview" Title="View" @onclick="@(async () => await View())"/>
     </div>
 }

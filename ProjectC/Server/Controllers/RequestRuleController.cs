@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Services.Interfaces;
@@ -12,11 +13,17 @@ namespace ProjectC.Server.Controllers
     {
         private readonly IMapper mapper;
         private readonly IRequestRuleService requestRuleService;
+        private readonly IValidator<RequestRule> requestRuleValidator;
 
-        public RequestRuleController(IMapper mapper, IRequestRuleService requestRuleService)
+        public RequestRuleController(
+            IMapper mapper,
+            IRequestRuleService requestRuleService,
+            IValidator<RequestRule> requestRuleValidator
+        )
         {
             this.mapper = mapper;
             this.requestRuleService = requestRuleService;
+            this.requestRuleValidator = requestRuleValidator;
         }
 
         [HttpGet()]
@@ -28,19 +35,25 @@ namespace ProjectC.Server.Controllers
         }
 
         [HttpPost()]
-        public Task CreateAsync(CreateRequestRuleDto createRequestRule)
+        public async Task CreateAsync(CreateRequestRuleDto createRequestRule)
         {
             var request = mapper.Map<RequestRule>(createRequestRule);
 
-            return requestRuleService.CreateAsync(request);
+            await requestRuleValidator.ValidateAndThrowAsync(request);
+
+            await requestRuleService.CreateAsync(request);
         }
 
         [HttpPut()]
-        public Task UpdateAsync(EditRequestRuleDto editRequestRule)
+        public async Task UpdateAsync(EditRequestRuleDto editRequestRule)
         {
+            await Task.Delay(3000);
+
             var request = mapper.Map<RequestRule>(editRequestRule);
 
-            return requestRuleService.UpdateAsync(request);
+            await requestRuleValidator.ValidateAndThrowAsync(request);
+
+            await requestRuleService.UpdateAsync(request);
         }
 
         [HttpDelete("{id}")]

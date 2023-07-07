@@ -1,8 +1,8 @@
 ﻿@if (RequestRule is not null)
-{    
+{
     <div class="d-flex justify-space-between align-center">
-        <MudChip Variant="Variant.Text" Color="@(GetMethodColor(RequestRule.Method))">@RequestRule.MethodLabel</MudChip>
-        <div>@RequestRule.Path</div>
+        <MudChip Variant="Variant.Text" Color="@(RequestRule.Method.GetMethodColor())">@RequestRule.MethodLabel</MudChip>
+        <MudText>@RequestRule.Path</MudText>
         <MudIcon Icon="@Icons.Material.Filled.Edit" Title="Edit" @onclick="@(async () => await EditAsync())" />
     </div>
 }
@@ -13,23 +13,6 @@
 
     [Parameter]
     public EventCallback OnEdit { get; set; }
-
-    private Color GetMethodColor(RequestRuleMethodDto method)
-    {
-        switch (method)
-        {
-            case RequestRuleMethodDto.GET:
-                return Color.Success;
-            case RequestRuleMethodDto.POST:
-                return Color.Warning;
-            case RequestRuleMethodDto.PUT:
-                return Color.Info;
-            case RequestRuleMethodDto.DELETE:
-                return Color.Error;
-            default:
-                return Color.Default;
-        }
-    }
 
     private async Task EditAsync()
     {

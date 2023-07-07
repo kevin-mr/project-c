@@ -1,57 +1,58 @@
 ﻿@inject HttpClient Http
 @inject IDialogService DialogService
 
-<div>
-    @foreach (var requestRule in RequestRules)
-    {
-        <MudPaper>
-            <MudList>
+@if (loading)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+@if (RequestRules.Count() > 0)
+{
+    <MudPaper>
+        <MudList>
+            @foreach (var requestRule in RequestRules)
+            {
                 <MudListItem>
                     <RequestRuleComponent RequestRule=@requestRule OnEdit="@(async () => await EditAsync(requestRule))"></RequestRuleComponent>
                 </MudListItem>
-            </MudList>
-        </MudPaper>
-    }
-</div>
+            }
+        </MudList>
+    </MudPaper>
+}
 
 @code {
     private RequestRuleDto[] RequestRules = Array.Empty<RequestRuleDto>();
+    private bool loading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await RefreshRequestRulesAsync();
+        await base.OnInitializedAsync();
+    }
+
+    public async Task RefreshRequestRulesAsync()
+    {
+        loading = true;
+        var requestRules = await Http.GetFromJsonAsync<RequestRuleDto[]>("api/v1/request");
+        if (requestRules is not null)
+        {
+            RequestRules = requestRules;
+            loading = false;
+        }
+    }
 
     private async Task EditAsync(RequestRuleDto requestRule)
     {
-        var options = new DialogOptions
-        {
-            CloseOnEscapeKey = true,
-            CloseButton = true,
-            FullWidth = true,
-            MaxWidth = MaxWidth.Small,
-        };
         var parameters = new DialogParameters
         {
             ["RequestRule"] = requestRule
         };
-        var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>("Request Rule", parameters, options);
+        var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>("Request Rule", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
         if (!result.Canceled)
         {
             await RefreshRequestRulesAsync();
         }
-    }
-
-    public async Task RefreshRequestRulesAsync()
-    {
-        var requestRules = await Http.GetFromJsonAsync<RequestRuleDto[]>("api/v1/request");
-        if (requestRules is not null)
-        {
-            RequestRules = requestRules;
-            StateHasChanged();
-        }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await RefreshRequestRulesAsync();
-        await base.OnInitializedAsync();
     }
 }

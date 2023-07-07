@@ -1,17 +1,21 @@
-﻿<MudDialog DisableSidePadding="true">
+﻿<MudDialog>
     <DialogContent>
-        <MudContainer Style="max-height: 80%; overflow-y: scroll">
-            <MudText Typo="Typo.h5" Class="ma-2">
-                Headers
-            </MudText>
-            <RequestHeadersComponent Headers="Request.Headers"></RequestHeadersComponent>
-            <div class="mt-5">
-                <MudText Typo="Typo.h5" Class="ma-2">
-                    Body
+        <div class="pa-5">
+            <MudContainer Style="max-height: 80%; overflow-y: scroll">
+                <MudText Typo="Typo.h5">
+                    Headers
                 </MudText>
-                <RequestBodyComponent Body=@Request.Body JsonBody=@Request.JsonBody></RequestBodyComponent>
-            </div>
-        </MudContainer>
+                <div class="mt-3">
+                    <RequestHeadersComponent Headers="Request.Headers"></RequestHeadersComponent>
+                </div>
+                <div class="mt-5">
+                    <MudText Typo="Typo.h5">
+                        Body
+                    </MudText>
+                    <RequestBodyComponent Body=@Request.Body JsonBody=@Request.JsonBody></RequestBodyComponent>
+                </div>
+            </MudContainer>
+        </div>
     </DialogContent>
 </MudDialog>
 

@@ -1,0 +1,100 @@
+﻿@using AutoMapper;
+@inject HttpClient Http
+@inject IMapper mapper
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <div class="pa-5">
+            <MudExpansionPanels>
+                @foreach (var workflowAction in WorkflowActions)
+                {
+                    <MudExpansionPanel>
+                        <TitleContent>
+                            <div class="d-flex justify-space-between">
+                                <MudText>@workflowAction.Name</MudText>
+                                <div class="mr-3" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                                    <MudIcon Icon="@Icons.Material.Filled.Edit" @onclick="@(async () => await EditAsync(workflowAction))" />
+                                </div>
+                            </div>
+                        </TitleContent>
+                        <ChildContent>
+                            <MudText>Status:</MudText>
+                            <MudText Typo="Typo.body2">@workflowAction.ResponseStatus</MudText>
+                            <MudText>Delay:</MudText>
+                            <MudText Typo="Typo.body2">@workflowAction.ResponseDelay</MudText>
+                            <MudText>Body:</MudText>
+                            <MudText Typo="Typo.body2">@workflowAction.ResponseBody</MudText>
+                        </ChildContent>
+                    </MudExpansionPanel>
+                }
+            </MudExpansionPanels>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Primary"
+                   @onclick="@(async () => await AddAsync())">
+            + Action
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    public MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public WorkflowDto Workflow { get; set; } = new WorkflowDto();
+
+    [Parameter]
+    public List<WorkflowActionDto> WorkflowActions { get; set; } = new List<WorkflowActionDto>();
+
+    private async Task EditAsync(WorkflowActionDto workflowAction)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Workflow"] = Workflow,
+            ["WorkflowAction"] = workflowAction
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowActionEditFormComponent>("Workflow Action", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowActionsAsync();
+        }
+    }
+
+    private async Task AddAsync()
+    {
+        var parameters = new DialogParameters
+        {
+            ["Workflow"] = Workflow,
+            ["WorkflowAction"] = new WorkflowActionDto(),
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowActionEditFormComponent>("Workflow Action", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowActionsAsync();
+        }
+    }
+
+    public async Task RefreshWorkflowActionsAsync()
+    {
+        var workflowActions = await Http.GetFromJsonAsync<WorkflowActionDto[]>($"api/v1/workflow/{Workflow.Id}/action");
+        if (workflowActions is not null)
+        {
+            WorkflowActions = workflowActions.ToList();
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshWorkflowActionsAsync();
+        await base.OnInitializedAsync();
+    }
+}

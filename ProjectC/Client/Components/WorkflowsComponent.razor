@@ -1,0 +1,101 @@
+﻿@inject HttpClient Http
+@inject IDialogService DialogService
+
+@if (loading)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+@if (Workflows.Count() > 0)
+{
+    <MudPaper>
+        <MudExpansionPanels>
+            @foreach (var workflow in Workflows)
+            {
+                <MudExpansionPanel>
+                    <TitleContent>
+                        <div class="d-flex justify-space-between">
+                            <MudText Class="mt-1">@workflow.Name</MudText>
+                            <div class="d-flex mr-3" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                                <MudIcon Icon="@Icons.Material.Filled.Edit" @onclick="@(async () => await EditAsync(workflow))" />
+                                <MudBadge Content="@workflow.WorkflowActions.Count" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto">
+                                    <MudIcon Icon="@Icons.Material.Filled.Flag" @onclick="@(async () => await ViewWorkflowActionsAsync(workflow))" />
+                                </MudBadge>
+                            </div>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudList>
+                            @foreach (var workflowAction in @workflow.WorkflowActions)
+                            {
+                                <MudListItem>
+                                    @workflowAction.Name
+                                </MudListItem>
+                            }
+                        </MudList>
+                    </ChildContent>
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+    </MudPaper>
+}
+
+@code {
+    private WorkflowDto[] Workflows = Array.Empty<WorkflowDto>();
+    private bool loading = false;
+
+    private async Task EditAsync(WorkflowDto workflow)
+    {
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            CloseButton = true,
+            FullWidth = true,
+            MaxWidth = MaxWidth.Small,
+        };
+        var parameters = new DialogParameters
+        {
+            ["Workflow"] = workflow
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowEditFormComponent>("Workflow", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowsAsync();
+        }
+    }
+
+    private async Task ViewWorkflowActionsAsync(WorkflowDto workflow)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Workflow"] = workflow,
+            ["WorkflowActions"] = workflow.WorkflowActions,
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowActionsComponent>("Workflow Actions", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowsAsync();
+        }
+    }
+
+    public async Task RefreshWorkflowsAsync()
+    {
+        loading = true;
+        var workflows = await Http.GetFromJsonAsync<WorkflowDto[]>("api/v1/workflow");
+        if (workflows is not null)
+        {
+            Workflows = workflows;
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshWorkflowsAsync();
+        await base.OnInitializedAsync();
+    }
+}

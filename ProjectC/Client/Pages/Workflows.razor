@@ -1,0 +1,32 @@
+﻿@page "/workflows"
+@inject IDialogService DialogService
+
+<div class="d-flex justify-end mt-5">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddWorkflow">Add Workflow</MudButton>
+</div>
+
+<MudGrid Spacing="2" Class="mt-5">
+    <MudItem sm="6">
+    </MudItem>
+    <MudItem sm="6">
+        <WorkflowsComponent @ref="WorkflowsComponent"></WorkflowsComponent>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private WorkflowsComponent? WorkflowsComponent;
+
+    private async Task AddWorkflow()
+    {
+        var dialog = await DialogService.ShowAsync<ProjectC.Client.Components.WorkflowEditFormComponent>("Workflow", DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            if (WorkflowsComponent is not null)
+            {
+                await WorkflowsComponent.RefreshWorkflowsAsync();
+            }
+        }
+    }
+}

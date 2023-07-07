@@ -2,17 +2,14 @@
 @inject NavigationManager Navigation
 @using Microsoft.AspNetCore.SignalR.Client
 
-<div>
+<MudList>
     @foreach (var request in Requests)
     {
-        <MudList>
-            <MudListItem>
-                <RequestComponent Request=@request OnView="@(async () => await ViewAsync(request))"></RequestComponent>
-            </MudListItem>
-        </MudList>
+        <MudListItem>
+            <RequestComponent Request=@request OnView="@(async () => await ViewAsync(request))"></RequestComponent>
+        </MudListItem>
     }
-
-</div>
+</MudList>
 
 @code {
     private HubConnection? hubConnection;
@@ -20,18 +17,11 @@
 
     private async Task ViewAsync(RequestDto request)
     {
-        var options = new DialogOptions
-        {
-            CloseOnEscapeKey = true,
-            CloseButton = true,
-            FullWidth = true,
-            MaxWidth = MaxWidth.Small,
-        };
         var parameters = new DialogParameters
         {
             ["Request"] = request
         };
-        await DialogService.ShowAsync<ViewRequestComponent>("Request", parameters, options);
+        await DialogService.ShowAsync<ViewRequestComponent>("Request Details", parameters, DialogUtils.DefaultDialogOptions);
     }
 
     private bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
@@ -46,9 +36,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var url = Navigation.ToAbsoluteUri("/request-rule-events");
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(url)
+            .WithUrl(Navigation.ToAbsoluteUri("/request-rule-events"))
             .Build();
 
         hubConnection.On<RequestDto>("RequestRuleEventCaught", (request) =>

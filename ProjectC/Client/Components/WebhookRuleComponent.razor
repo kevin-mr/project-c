@@ -1,9 +1,9 @@
 ﻿@if (WebhookRule is not null)
 {
     <div class="d-flex justify-space-between align-center">
-        <MudChip Variant="Variant.Text" Color="@(GetMethodColor(WebhookRule.Method))">@WebhookRule.MethodLabel</MudChip>
-        <div>@WebhookRule.Path</div>
-        <div>@WebhookRule.Description</div>
+        <MudChip Variant="Variant.Text" Color="@(WebhookRule.Method.GetMethodColor())">@WebhookRule.MethodLabel</MudChip>
+        <MudText>@WebhookRule.Path</MudText>
+        <MudText>@WebhookRule.Description</MudText>
         <MudIcon Icon="@Icons.Material.Filled.Edit" Title="Edit" @onclick="@(async () => await EditAsync())" />
     </div>
 }
@@ -14,19 +14,6 @@
 
     [Parameter]
     public EventCallback OnEdit { get; set; }
-
-    private Color GetMethodColor(WebhookRuleMethodDto method)
-    {
-        switch (method)
-        {
-            case WebhookRuleMethodDto.POST:
-                return Color.Warning;
-            case WebhookRuleMethodDto.PUT:
-                return Color.Info;
-            default:
-                return Color.Default;
-        }
-    }
 
     private async Task EditAsync()
     {
