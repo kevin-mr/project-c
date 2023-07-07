@@ -7,11 +7,12 @@
     <DialogContent>
         <div class="pa-5">
             <MudContainer Style="max-height: 80%; overflow-y: scroll">
-                <EditForm Model="@Workflow" @ref=Form Validation="@(WorkflowValidator.ValidateValue)">
+                <MudForm Model="@Workflow" @ref=Form Validation="@(WorkflowValidator.ValidateValue)">
                     <MudTextField @bind-Value="Workflow.Name"
                                   Label="Name"
+                                  For="@(() => Workflow.Name)"
                                   Variant="Variant.Text" />
-                </EditForm>
+                </MudForm>
             </MudContainer>
         </div>
     </DialogContent>
@@ -80,7 +81,7 @@
         await Form.Validate();
         if (!Form.IsValid)
         {
-            Snackbar.Add("Invalid request rule data", Severity.Warning);
+            Snackbar.Add("Invalid workflow data", Severity.Warning);
             Saving = false;
             return;
         }

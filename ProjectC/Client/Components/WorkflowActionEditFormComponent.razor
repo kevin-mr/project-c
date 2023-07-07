@@ -4,9 +4,21 @@
 @inject ISnackbar Snackbar
 
 <MudDialog>
+    @*<TitleContent>
+        <div class="d-flex justify-space-between">
+            <MudText Typo="Typo.h6">Workflow Action</MudText>
+            
+        </div>
+    </TitleContent>*@
     <DialogContent>
         <div class="pa-5">
             <MudContainer Style="max-height: 80%; overflow-y: scroll">
+                @if (InvalidRequestRule)
+                {
+                    <MudAlert Severity="Severity.Error">
+                        Please, Select a Request Rule
+                    </MudAlert>
+                }
                 <MudForm Model="@WorkflowAction" @ref=Form Validation="@(WorkflowActionValidator.ValidateValue)">
                     <MudAutocomplete @ref="RequestRuleMudAutocompleteComponent"
                                      T="RequestRuleDto"
@@ -43,7 +55,8 @@
                             </MudPaper>
                         }
                         <MudTextField @bind-Value="WorkflowAction.Name"
-                                      Label="Description"
+                                      Label="Name"
+                                      For="@(() => Workflow.Name)"
                                       Variant="Variant.Text" />
                         <MudNumericField @bind-Value="WorkflowAction.ResponseStatus"
                                          Label="Status"
@@ -116,6 +129,7 @@
     private WorkflowActionValidator WorkflowActionValidator = new WorkflowActionValidator();
     private bool Deleting = false;
     private bool Saving = false;
+    private bool InvalidRequestRule = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -148,9 +162,10 @@
         }
 
         await Form.Validate();
-        if (!Form.IsValid)
+        InvalidRequestRule = WorkflowAction.RequestRuleId == 0;
+        if (!Form.IsValid || InvalidRequestRule)
         {
-            Snackbar.Add("Invalid request rule data", Severity.Warning);
+            Snackbar.Add("Invalid workflow action data", Severity.Warning);
             Saving = false;
             return;
         }
@@ -221,6 +236,8 @@
         WorkflowAction.ResponseStatus = RequestRule.ResponseStatus;
         WorkflowAction.ResponseDelay = RequestRule.ResponseDelay;
         WorkflowAction.ResponseBody = RequestRule.ResponseBody;
+
+        InvalidRequestRule = WorkflowAction.RequestRuleId == 0;
 
         StateHasChanged();
     }

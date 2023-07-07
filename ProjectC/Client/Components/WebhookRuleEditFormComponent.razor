@@ -95,7 +95,7 @@
         await Form.Validate();
         if (!Form.IsValid)
         {
-            Snackbar.Add("Invalid request rule data", Severity.Warning);
+            Snackbar.Add("Invalid webhook rule data", Severity.Warning);
             Saving = false;
             return;
         }
