@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectC.Server.Data;
 
@@ -11,9 +12,11 @@ using ProjectC.Server.Data;
 namespace ProjectC.Server.Migrations
 {
     [DbContext(typeof(ProjectCDbContext))]
-    partial class ProjectCDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230709150413_AddRequestEvent")]
+    partial class AddRequestEvent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,17 +48,7 @@ namespace ProjectC.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RequestRuleId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("WebhookRuleId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("RequestRuleId");
-
-                    b.HasIndex("WebhookRuleId");
 
                     b.ToTable("RequestEvent", (string)null);
                 });
@@ -183,17 +176,6 @@ namespace ProjectC.Server.Migrations
                     b.ToTable("WorkflowAction", (string)null);
                 });
 
-            modelBuilder.Entity("ProjectC.Server.Data.Entities.RequestEvent", b =>
-                {
-                    b.HasOne("ProjectC.Server.Data.Entities.RequestRule", null)
-                        .WithMany("RequestEvents")
-                        .HasForeignKey("RequestRuleId");
-
-                    b.HasOne("ProjectC.Server.Data.Entities.WebhookRule", null)
-                        .WithMany("RequestEvents")
-                        .HasForeignKey("WebhookRuleId");
-                });
-
             modelBuilder.Entity("ProjectC.Server.Data.Entities.WorkflowAction", b =>
                 {
                     b.HasOne("ProjectC.Server.Data.Entities.RequestRule", "RequestRule")
@@ -215,14 +197,7 @@ namespace ProjectC.Server.Migrations
 
             modelBuilder.Entity("ProjectC.Server.Data.Entities.RequestRule", b =>
                 {
-                    b.Navigation("RequestEvents");
-
                     b.Navigation("WorkflowActions");
-                });
-
-            modelBuilder.Entity("ProjectC.Server.Data.Entities.WebhookRule", b =>
-                {
-                    b.Navigation("RequestEvents");
                 });
 
             modelBuilder.Entity("ProjectC.Server.Data.Entities.Workflow", b =>

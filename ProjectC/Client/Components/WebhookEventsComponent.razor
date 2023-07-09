@@ -1,37 +1,67 @@
 ﻿@inject IDialogService DialogService
+@inject HttpClient Http
 @inject NavigationManager Navigation
 @using Microsoft.AspNetCore.SignalR.Client
 
 <MudList>
-@foreach (var request in Requests)
-{
-    <MudListItem>
-        <RequestComponent Request=@request OnView="@(async () => await ViewAsync(request))"></RequestComponent>
-    </MudListItem>
-}
+    @foreach (var requestEvent in RequestEvents)
+    {
+        <MudListItem>
+            <RequestEventComponent RequestEvent=@requestEvent OnView="@(async () => await ViewAsync(requestEvent))"></RequestEventComponent>
+        </MudListItem>
+    }
 </MudList>
 
 @code {
     private HubConnection? hubConnection;
-    private List<RequestDto> Requests = new List<RequestDto>();
+    private List<RequestEventDto> RequestEvents = new List<RequestEventDto>();
 
-    private async Task ViewAsync(RequestDto request)
+    protected override async Task OnInitializedAsync()
     {
-        var options = new DialogOptions
-        {
-            CloseOnEscapeKey = true,
-            CloseButton = true,
-            FullWidth = true,
-            MaxWidth = MaxWidth.Small,
-        };
+        await LoadRequestEventsAsync();
+        await ConnectToHubAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task ViewAsync(RequestEventDto requestEvent)
+    {
         var parameters = new DialogParameters
         {
-            ["Request"] = request
+            ["RequestEvent"] = requestEvent
         };
-        await DialogService.ShowAsync<ViewRequestComponent>("Request", parameters, options);
+        await DialogService.ShowAsync<ViewRequestEventComponent>("Request", parameters, DialogUtils.DefaultDialogOptions);
+    }
+
+    private async Task LoadRequestEventsAsync()
+    {
+        var requestEvents = await Http.GetFromJsonAsync<RequestEventDto[]>("api/v1/request-event/webhook-rule");
+        if (requestEvents is not null)
+        {
+            RequestEvents = requestEvents.ToList();
+            StateHasChanged();
+        }
     }
 
     private bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+    private async Task ConnectToHubAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/webhook-rule-events"))
+            .Build();
+
+        hubConnection.On<RequestEventDto>("WebhookRuleEventCaught", (requestEvent) =>
+        {
+            if (requestEvent is not null)
+            {
+                RequestEvents.Add(requestEvent);
+                StateHasChanged();
+            }
+        });
+
+        await hubConnection.StartAsync();
+    }
 
     private async ValueTask DisposeAsync()
     {
@@ -39,23 +69,5 @@
         {
             await hubConnection.DisposeAsync();
         }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/webhook-rule-events"))
-            .Build();
-
-        hubConnection.On<RequestDto>("WebhookRuleEventCaught", (request) =>
-        {
-            if (request is not null)
-            {
-                Requests.Add(request);
-                StateHasChanged();
-            }
-        });
-
-        await hubConnection.StartAsync();
     }
 }

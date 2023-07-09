@@ -45,18 +45,11 @@
 
     private async Task EditAsync(WorkflowDto workflow)
     {
-        var options = new DialogOptions
-        {
-            CloseOnEscapeKey = true,
-            CloseButton = true,
-            FullWidth = true,
-            MaxWidth = MaxWidth.Small,
-        };
         var parameters = new DialogParameters
         {
             ["Workflow"] = workflow
         };
-        var dialog = await DialogService.ShowAsync<WorkflowEditFormComponent>("Workflow", parameters, options);
+        var dialog = await DialogService.ShowAsync<WorkflowEditFormComponent>("Workflow", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
         if (!result.Canceled)

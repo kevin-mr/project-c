@@ -1,8 +1,10 @@
 ﻿using ProjectC.Server.Data.Entities;
+using ProjectC.Server.Models;
 using ProjectC.Server.Services.Interfaces;
 using ProjectC.Shared.Models;
 using System.Text;
 using System.Text.Json;
+using System.Xml;
 
 namespace ProjectC.Server.Services
 {
@@ -12,7 +14,7 @@ namespace ProjectC.Server.Services
 
         public RequestInspectorService() { }
 
-        public async Task<RequestDto> BuildRequestAsync(HttpRequest request)
+        public async Task<RequestEvent> BuildRequestEventAsync(HttpRequest request)
         {
             var stringBuilder = new StringBuilder();
             using (var reader = new StreamReader(request.Body))
@@ -20,31 +22,27 @@ namespace ProjectC.Server.Services
                 stringBuilder.AppendLine(await reader.ReadToEndAsync());
             }
 
-            var requestDto = new RequestDto
+            var headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString());
+            var body = stringBuilder.ToString();
+
+            var requestEvent = new RequestEvent
             {
                 Id = index++,
                 Method = request.Method,
-                Headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString()),
-                Body = stringBuilder.ToString(),
                 ArrivalDate = DateTime.Now,
             };
 
             try
             {
-                requestDto.JsonBody = JsonSerializer.Serialize(
-                    requestDto.Body,
-                    new JsonSerializerOptions() { WriteIndented = true }
-                );
+                requestEvent.JsonBody = JsonSerializer.Serialize(body);
+                requestEvent.JsonHeaders = JsonSerializer.Serialize(headers);
             }
-            catch (Exception)
-            {
-                requestDto.JsonBody = requestDto.Body;
-            }
+            catch (Exception e) { }
 
-            return requestDto;
+            return requestEvent;
         }
 
-        public async Task<WebhookEventDto> BuildWebhookEventAsync(
+        public async Task<WebhookEvent> BuildWebhookEventAsync(
             HttpRequest request,
             string redirectUrl
         )
@@ -55,7 +53,7 @@ namespace ProjectC.Server.Services
                 stringBuilder.AppendLine(await reader.ReadToEndAsync());
             }
 
-            return new WebhookEventDto
+            return new WebhookEvent
             {
                 Scheme = request.Scheme,
                 Host = request.Host.Host,

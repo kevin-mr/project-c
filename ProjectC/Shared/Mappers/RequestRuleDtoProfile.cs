@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ProjectC.Shared.Models;
 
-namespace ProjectC.Shared.Mapper
+namespace ProjectC.Shared.Mappers
 {
     public class RequestRuleDtoProfile : Profile
     {

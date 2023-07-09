@@ -1,10 +1,12 @@
-﻿using ProjectC.Shared.Models;
+﻿using ProjectC.Server.Data.Entities;
+using ProjectC.Server.Models;
+using ProjectC.Shared.Models;
 
 namespace ProjectC.Server.Services.Interfaces
 {
     public interface IRequestInspectorService
     {
-        Task<RequestDto> BuildRequestAsync(HttpRequest httpRequest);
-        Task<WebhookEventDto> BuildWebhookEventAsync(HttpRequest request, string redirectUrl);
+        Task<RequestEvent> BuildRequestEventAsync(HttpRequest httpRequest);
+        Task<WebhookEvent> BuildWebhookEventAsync(HttpRequest request, string redirectUrl);
     }
 }

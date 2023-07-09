@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
-using ProjectC.Shared.Mapper;
+using ProjectC.Shared.Mappers;
 using System.Reflection;
 
 namespace ProjectC.Client

@@ -9,6 +9,7 @@ namespace ProjectC.Server.Data
         public DbSet<WebhookRule> WebhookRule { get; set; }
         public DbSet<Workflow> Workflow { get; set; }
         public DbSet<WorkflowAction> WorkflowAction { get; set; }
+        public DbSet<RequestEvent> RequestEvent { get; set; }
 
         public ProjectCDbContext(DbContextOptions<ProjectCDbContext> options)
             : base(options) { }
@@ -28,6 +29,11 @@ namespace ProjectC.Server.Data
                 .HasMany(x => x.WorkflowActions)
                 .WithOne(x => x.RequestRule)
                 .HasForeignKey(x => x.RequestRuleId);
+            modelBuilder
+                .Entity<RequestRule>()
+                .HasMany(x => x.RequestEvents)
+                .WithOne()
+                .HasForeignKey(x => x.RequestRuleId);
 
             modelBuilder.Entity<WebhookRule>().ToTable("WebhookRule");
             modelBuilder
@@ -37,6 +43,11 @@ namespace ProjectC.Server.Data
                     x => x.ToString(),
                     x => (WebhookRuleMethod)Enum.Parse(typeof(WebhookRuleMethod), x)
                 );
+            modelBuilder
+                .Entity<WebhookRule>()
+                .HasMany(x => x.RequestEvents)
+                .WithOne()
+                .HasForeignKey(x => x.WebhookRuleId);
 
             modelBuilder.Entity<Workflow>().ToTable("Workflow");
             modelBuilder
@@ -57,6 +68,20 @@ namespace ProjectC.Server.Data
                 .HasOne(x => x.RequestRule)
                 .WithMany(x => x.WorkflowActions)
                 .HasForeignKey(x => x.RequestRuleId);
+
+            modelBuilder.Entity<RequestEvent>().ToTable("RequestEvent");
+            modelBuilder.Entity<RequestEvent>().Ignore(x => x.Headers);
+            modelBuilder.Entity<RequestEvent>().Ignore(x => x.Body);
+            modelBuilder
+                .Entity<RequestEvent>()
+                .HasOne<RequestRule>()
+                .WithMany(x => x.RequestEvents)
+                .HasForeignKey(x => x.RequestRuleId);
+            modelBuilder
+                .Entity<RequestEvent>()
+                .HasOne<WebhookRule>()
+                .WithMany(x => x.RequestEvents)
+                .HasForeignKey(x => x.WebhookRuleId);
 
             base.OnModelCreating(modelBuilder);
         }

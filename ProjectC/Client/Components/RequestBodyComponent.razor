@@ -16,9 +16,9 @@
             Pretty
         </TabContent>
         <ChildContent>
-            <pre class="my-10">
+            <p class="my-10">
                 @JsonBody
-            </pre>
+            </p>
         </ChildContent>
     </MudTabPanel>
 </MudTabs>
@@ -30,15 +30,14 @@
     [Parameter]
     public string JsonBody { get; set; } = string.Empty;
 
+    //TODO
     //ElementReference JsonEditorContainer;
-
     //protected override async Task OnAfterRenderAsync(bool firstRender)
     //{
     //    if (firstRender)
     //    {
     //        await JSRuntime.InvokeVoidAsync("BlazorInterop.LoadJsonEditor", JsonEditorContainer, Body);
     //    }
-
     //    await base.OnAfterRenderAsync(firstRender);
     //}
 }

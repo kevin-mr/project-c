@@ -1,15 +1,15 @@
-﻿@if (Request is not null)
+﻿@if (RequestEvent is not null)
 {
     <div class="d-flex justify-space-between">
-        <MudText>@Request.Method</MudText>
-        <MudText>@Request.ArrivedSecondsAge<span class="ml-1">Seconds Ago</span></MudText>
+        <MudText>@RequestEvent.Method</MudText>
+        <MudText>@RequestEvent.ArrivedSecondsAge<span class="ml-1">Seconds Ago</span></MudText>
         <MudIcon Icon="@Icons.Material.Filled.Preview" Title="View" @onclick="@(async () => await View())"/>
     </div>
 }
 
 @code {
     [Parameter]
-    public RequestDto? Request { get; set; }
+    public RequestEventDto? RequestEvent { get; set; }
 
     [Parameter]
     public EventCallback OnView { get; set; }

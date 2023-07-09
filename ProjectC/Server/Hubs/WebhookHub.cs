@@ -5,7 +5,7 @@ namespace ProjectC.Server.Hubs
 {
     public class WebhookHub : Hub
     {
-        public async Task NotifyWebhookRuleEventCaught(RequestDto webhookEventDto)
+        public async Task NotifyWebhookRuleEventCaught(RequestEventDto webhookEventDto)
         {
             await Clients.All.SendAsync("WebhookRuleEventCaught", webhookEventDto);
         }

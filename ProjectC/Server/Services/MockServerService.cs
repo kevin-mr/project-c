@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using ProjectC.Client.Pages;
 using ProjectC.Server.Data;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Hubs;
@@ -16,18 +18,21 @@ namespace ProjectC.Server.Services
         private readonly IHubContext<RequestsHub> requestHubContext;
         private readonly IHubContext<WebhookHub> webhookHubContext;
         private readonly IRequestInspectorService requestInspectorService;
+        private readonly IMapper mapper;
 
         public MockServerService(
             ProjectCDbContext context,
             IHubContext<RequestsHub> requestHubContext,
             IHubContext<WebhookHub> webhookHubContext,
-            IRequestInspectorService requestInspectorService
+            IRequestInspectorService requestInspectorService,
+            IMapper mapper
         )
         {
             this.context = context;
             this.requestHubContext = requestHubContext;
             this.webhookHubContext = webhookHubContext;
             this.requestInspectorService = requestInspectorService;
+            this.mapper = mapper;
         }
 
         public async Task<RequestRule?> FindRequestRule(HttpRequest request)
@@ -60,34 +65,64 @@ namespace ProjectC.Server.Services
             );
         }
 
-        public async Task BuildRequestRuleResponse(HttpContext context, RequestRule requestRule)
+        public async Task HandleRequestRuleResponse(
+            HttpContext httpContext,
+            RequestRule requestRule
+        )
         {
             if (requestRule.ResponseDelay > 0)
             {
                 Thread.Sleep(requestRule.ResponseDelay);
             }
 
-            context.Response.StatusCode = requestRule.ResponseStatus;
-            await context.Response.WriteAsync(requestRule.ResponseBody);
+            httpContext.Response.StatusCode = requestRule.ResponseStatus;
+            await httpContext.Response.WriteAsync(requestRule.ResponseBody);
 
-            var request = await requestInspectorService.BuildRequestAsync(context.Request);
-            await requestHubContext.Clients.All.SendAsync("RequestRuleEventCaught", request);
+            var requestEvent = await requestInspectorService.BuildRequestEventAsync(
+                httpContext.Request
+            );
+            if (requestEvent is not null)
+            {
+                requestEvent.RequestRuleId = requestRule.Id;
+                context.RequestEvent.Add(requestEvent);
+                await context.SaveChangesAsync();
+
+                await requestHubContext.Clients.All.SendAsync(
+                    "RequestRuleEventCaught",
+                    mapper.Map<RequestEventDto>(requestEvent)
+                );
+            }
         }
 
-        public async Task BuildWebhookRuleResponse(HttpContext context, WebhookRule webhookRule)
+        public async Task HandleWebhookRuleResponse(
+            HttpContext httpContext,
+            WebhookRule webhookRule
+        )
         {
-            var request = await requestInspectorService.BuildRequestAsync(context.Request);
-            await webhookHubContext.Clients.All.SendAsync("WebhookRuleEventCaught", request);
-            if (!string.IsNullOrEmpty(webhookRule.RedirectUrl))
+            var requestEvent = await requestInspectorService.BuildRequestEventAsync(
+                httpContext.Request
+            );
+            if (requestEvent is not null)
             {
-                var webhookEvent = await requestInspectorService.BuildWebhookEventAsync(
-                    context.Request,
-                    webhookRule.RedirectUrl
-                );
+                requestEvent.WebhookRuleId = webhookRule.Id;
+                context.RequestEvent.Add(requestEvent);
+                await context.SaveChangesAsync();
+
                 await webhookHubContext.Clients.All.SendAsync(
-                    "WebhookRuleEventToRedirect",
-                    webhookEvent
+                    "WebhookRuleEventCaught",
+                    mapper.Map<RequestEventDto>(requestEvent)
                 );
+                if (!string.IsNullOrEmpty(webhookRule.RedirectUrl))
+                {
+                    var webhookEvent = await requestInspectorService.BuildWebhookEventAsync(
+                        httpContext.Request,
+                        webhookRule.RedirectUrl
+                    );
+                    await webhookHubContext.Clients.All.SendAsync(
+                        "WebhookRuleEventToRedirect",
+                        mapper.Map<WebhookEventDto>(webhookEvent)
+                    );
+                }
             }
         }
 

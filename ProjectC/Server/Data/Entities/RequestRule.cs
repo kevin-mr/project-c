@@ -13,6 +13,7 @@
             ResponseBody = string.Empty;
             ResponseDelay = 0;
             WorkflowActions = new List<WorkflowAction>();
+            RequestEvents = new List<RequestEvent>();
         }
 
         public int Id { get; set; }
@@ -25,5 +26,6 @@
         public string ResponseBody { get; set; }
 
         public IEnumerable<WorkflowAction> WorkflowActions { get; set; }
+        public IEnumerable<RequestEvent> RequestEvents { get; set; }
     }
 }

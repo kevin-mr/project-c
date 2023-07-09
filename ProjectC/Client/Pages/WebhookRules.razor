@@ -19,7 +19,7 @@
 
     private async Task AddWebhookRule()
     {
-        var dialog = await DialogService.ShowAsync<ProjectC.Client.Components.WebhookRuleEditFormComponent>("Webhook Rule", DialogUtils.DefaultDialogOptions);
+        var dialog = await DialogService.ShowAsync<WebhookRuleEditFormComponent>("Webhook Rule", DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
         if (!result.Canceled)

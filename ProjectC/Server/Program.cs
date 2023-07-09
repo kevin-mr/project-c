@@ -45,6 +45,7 @@ namespace ProjectC
             builder.Services.AddTransient<IWebookRuleService, WebookRuleService>();
             builder.Services.AddTransient<IWorkflowService, WorkflowService>();
             builder.Services.AddTransient<IWorkflowActionService, WorkflowActionService>();
+            builder.Services.AddTransient<IRequestEventService, RequestEventService>();
 
             var app = builder.Build();
 
@@ -81,7 +82,7 @@ namespace ProjectC
                             );
                             if (requestRule is not null)
                             {
-                                await mockServerService.BuildRequestRuleResponse(
+                                await mockServerService.HandleRequestRuleResponse(
                                     context,
                                     requestRule
                                 );
@@ -102,7 +103,7 @@ namespace ProjectC
                             );
                             if (webhookRule is not null)
                             {
-                                await mockServerService.BuildWebhookRuleResponse(
+                                await mockServerService.HandleWebhookRuleResponse(
                                     context,
                                     webhookRule
                                 );

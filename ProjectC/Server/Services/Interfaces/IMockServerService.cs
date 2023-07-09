@@ -6,7 +6,7 @@ namespace ProjectC.Server.Services.Interfaces
     {
         Task<RequestRule?> FindRequestRule(HttpRequest httpRequest);
         Task<WebhookRule?> FindWebhookRule(HttpRequest httpRequest);
-        Task BuildRequestRuleResponse(HttpContext context, RequestRule requestRule);
-        Task BuildWebhookRuleResponse(HttpContext context, WebhookRule requestRule);
+        Task HandleRequestRuleResponse(HttpContext httpContext, RequestRule requestRule);
+        Task HandleWebhookRuleResponse(HttpContext httpContext, WebhookRule requestRule);
     }
 }
