@@ -22,14 +22,8 @@ namespace ProjectC.Server.Controllers
         public async Task<IEnumerable<RequestEventDto>> GetByRequestRuleAsync()
         {
             var requestEvents = await requestEventService.GetByRequestRuleAsync();
-            try
-            {
-                return requestEvents.Select(x => mapper.Map<RequestEventDto>(x)).ToArray();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+
+            return requestEvents.Select(x => mapper.Map<RequestEventDto>(x)).ToArray();
         }
 
         [HttpGet("webhook-rule")]

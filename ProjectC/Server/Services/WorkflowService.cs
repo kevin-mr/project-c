@@ -22,6 +22,14 @@ namespace ProjectC.Server.Services
                 .ToArrayAsync();
         }
 
+        public async Task<Workflow?> GetAsync(int id)
+        {
+            return await context.Workflow
+                .Include(x => x.WorkflowActions)
+                .ThenInclude(x => x.RequestRule)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task CreateAsync(Workflow workflow)
         {
             context.Workflow.Add(workflow);

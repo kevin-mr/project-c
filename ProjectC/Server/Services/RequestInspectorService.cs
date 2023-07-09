@@ -1,17 +1,13 @@
 ﻿using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Models;
 using ProjectC.Server.Services.Interfaces;
-using ProjectC.Shared.Models;
 using System.Text;
 using System.Text.Json;
-using System.Xml;
 
 namespace ProjectC.Server.Services
 {
     public class RequestInspectorService : IRequestInspectorService
     {
-        private int index = 0;
-
         public RequestInspectorService() { }
 
         public async Task<RequestEvent> BuildRequestEventAsync(HttpRequest request)
@@ -27,7 +23,6 @@ namespace ProjectC.Server.Services
 
             var requestEvent = new RequestEvent
             {
-                Id = index++,
                 Method = request.Method,
                 ArrivalDate = DateTime.Now,
             };

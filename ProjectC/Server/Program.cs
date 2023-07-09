@@ -7,6 +7,7 @@ using ProjectC.Server.Services;
 using ProjectC.Server.Services.Interfaces;
 using System.Reflection;
 using FluentValidation;
+using ProjectC.Server.Middlewares;
 
 namespace ProjectC
 {
@@ -64,57 +65,8 @@ namespace ProjectC
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
-            app.Use(
-                async (context, next) =>
-                {
-                    if (
-                        context.Request.Path.StartsWithSegments(
-                            MockServerService.MOCK_SERVER_PREFIX
-                        )
-                    )
-                    {
-                        var mockServerService =
-                            context.RequestServices.GetRequiredService<IMockServerService>();
-                        if (mockServerService is not null)
-                        {
-                            var requestRule = await mockServerService.FindRequestRule(
-                                context.Request
-                            );
-                            if (requestRule is not null)
-                            {
-                                await mockServerService.HandleRequestRuleResponse(
-                                    context,
-                                    requestRule
-                                );
-                                return;
-                            }
-                        }
-                    }
-                    else if (
-                        context.Request.Path.StartsWithSegments(MockServerService.WEBHOOK_PREFIX)
-                    )
-                    {
-                        var mockServerService =
-                            context.RequestServices.GetRequiredService<IMockServerService>();
-                        if (mockServerService is not null)
-                        {
-                            var webhookRule = await mockServerService.FindWebhookRule(
-                                context.Request
-                            );
-                            if (webhookRule is not null)
-                            {
-                                await mockServerService.HandleWebhookRuleResponse(
-                                    context,
-                                    webhookRule
-                                );
-                                return;
-                            }
-                        }
-                    }
-
-                    await next(context);
-                }
-            );
+            app.UseMockServerHandler();
+            app.UseWebhookHandler();
 
             app.UseRouting();
 

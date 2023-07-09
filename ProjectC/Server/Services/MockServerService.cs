@@ -35,7 +35,7 @@ namespace ProjectC.Server.Services
             this.mapper = mapper;
         }
 
-        public async Task<RequestRule?> FindRequestRule(HttpRequest request)
+        public async Task<RequestRule?> FindRequestRuleAsync(HttpRequest request)
         {
             if (!request.Path.HasValue)
             {
@@ -50,7 +50,7 @@ namespace ProjectC.Server.Services
             );
         }
 
-        public async Task<WebhookRule?> FindWebhookRule(HttpRequest request)
+        public async Task<WebhookRule?> FindWebhookRuleAsync(HttpRequest request)
         {
             if (!request.Path.HasValue)
             {
@@ -65,7 +65,31 @@ namespace ProjectC.Server.Services
             );
         }
 
-        public async Task HandleRequestRuleResponse(
+        public async Task<WorkflowAction?> FindWorkflowActionAsync(
+            HttpRequest request,
+            int workflowId
+        )
+        {
+            if (!request.Path.HasValue)
+            {
+                return null;
+            }
+
+            var method = GetRequestRuleMethod(request.Method);
+            var path = request.Path.Value.Remove(0, MOCK_SERVER_PREFIX.Length);
+
+            return await context.WorkflowAction
+                .Include(x => x.RequestRule)
+                .FirstOrDefaultAsync(
+                    x =>
+                        x.RequestRule != null
+                        && x.RequestRule.Method == method
+                        && x.RequestRule.Path == path
+                        && x.WorkFlowId == workflowId
+                );
+        }
+
+        public async Task HandleRequestRuleResponseAsync(
             HttpContext httpContext,
             RequestRule requestRule
         )
@@ -94,7 +118,48 @@ namespace ProjectC.Server.Services
             }
         }
 
-        public async Task HandleWebhookRuleResponse(
+        public async Task HandleWebhookActionResponseForRequestRuleAsync(
+            HttpContext httpContext,
+            Workflow workflow,
+            WorkflowAction workflowAction
+        )
+        {
+            if (workflowAction.RequestRule is null)
+            {
+                return;
+            }
+
+            if (workflowAction.ResponseDelay > 0 || workflowAction.RequestRule.ResponseDelay > 0)
+            {
+                Thread.Sleep(
+                    workflowAction.ResponseDelay ?? workflowAction.RequestRule.ResponseDelay
+                );
+            }
+
+            httpContext.Response.StatusCode =
+                workflowAction.ResponseStatus ?? workflowAction.RequestRule.ResponseStatus;
+
+            await httpContext.Response.WriteAsync(
+                workflowAction.ResponseBody ?? workflowAction.RequestRule.ResponseBody
+            );
+
+            var requestEvent = await requestInspectorService.BuildRequestEventAsync(
+                httpContext.Request
+            );
+            if (requestEvent is not null)
+            {
+                requestEvent.RequestRuleId = workflowAction.RequestRule.Id;
+                context.RequestEvent.Add(requestEvent);
+                await context.SaveChangesAsync();
+
+                await requestHubContext.Clients.All.SendAsync(
+                    "RequestRuleEventCaught",
+                    mapper.Map<RequestEventDto>(requestEvent)
+                );
+            }
+        }
+
+        public async Task HandleWebhookRuleResponseAsync(
             HttpContext httpContext,
             WebhookRule webhookRule
         )
