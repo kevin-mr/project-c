@@ -1,8 +1,7 @@
 {
   "profiles": {
     "ProjectC.CLI": {
-      "commandName": "Project",
-      "commandLineArgs": "--redirect-to \"https://localhost:7026\""
+      "commandName": "Project"
     }
   }
 }

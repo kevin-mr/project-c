@@ -2,8 +2,8 @@
 {
     <div class="d-flex justify-space-between">
         <MudText>@RequestEvent.Method</MudText>
-        <MudText>@RequestEvent.ArrivedSecondsAge<span class="ml-1">Seconds Ago</span></MudText>
-        <MudIcon Icon="@Icons.Material.Filled.Preview" Title="View" @onclick="@(async () => await View())"/>
+        <MudText>@RequestEvent.ArrivedTimeLabel()</MudText>
+        <MudIcon Icon="@Icons.Material.Filled.Preview" Title="View" @onclick="@(async () => await View())" />
     </div>
 }
 

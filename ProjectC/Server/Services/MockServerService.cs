@@ -105,8 +105,12 @@ namespace ProjectC.Server.Services
             SetHeaders(httpContext, requestRule.ResponseHeaders);
             await httpContext.Response.WriteAsync(requestRule.ResponseBody);
 
-            var requestEvent = await requestInspectorService.BuildRequestEventAsync(
+            var requestBody = await requestInspectorService.ReadRequestBodyAsync(
                 httpContext.Request
+            );
+            var requestEvent = requestInspectorService.BuildRequestEventAsync(
+                httpContext.Request,
+                requestBody
             );
             if (requestEvent is not null)
             {
@@ -146,8 +150,12 @@ namespace ProjectC.Server.Services
                 workflowAction.ResponseBody ?? workflowAction.RequestRule.ResponseBody
             );
 
-            var requestEvent = await requestInspectorService.BuildRequestEventAsync(
+            var requestBody = await requestInspectorService.ReadRequestBodyAsync(
                 httpContext.Request
+            );
+            var requestEvent = requestInspectorService.BuildRequestEventAsync(
+                httpContext.Request,
+                requestBody
             );
             if (requestEvent is not null)
             {
@@ -167,8 +175,12 @@ namespace ProjectC.Server.Services
             WebhookRule webhookRule
         )
         {
-            var requestEvent = await requestInspectorService.BuildRequestEventAsync(
+            var requestBody = await requestInspectorService.ReadRequestBodyAsync(
                 httpContext.Request
+            );
+            var requestEvent = requestInspectorService.BuildRequestEventAsync(
+                httpContext.Request,
+                requestBody
             );
             if (requestEvent is not null)
             {
@@ -182,8 +194,9 @@ namespace ProjectC.Server.Services
                 );
                 if (!string.IsNullOrEmpty(webhookRule.RedirectUrl))
                 {
-                    var webhookEvent = await requestInspectorService.BuildWebhookEventAsync(
+                    var webhookEvent = requestInspectorService.BuildWebhookEventAsync(
                         httpContext.Request,
+                        requestBody,
                         webhookRule.RedirectUrl
                     );
                     await webhookHubContext.Clients.All.SendAsync(

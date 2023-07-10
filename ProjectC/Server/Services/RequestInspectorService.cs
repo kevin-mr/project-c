@@ -10,16 +10,9 @@ namespace ProjectC.Server.Services
     {
         public RequestInspectorService() { }
 
-        public async Task<RequestEvent> BuildRequestEventAsync(HttpRequest request)
+        public RequestEvent BuildRequestEventAsync(HttpRequest request, string body)
         {
-            var stringBuilder = new StringBuilder();
-            using (var reader = new StreamReader(request.Body))
-            {
-                stringBuilder.AppendLine(await reader.ReadToEndAsync());
-            }
-
             var headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString());
-            var body = stringBuilder.ToString();
 
             var requestEvent = new RequestEvent
             {
@@ -32,21 +25,18 @@ namespace ProjectC.Server.Services
                 requestEvent.JsonBody = JsonSerializer.Serialize(body);
                 requestEvent.JsonHeaders = JsonSerializer.Serialize(headers);
             }
-            catch (Exception e) { }
+            catch (Exception) { }
 
             return requestEvent;
         }
 
-        public async Task<WebhookEvent> BuildWebhookEventAsync(
+        public WebhookEvent BuildWebhookEventAsync(
             HttpRequest request,
+            string body,
             string redirectUrl
         )
         {
-            var stringBuilder = new StringBuilder();
-            using (var reader = new StreamReader(request.Body))
-            {
-                stringBuilder.AppendLine(await reader.ReadToEndAsync());
-            }
+            var headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToArray());
 
             return new WebhookEvent
             {
@@ -56,11 +46,23 @@ namespace ProjectC.Server.Services
                 PathBase = request.PathBase,
                 Path = request.Path,
                 Method = request.Method,
-                Headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToArray()),
+                Headers = headers,
                 ContentType = request.ContentType,
                 RedirectUrl = redirectUrl,
-                Body = stringBuilder.ToString()
+                Body = body
             };
+        }
+
+        public async Task<string> ReadRequestBodyAsync(HttpRequest request)
+        {
+            var stringBuilder = new StringBuilder();
+
+            using (var reader = new StreamReader(request.Body))
+            {
+                stringBuilder.AppendLine(await reader.ReadToEndAsync());
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

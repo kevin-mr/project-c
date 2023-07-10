@@ -1,8 +1,10 @@
 ﻿@if (RequestRule is not null)
 {
     <div class="d-flex justify-space-between align-center">
-        <MudChip Variant="Variant.Text" Color="@(RequestRule.Method.GetMethodColor())">@RequestRule.MethodLabel</MudChip>
-        <MudText>@RequestRule.Path</MudText>
+        <div Class="flex-1" >
+            <MudChip Variant="Variant.Text" Color="@(RequestRule.Method.GetMethodColor())">@RequestRule.MethodLabel</MudChip>
+        </div>
+        <MudText Class="flex-1">@RequestRule.Path</MudText>
         <MudIcon Icon="@Icons.Material.Filled.Edit" Title="Edit" @onclick="@(async () => await EditAsync())" />
     </div>
 }

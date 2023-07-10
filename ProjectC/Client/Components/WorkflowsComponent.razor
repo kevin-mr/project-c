@@ -15,24 +15,37 @@
                     <TitleContent>
                         <div class="d-flex justify-space-between">
                             <MudText Class="mt-1">@workflow.Name</MudText>
-                            <div class="d-flex mr-3" @onclick:stopPropagation="true" @onclick:preventDefault="true">
-                                <MudIcon Icon="@Icons.Material.Filled.Edit" @onclick="@(async () => await EditAsync(workflow))" />
-                                <MudBadge Content="@workflow.WorkflowActions.Count" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto">
-                                    <MudIcon Icon="@Icons.Material.Filled.Flag" @onclick="@(async () => await ViewWorkflowActionsAsync(workflow))" />
-                                </MudBadge>
-                                <MudIcon Icon="@Icons.Material.Filled.Storage" @onclick="@(async () => await ViewStorageAsync(workflow))" />
+                            <div class="d-flex align-center" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                                <MudIcon Class="mr-2" Icon="@Icons.Material.Filled.Edit" @onclick="@(async () => await EditAsync(workflow))" />
+                                <MudIcon Class="mr-2" Icon="@Icons.Material.Filled.Storage" @onclick="@(async () => await ViewStorageAsync(workflow))" />
+                                <MudChip Class="mr-2" Variant="Variant.Text" Color="Color.Primary" @onclick="@(async () => await ViewWorkflowActionsAsync(workflow))">
+                                    @workflow.WorkflowActions.Count
+                                </MudChip>
                             </div>
                         </div>
                     </TitleContent>
                     <ChildContent>
-                        <MudList>
-                            @foreach (var workflowAction in @workflow.WorkflowActions)
-                            {
-                                <MudListItem>
-                                    @workflowAction.Name
-                                </MudListItem>
-                            }
-                        </MudList>
+                        <MudTable Items="@workflow.WorkflowActions" Dense="true">
+                            <HeaderContent>
+                                <MudTh>Action</MudTh>
+                                <MudTh>Path</MudTh>
+                                <MudTh>Method</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Name">
+                                    @context.Name
+                                </MudTd>
+                                @if (context.RequestRule is not null)
+                                {
+                                    <MudTd DataLabel="Path">
+                                        @context.RequestRule.Path
+                                    </MudTd>
+                                    <MudTd DataLabel="Method">
+                                        @context.RequestRule.MethodLabel
+                                    </MudTd>
+                                }
+                            </RowTemplate>
+                        </MudTable>
                     </ChildContent>
                 </MudExpansionPanel>
             }

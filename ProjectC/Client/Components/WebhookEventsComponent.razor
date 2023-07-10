@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.SignalR.Client
 
 <MudList>
-    @foreach (var requestEvent in RequestEvents)
+    @foreach (var requestEvent in RequestEvents.OrderByDescending(x => x.ArrivalDate))
     {
         <MudListItem>
             <RequestEventComponent RequestEvent=@requestEvent OnView="@(async () => await ViewAsync(requestEvent))"></RequestEventComponent>

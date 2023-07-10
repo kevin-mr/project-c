@@ -10,10 +10,10 @@ namespace ProjectC.CLI
 {
     public class Program
     {
+        private static readonly string HUB_URL = "https://localhost:7026/webhook-rule-events";
+
         static async Task Main(string[] args)
         {
-            IConfiguration config = new ConfigurationBuilder().AddCommandLine(args).Build();
-
             using IHost host = Host.CreateDefaultBuilder(args)
                 .ConfigureServices(services =>
                 {
@@ -23,16 +23,23 @@ namespace ProjectC.CLI
                 .Build();
 
             var webhookService = host.Services.GetService<IWebhookService>();
+            if (webhookService is not null)
+            {
+                await ConnectToHubAsync(webhookService);
+            }
 
-            var hubConnection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:7026/webhook-rule-events")
-                .Build();
+            await host.RunAsync();
+        }
+
+        private static async Task ConnectToHubAsync(IWebhookService webhookService)
+        {
+            var hubConnection = new HubConnectionBuilder().WithUrl(HUB_URL).Build();
 
             hubConnection.On<WebhookEventDto>(
                 "WebhookRuleEventToRedirect",
                 async (webhookEvent) =>
                 {
-                    if (webhookEvent is not null && webhookService is not null)
+                    if (webhookEvent is not null)
                     {
                         await webhookService.RedirectWebhookEventAsync(webhookEvent);
                     }
@@ -45,10 +52,13 @@ namespace ProjectC.CLI
             }
             catch (Exception)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(
+                    "Couldn't connect to server, please review if it's running correctly"
+                );
+                Console.ResetColor();
                 throw;
             }
-
-            await host.RunAsync();
         }
     }
 }

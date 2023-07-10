@@ -19,12 +19,34 @@
                             </div>
                         </TitleContent>
                         <ChildContent>
-                            <MudText>Status:</MudText>
-                            <MudText Typo="Typo.body2">@workflowAction.ResponseStatus</MudText>
-                            <MudText>Delay:</MudText>
-                            <MudText Typo="Typo.body2">@workflowAction.ResponseDelay</MudText>
-                            <MudText>Body:</MudText>
-                            <MudText Typo="Typo.body2">@workflowAction.ResponseBody</MudText>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <MudText>Status</MudText>
+                                        </td>
+                                        <td>
+                                            <MudText Typo="Typo.body2">@workflowAction.ResponseStatus</MudText>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <MudText>Delay</MudText>
+                                        </td>
+                                        <td>
+                                            <MudText Typo="Typo.body2">@workflowAction.ResponseDelay</MudText>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <MudText>Body</MudText>
+                                        </td>
+                                        <td>
+                                            <MudText Typo="Typo.body2">@workflowAction.ResponseBody</MudText>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
                         </ChildContent>
                     </MudExpansionPanel>
                 }

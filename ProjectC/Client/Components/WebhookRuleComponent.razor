@@ -1,9 +1,11 @@
 ﻿@if (WebhookRule is not null)
 {
     <div class="d-flex justify-space-between align-center">
-        <MudChip Variant="Variant.Text" Color="@(WebhookRule.Method.GetMethodColor())">@WebhookRule.MethodLabel</MudChip>
-        <MudText>@WebhookRule.Path</MudText>
-        <MudText>@WebhookRule.Description</MudText>
+        <div Class="flex-1" >
+            <MudChip Variant="Variant.Text" Color="@(WebhookRule.Method.GetMethodColor())">@WebhookRule.MethodLabel</MudChip>
+        </div>
+        <MudText Class="flex-1" >@WebhookRule.Path</MudText>
+        <MudText Class="flex-1" >@WebhookRule.Description</MudText>
         <MudIcon Icon="@Icons.Material.Filled.Edit" Title="Edit" @onclick="@(async () => await EditAsync())" />
     </div>
 }

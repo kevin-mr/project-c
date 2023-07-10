@@ -20,6 +20,25 @@
         public Dictionary<string, string> Headers { get; set; }
         public string Body { get; set; }
 
-        public int ArrivedSecondsAge => (DateTime.Now - ArrivalDate).Seconds;
+        public string ArrivedTimeLabel()
+        {
+            var totalSeconds = (int)Math.Floor((DateTime.Now - ArrivalDate).TotalSeconds);
+            if (totalSeconds < 60)
+            {
+                return $"{totalSeconds} seconds ago";
+            }
+            else if (totalSeconds < 3600)
+            {
+                return $"{totalSeconds / 60} minutes ago";
+            }
+            else if (totalSeconds < 86400)
+            {
+                return $"{totalSeconds / 3600} minutes ago";
+            }
+            else
+            {
+                return "long time ago";
+            }
+        }
     }
 }
