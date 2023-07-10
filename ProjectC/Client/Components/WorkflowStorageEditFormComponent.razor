@@ -1,0 +1,102 @@
+﻿@using AutoMapper;
+@inject HttpClient Http
+@inject IMapper mapper
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <div class="pa-5">
+            <MudContainer Style="max-height: 80%; overflow-y: scroll">
+                <MudForm Model="@WorkflowStorage" @ref=Form Validation="@(WorkflowStorageValidator.ValidateValue)">
+                    <MudTextField @bind-Value="WorkflowStorage.PropertyIdentifier"
+                                  Label="Identifier"
+                                  For="@(() => WorkflowStorage.PropertyIdentifier)"
+                                  Variant="Variant.Text" />
+                </MudForm>
+            </MudContainer>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Disabled="@Saving"
+                   OnClick="Save">
+            @if (Saving)
+            {
+                <div class="d-flex justify-space-between align-center">
+                    <div>Saving</div>
+                    <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                </div>
+            }
+            else
+            {
+                <span>Save</span>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    public MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public WorkflowDto Workflow { get; set; } = new WorkflowDto();
+
+    [Parameter]
+    public WorkflowStorageDto WorkflowStorage { get; set; } = new WorkflowStorageDto();
+
+    private MudForm? Form;
+    private WorkflowStorageValidator WorkflowStorageValidator = new WorkflowStorageValidator();
+    private bool Saving = false;
+
+    private async Task Save()
+    {
+        Saving = true;
+
+        if (Form is null)
+        {
+            Snackbar.Add("Form couldn't be loaded", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        await Form.Validate();
+        if (!Form.IsValid)
+        {
+            Snackbar.Add("Invalid workflow storage data", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        if (WorkflowStorage.Id != 0)
+        {
+            var response = await Http.PutAsJsonAsync<EditWorkflowStorageDto>("api/v1/workflow-storage", mapper.Map<EditWorkflowStorageDto>(WorkflowStorage));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Workflow storage successfully updated", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Workflow storage couldn't be updated", Severity.Error);
+            }
+        }
+        else
+        {
+            WorkflowStorage.WorkflowId = Workflow.Id;
+            var response = await Http.PostAsJsonAsync<CreateWorkflowStorageDto>("api/v1/workflow-storage", mapper.Map<CreateWorkflowStorageDto>(WorkflowStorage));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Workflow storage successfully created", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Workflow storage couldn't be created", Severity.Error);
+            }
+        }
+
+        Saving = false;
+    }
+}

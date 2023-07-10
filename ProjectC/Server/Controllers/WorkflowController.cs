@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Services.Interfaces;
+using ProjectC.Server.Validators;
 using ProjectC.Shared.Models;
 
 namespace ProjectC.Server.Controllers
@@ -13,16 +15,22 @@ namespace ProjectC.Server.Controllers
         private readonly IMapper mapper;
         private readonly IWorkflowService workflowService;
         private readonly IWorkflowActionService workflowActionService;
+        private readonly IWorkflowStorageService workflowStorageService;
+        private readonly IValidator<Workflow> workflowValidator;
 
         public WorkflowController(
             IMapper mapper,
             IWorkflowService workflowService,
-            IWorkflowActionService workflowActionService
+            IWorkflowActionService workflowActionService,
+            IWorkflowStorageService workflowStorageService,
+            IValidator<Workflow> workflowValidator
         )
         {
             this.mapper = mapper;
             this.workflowService = workflowService;
             this.workflowActionService = workflowActionService;
+            this.workflowStorageService = workflowStorageService;
+            this.workflowValidator = workflowValidator;
         }
 
         [HttpGet()]
@@ -41,20 +49,34 @@ namespace ProjectC.Server.Controllers
             return workflowActions.Select(x => mapper.Map<WorkflowActionDto>(x)).ToArray();
         }
 
+        [HttpGet("{id}/storage")]
+        public async Task<WorkflowStorageDto?> GetStorageAsync(int id)
+        {
+            var workflowStorage = await workflowStorageService.GetByWorkflowIdAsync(id);
+
+            return workflowStorage is not null
+                ? mapper.Map<WorkflowStorageDto>(workflowStorage)
+                : null;
+        }
+
         [HttpPost()]
-        public Task CreateAsync(CreateWorkflowDto createWorkflow)
+        public async Task CreateAsync(CreateWorkflowDto createWorkflow)
         {
             var workflow = mapper.Map<Workflow>(createWorkflow);
 
-            return workflowService.CreateAsync(workflow);
+            await workflowValidator.ValidateAndThrowAsync(workflow);
+
+            await workflowService.CreateAsync(workflow);
         }
 
         [HttpPut()]
-        public Task UpdateAsync(EditWorkflowDto editWorkflow)
+        public async Task UpdateAsync(EditWorkflowDto editWorkflow)
         {
             var workflow = mapper.Map<Workflow>(editWorkflow);
 
-            return workflowService.UpdateAsync(workflow);
+            await workflowValidator.ValidateAndThrowAsync(workflow);
+
+            await workflowService.UpdateAsync(workflow);
         }
 
         [HttpDelete("{id}")]

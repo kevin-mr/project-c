@@ -10,6 +10,7 @@ namespace ProjectC.Server.Data
         public DbSet<Workflow> Workflow { get; set; }
         public DbSet<WorkflowAction> WorkflowAction { get; set; }
         public DbSet<RequestEvent> RequestEvent { get; set; }
+        public DbSet<WorkflowStorage> WorkflowStorage { get; set; }
 
         public ProjectCDbContext(DbContextOptions<ProjectCDbContext> options)
             : base(options) { }
@@ -26,13 +27,13 @@ namespace ProjectC.Server.Data
                 );
             modelBuilder
                 .Entity<RequestRule>()
-                .HasMany(x => x.WorkflowActions)
-                .WithOne(x => x.RequestRule)
+                .HasMany(x => x.RequestEvents)
+                .WithOne()
                 .HasForeignKey(x => x.RequestRuleId);
             modelBuilder
                 .Entity<RequestRule>()
-                .HasMany(x => x.RequestEvents)
-                .WithOne()
+                .HasMany(x => x.WorkflowActions)
+                .WithOne(x => x.RequestRule)
                 .HasForeignKey(x => x.RequestRuleId);
 
             modelBuilder.Entity<WebhookRule>().ToTable("WebhookRule");
@@ -52,22 +53,33 @@ namespace ProjectC.Server.Data
             modelBuilder.Entity<Workflow>().ToTable("Workflow");
             modelBuilder
                 .Entity<Workflow>()
-                .ToTable("Workflow")
                 .HasMany(x => x.WorkflowActions)
-                .WithOne(x => x.WorkFlow)
-                .HasForeignKey(x => x.WorkFlowId);
+                .WithOne()
+                .HasForeignKey(x => x.WorkflowId);
+            modelBuilder
+                .Entity<Workflow>()
+                .HasOne(x => x.WorkflowStorage)
+                .WithOne()
+                .HasForeignKey<WorkflowStorage>(x => x.WorkflowId);
 
             modelBuilder.Entity<WorkflowAction>().ToTable("WorkflowAction");
             modelBuilder
                 .Entity<WorkflowAction>()
-                .HasOne(x => x.WorkFlow)
+                .HasOne<Workflow>()
                 .WithMany(x => x.WorkflowActions)
-                .HasForeignKey(x => x.WorkFlowId);
+                .HasForeignKey(x => x.WorkflowId);
             modelBuilder
                 .Entity<WorkflowAction>()
                 .HasOne(x => x.RequestRule)
                 .WithMany(x => x.WorkflowActions)
                 .HasForeignKey(x => x.RequestRuleId);
+
+            modelBuilder.Entity<WorkflowStorage>().ToTable("WorkflowStorage");
+            modelBuilder
+                .Entity<WorkflowStorage>()
+                .HasOne<Workflow>()
+                .WithOne(x => x.WorkflowStorage)
+                .HasForeignKey<WorkflowStorage>(x => x.WorkflowId);
 
             modelBuilder.Entity<RequestEvent>().ToTable("RequestEvent");
             modelBuilder.Entity<RequestEvent>().Ignore(x => x.Headers);

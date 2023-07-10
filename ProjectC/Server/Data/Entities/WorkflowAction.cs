@@ -10,7 +10,7 @@
             ResponseDelay = 0;
             ResponseHeaders = string.Empty;
             ResponseBody = string.Empty;
-            WorkFlowId = 0;
+            WorkflowId = 0;
             RequestRuleId = 0;
         }
 
@@ -24,7 +24,6 @@
         public int RequestRuleId { get; set; }
         public RequestRule? RequestRule { get; set; }
 
-        public int WorkFlowId { get; set; }
-        public Workflow? WorkFlow { get; set; }
+        public int WorkflowId { get; set; }
     }
 }

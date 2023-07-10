@@ -13,5 +13,6 @@
         public string Name { get; set; }
 
         public List<WorkflowActionDto> WorkflowActions { get; set; }
+        public WorkflowStorageDto? WorkflowStorage { get; set; }
     }
 }

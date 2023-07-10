@@ -22,7 +22,7 @@ namespace ProjectC.Server.Services
         public async Task<IEnumerable<WorkflowAction>> GetByWorkflowIdAsync(int workflowId)
         {
             return await context.WorkflowAction
-                .Where(x => x.WorkFlowId == workflowId)
+                .Where(x => x.WorkflowId == workflowId)
                 .ToArrayAsync();
         }
 

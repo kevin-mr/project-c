@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using ProjectC.Client.Pages;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Services.Interfaces;
 using ProjectC.Shared.Models;
@@ -12,14 +14,17 @@ namespace ProjectC.Server.Controllers
     {
         private readonly IMapper mapper;
         private readonly IWorkflowActionService workflowActionService;
+        private readonly IValidator<WorkflowAction> workflowActionValidator;
 
         public WorkflowActionController(
             IMapper mapper,
-            IWorkflowActionService workflowActionService
+            IWorkflowActionService workflowActionService,
+            IValidator<WorkflowAction> workflowActionValidator
         )
         {
             this.mapper = mapper;
             this.workflowActionService = workflowActionService;
+            this.workflowActionValidator = workflowActionValidator;
         }
 
         [HttpGet()]
@@ -31,19 +36,23 @@ namespace ProjectC.Server.Controllers
         }
 
         [HttpPost()]
-        public Task CreateAsync(CreateWorkflowActionDto createWorkflowAction)
+        public async Task CreateAsync(CreateWorkflowActionDto createWorkflowAction)
         {
             var workflowAction = mapper.Map<WorkflowAction>(createWorkflowAction);
 
-            return workflowActionService.CreateAsync(workflowAction);
+            await workflowActionValidator.ValidateAndThrowAsync(workflowAction);
+
+            await workflowActionService.CreateAsync(workflowAction);
         }
 
         [HttpPut()]
-        public Task UpdateAsync(EditWorkflowActionDto editWorkflowAction)
+        public async Task UpdateAsync(EditWorkflowActionDto editWorkflowAction)
         {
-            var workflow = mapper.Map<WorkflowAction>(editWorkflowAction);
+            var workflowAction = mapper.Map<WorkflowAction>(editWorkflowAction);
 
-            return workflowActionService.UpdateAsync(workflow);
+            await workflowActionValidator.ValidateAndThrowAsync(workflowAction);
+
+            await workflowActionService.UpdateAsync(workflowAction);
         }
 
         [HttpDelete("{id}")]

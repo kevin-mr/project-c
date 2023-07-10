@@ -1,0 +1,66 @@
+﻿@using AutoMapper;
+@inject HttpClient Http
+@inject IMapper mapper
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <div class="pa-5">
+            @if (WorkflowStorage is not null)
+            {
+                <MudText>Identifier:</MudText>
+                <MudText Typo="Typo.body2">@WorkflowStorage.PropertyIdentifier</MudText>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Warning">Please configure your storage before you can use it.</MudAlert>
+            }
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   @onclick="@(async () => await ConfigAsync())">
+            Config Storage
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    public MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public WorkflowDto Workflow { get; set; } = new WorkflowDto();
+
+    [Parameter]
+    public WorkflowStorageDto? WorkflowStorage { get; set; }
+
+    private async Task ConfigAsync()
+    {
+        var parameters = new DialogParameters
+        {
+            ["Workflow"] = Workflow,
+            ["WorkflowStorage"] = WorkflowStorage != null && WorkflowStorage.Id > 0
+                ? WorkflowStorage
+                : new WorkflowStorageDto(),
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowStorageEditFormComponent>("Workflow Storage", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowStorageAsync();
+        }
+    }
+
+    public async Task RefreshWorkflowStorageAsync()
+    {
+        var workflowStorage = await Http.GetFromJsonAsync<WorkflowStorageDto>($"api/v1/workflow/{Workflow.Id}/storage");
+        if (workflowStorage is not null)
+        {
+            WorkflowStorage = workflowStorage;
+            StateHasChanged();
+        }
+    }
+}

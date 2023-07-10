@@ -29,10 +29,16 @@
                                      For="@(() => RequestRule.ResponseDelay)"
                                      Label="Delay"
                                      Variant="Variant.Text" />
-                    <MudTextField @bind-Value="RequestRule.ResponseBody"
-                                  Label="Body"
-                                  Variant="Variant.Text"
-                                  Lines="5" />
+                    <div class="d-flex">
+                        <MudTextField @bind-Value="RequestRule.ResponseHeaders"
+                                      Label="Headers"
+                                      Variant="Variant.Text"
+                                      Lines="5" />
+                        <MudTextField @bind-Value="RequestRule.ResponseBody"
+                                      Label="Body"
+                                      Variant="Variant.Text"
+                                      Lines="5" />
+                    </div>
                 </MudForm>
             </MudContainer>
         </div>

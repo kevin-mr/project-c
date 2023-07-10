@@ -13,5 +13,6 @@
         public string Name { get; set; }
 
         public IEnumerable<WorkflowAction> WorkflowActions { get; set; }
+        public WorkflowStorage? WorkflowStorage { get; set; }
     }
 }

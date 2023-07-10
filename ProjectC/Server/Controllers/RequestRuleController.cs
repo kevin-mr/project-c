@@ -47,8 +47,6 @@ namespace ProjectC.Server.Controllers
         [HttpPut()]
         public async Task UpdateAsync(EditRequestRuleDto editRequestRule)
         {
-            await Task.Delay(3000);
-
             var request = mapper.Map<RequestRule>(editRequestRule);
 
             await requestRuleValidator.ValidateAndThrowAsync(request);

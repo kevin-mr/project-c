@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ProjectC.Client.Pages;
@@ -7,6 +8,8 @@ using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Hubs;
 using ProjectC.Server.Services.Interfaces;
 using ProjectC.Shared.Models;
+using System.Reflection.PortableExecutable;
+using System.Text.Json;
 
 namespace ProjectC.Server.Services
 {
@@ -85,7 +88,7 @@ namespace ProjectC.Server.Services
                         x.RequestRule != null
                         && x.RequestRule.Method == method
                         && x.RequestRule.Path == path
-                        && x.WorkFlowId == workflowId
+                        && x.WorkflowId == workflowId
                 );
         }
 
@@ -98,8 +101,8 @@ namespace ProjectC.Server.Services
             {
                 Thread.Sleep(requestRule.ResponseDelay);
             }
-
             httpContext.Response.StatusCode = requestRule.ResponseStatus;
+            SetHeaders(httpContext, requestRule.ResponseHeaders);
             await httpContext.Response.WriteAsync(requestRule.ResponseBody);
 
             var requestEvent = await requestInspectorService.BuildRequestEventAsync(
@@ -211,6 +214,22 @@ namespace ProjectC.Server.Services
                 "PUT" => WebhookRuleMethod.PUT,
                 _ => throw new Exception("Invalid Method"),
             };
+        }
+
+        private void SetHeaders(HttpContext httpContext, string jsonHeaders)
+        {
+            try
+            {
+                var headers = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonHeaders);
+                if (headers is not null)
+                {
+                    foreach (var header in headers)
+                    {
+                        httpContext.Response.Headers.Add(header.Key, header.Value);
+                    }
+                }
+            }
+            catch (Exception) { }
         }
     }
 }

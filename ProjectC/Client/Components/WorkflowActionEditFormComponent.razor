@@ -4,12 +4,6 @@
 @inject ISnackbar Snackbar
 
 <MudDialog>
-    @*<TitleContent>
-        <div class="d-flex justify-space-between">
-            <MudText Typo="Typo.h6">Workflow Action</MudText>
-            
-        </div>
-    </TitleContent>*@
     <DialogContent>
         <div class="pa-5">
             <MudContainer Style="max-height: 80%; overflow-y: scroll">
@@ -25,7 +19,7 @@
                                      Label="Search Request Rule"
                                      SearchFunc="@(async (value) => await Task.FromResult(SearchRequestRule(value)))"
                                      Value="RequestRule"
-                                     Text="@RequestRule?.Path"
+                                     Text="@($"{RequestRule?.Path} - {RequestRule?.MethodLabel}")"
                                      ValueChanged="@OnRequestRuleSelected">
                         <ItemSelectedTemplate Context="requestRule">
                             <MudText>
@@ -185,7 +179,7 @@
         }
         else
         {
-            WorkflowAction.WorkFlowId = Workflow.Id;
+            WorkflowAction.WorkflowId = Workflow.Id;
             var response = await Http.PostAsJsonAsync<CreateWorkflowActionDto>("api/v1/workflow-action", mapper.Map<CreateWorkflowActionDto>(WorkflowAction));
             if (response.IsSuccessStatusCode)
             {

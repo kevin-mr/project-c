@@ -34,6 +34,7 @@ namespace ProjectC.Server.Services
             currentRequestRule.Path = requestRule.Path;
             currentRequestRule.Method = requestRule.Method;
             currentRequestRule.ResponseStatus = requestRule.ResponseStatus;
+            currentRequestRule.ResponseHeaders = requestRule.ResponseHeaders;
             currentRequestRule.ResponseDelay = requestRule.ResponseDelay;
             currentRequestRule.ResponseBody = requestRule.ResponseBody;
 

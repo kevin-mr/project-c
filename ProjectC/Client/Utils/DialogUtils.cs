@@ -12,5 +12,16 @@ namespace ProjectC.Client.Utils
                 FullWidth = true,
                 MaxWidth = MaxWidth.Small,
             };
+
+        public static DialogOptions DefaultDialogOptionsWidth(MaxWidth maxWidth)
+        {
+            return new()
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                FullWidth = true,
+                MaxWidth = maxWidth,
+            };
+        }
     }
 }

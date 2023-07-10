@@ -47,6 +47,7 @@ namespace ProjectC
             builder.Services.AddTransient<IWorkflowService, WorkflowService>();
             builder.Services.AddTransient<IWorkflowActionService, WorkflowActionService>();
             builder.Services.AddTransient<IRequestEventService, RequestEventService>();
+            builder.Services.AddTransient<IWorkflowStorageService, WorkflowStorageService>();
 
             var app = builder.Build();
 

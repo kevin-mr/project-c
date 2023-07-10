@@ -20,6 +20,7 @@
                                 <MudBadge Content="@workflow.WorkflowActions.Count" Color="Color.Primary" Overlap="true" Class="d-flex ml-auto">
                                     <MudIcon Icon="@Icons.Material.Filled.Flag" @onclick="@(async () => await ViewWorkflowActionsAsync(workflow))" />
                                 </MudBadge>
+                                <MudIcon Icon="@Icons.Material.Filled.Storage" @onclick="@(async () => await ViewStorageAsync(workflow))" />
                             </div>
                         </div>
                     </TitleContent>
@@ -66,6 +67,22 @@
             ["WorkflowActions"] = workflow.WorkflowActions,
         };
         var dialog = await DialogService.ShowAsync<WorkflowActionsComponent>("Workflow Actions", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowsAsync();
+        }
+    }
+
+    private async Task ViewStorageAsync(WorkflowDto workflow)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Workflow"] = workflow,
+            ["WorkflowStorage"] = workflow.WorkflowStorage,
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowStorageComponent>("Workflow Storage", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
         if (!result.Canceled)

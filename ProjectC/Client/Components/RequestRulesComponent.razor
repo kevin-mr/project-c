@@ -46,7 +46,7 @@
         {
             ["RequestRule"] = requestRule
         };
-        var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>("Request Rule", parameters, DialogUtils.DefaultDialogOptions);
+        var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>("Request Rule", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
         var result = await dialog.Result;
 
         if (!result.Canceled)
