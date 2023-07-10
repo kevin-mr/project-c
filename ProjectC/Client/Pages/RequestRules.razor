@@ -2,23 +2,26 @@
 @inject IDialogService DialogService
 @using ProjectC.Client.Components;
 
-<div class="d-flex justify-end mt-5">
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddRequestRule">Add Rule</MudButton>
-</div>
-
 <MudGrid Spacing="2" Class="mt-5">
     <MudItem sm="6">
-        <RequestEventsComponent></RequestEventsComponent>
+        <div class="mb-5">
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestEventsAsync"></MudIconButton>
+        </div>
+        <RequestEventsComponent @ref="RequestEventsComponent"></RequestEventsComponent>
     </MudItem>
     <MudItem sm="6">
+        <div class="d-flex justify-end mb-5">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddRequestRuleAsync">Add Rule</MudButton>
+        </div>
         <RequestRulesComponent @ref="RequestRulesComponent"></RequestRulesComponent>
     </MudItem>
 </MudGrid>
 
 @code {
     private RequestRulesComponent? RequestRulesComponent;
+    private RequestEventsComponent? RequestEventsComponent;
 
-    private async Task AddRequestRule()
+    private async Task AddRequestRuleAsync()
     {
         var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>("Request Rule", DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
@@ -29,6 +32,14 @@
             {
                 await RequestRulesComponent.RefreshRequestRulesAsync();
             }
+        }
+    }
+
+    private async Task DeleteRequestEventsAsync()
+    {
+        if (RequestEventsComponent is not null)
+        {
+            await RequestEventsComponent.DeleteRequestEventsAsync();
         }
     }
 }

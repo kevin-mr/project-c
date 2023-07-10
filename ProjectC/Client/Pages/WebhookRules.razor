@@ -1,21 +1,24 @@
 ﻿@page "/webhook-rules"
 @inject IDialogService DialogService
 
-<div class="d-flex justify-end mt-5">
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddWebhookRule">Add Webhook</MudButton>
-</div>
-
 <MudGrid Spacing="2" Class="mt-5">
     <MudItem sm="6">
-        <WebhookEventsComponent></WebhookEventsComponent>
+        <div class="mb-5">
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestEventsAsync"></MudIconButton>
+        </div>
+        <WebhookEventsComponent @ref="WebhookEventsComponent"></WebhookEventsComponent>
     </MudItem>
     <MudItem sm="6">
+        <div class="d-flex justify-end mt-5">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddWebhookRule">Add Webhook</MudButton>
+        </div>
         <WebhookRulesComponent @ref="WebhookRulesComponent"></WebhookRulesComponent>
     </MudItem>
 </MudGrid>
 
 @code {
     private WebhookRulesComponent? WebhookRulesComponent;
+    private WebhookEventsComponent? WebhookEventsComponent;
 
     private async Task AddWebhookRule()
     {
@@ -28,6 +31,14 @@
             {
                 await WebhookRulesComponent.RefreshWebhookRulesAsync();
             }
+        }
+    }
+
+    private async Task DeleteRequestEventsAsync()
+    {
+        if (WebhookEventsComponent is not null)
+        {
+            await WebhookEventsComponent.DeleteRequestEventsAsync();
         }
     }
 }

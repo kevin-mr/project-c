@@ -9,7 +9,7 @@ namespace ProjectC.Server.Services.Interfaces
         Task<WorkflowAction?> FindWorkflowActionAsync(HttpRequest request, int workflowId);
         Task HandleRequestRuleResponseAsync(HttpContext httpContext, RequestRule requestRule);
         Task HandleWebhookRuleResponseAsync(HttpContext httpContext, WebhookRule requestRule);
-        Task HandleWebhookActionResponseForRequestRuleAsync(
+        Task HandleWorkflowActionResponseForRequestRuleAsync(
             HttpContext httpContext,
             Workflow workflow,
             WorkflowAction workflowAction

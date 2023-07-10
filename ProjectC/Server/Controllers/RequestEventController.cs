@@ -33,5 +33,31 @@ namespace ProjectC.Server.Controllers
 
             return requestEvents.Select(x => mapper.Map<RequestEventDto>(x)).ToArray();
         }
+
+        [HttpGet("workflow-action")]
+        public async Task<IEnumerable<RequestEventDto>> GetByWorkflowActionAsync()
+        {
+            var requestEvents = await requestEventService.GetByWorkflowActionAsync();
+
+            return requestEvents.Select(x => mapper.Map<RequestEventDto>(x)).ToArray();
+        }
+
+        [HttpDelete("request-rule")]
+        public Task DeleteByRequestRuleAsync()
+        {
+            return requestEventService.DeleteByRequestRuleAsync();
+        }
+
+        [HttpDelete("webhook-rule")]
+        public Task DeleteByWebhookRuleAsync()
+        {
+            return requestEventService.DeleteByWebhookRuleAsync();
+        }
+
+        [HttpDelete("workflow-action")]
+        public Task DeleteByWorkflowActionAsync()
+        {
+            return requestEventService.DeleteByWorkflowActionAsync();
+        }
     }
 }

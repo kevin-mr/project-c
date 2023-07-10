@@ -23,12 +23,12 @@
                                      ValueChanged="@OnRequestRuleSelected">
                         <ItemSelectedTemplate Context="requestRule">
                             <MudText>
-                                @($"{RequestRule?.Path} - {RequestRule?.MethodLabel}")
+                                @($"{requestRule?.Path} - {requestRule?.MethodLabel}")
                             </MudText>
                         </ItemSelectedTemplate>
                         <ItemTemplate Context="requestRule">
                             <MudText>
-                                @requestRule.Path
+                                @($"{requestRule?.Path} - {requestRule?.MethodLabel}")
                             </MudText>
                         </ItemTemplate>
                     </MudAutocomplete>

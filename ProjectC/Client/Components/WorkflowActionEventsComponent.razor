@@ -25,9 +25,18 @@
         await base.OnInitializedAsync();
     }
 
+    private async Task ViewAsync(RequestEventDto requestEvent)
+    {
+        var parameters = new DialogParameters
+        {
+            ["RequestEvent"] = requestEvent
+        };
+        await DialogService.ShowAsync<ViewRequestEventComponent>("Request", parameters, DialogUtils.DefaultDialogOptions);
+    }
+
     public async Task DeleteRequestEventsAsync()
     {
-        var response = await Http.DeleteAsync("api/v1/request-event/request-rule");
+        var response = await Http.DeleteAsync("api/v1/request-event/workflow-action");
         if (response.IsSuccessStatusCode)
         {
             Snackbar.Add("Request events history deleted", Severity.Success);
@@ -40,18 +49,9 @@
         }
     }
 
-    private async Task ViewAsync(RequestEventDto requestEvent)
-    {
-        var parameters = new DialogParameters
-        {
-            ["RequestEvent"] = requestEvent
-        };
-        await DialogService.ShowAsync<ViewRequestEventComponent>("Request Details", parameters, DialogUtils.DefaultDialogOptions);
-    }
-
     private async Task LoadRequestEventsAsync()
     {
-        var requestEvents = await Http.GetFromJsonAsync<RequestEventDto[]>("api/v1/request-event/request-rule");
+        var requestEvents = await Http.GetFromJsonAsync<RequestEventDto[]>("api/v1/request-event/workflow-action");
         if (requestEvents is not null)
         {
             RequestEvents = requestEvents.ToList();
@@ -64,10 +64,10 @@
     private async Task ConnectToHubAsync()
     {
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/request-rule-events"))
+            .WithUrl(Navigation.ToAbsoluteUri("/workflow-action-events"))
             .Build();
 
-        hubConnection.On<RequestEventDto>("RequestRuleEventCaught", (requestEvent) =>
+        hubConnection.On<RequestEventDto>("WorkflowActionEventCaught", (requestEvent) =>
         {
             if (requestEvent is not null)
             {

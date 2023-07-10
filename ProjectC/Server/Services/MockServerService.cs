@@ -125,7 +125,7 @@ namespace ProjectC.Server.Services
             }
         }
 
-        public async Task HandleWebhookActionResponseForRequestRuleAsync(
+        public async Task HandleWorkflowActionResponseForRequestRuleAsync(
             HttpContext httpContext,
             Workflow workflow,
             WorkflowAction workflowAction
@@ -160,11 +160,12 @@ namespace ProjectC.Server.Services
             if (requestEvent is not null)
             {
                 requestEvent.RequestRuleId = workflowAction.RequestRule.Id;
+                requestEvent.ForWorkflowAction = true;
                 context.RequestEvent.Add(requestEvent);
                 await context.SaveChangesAsync();
 
                 await requestHubContext.Clients.All.SendAsync(
-                    "RequestRuleEventCaught",
+                    "WorkflowActionEventCaught",
                     mapper.Map<RequestEventDto>(requestEvent)
                 );
             }

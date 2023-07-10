@@ -44,7 +44,7 @@ namespace ProjectC.Server.Middlewares
                                     );
                                 if (workflowAction is not null)
                                 {
-                                    await mockServerService.HandleWebhookActionResponseForRequestRuleAsync(
+                                    await mockServerService.HandleWorkflowActionResponseForRequestRuleAsync(
                                         context,
                                         workflow,
                                         workflowAction

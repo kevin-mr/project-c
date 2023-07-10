@@ -1,4 +1,5 @@
 ﻿@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @using Microsoft.AspNetCore.SignalR.Client
@@ -22,6 +23,21 @@
         await ConnectToHubAsync();
 
         await base.OnInitializedAsync();
+    }
+
+    public async Task DeleteRequestEventsAsync()
+    {
+        var response = await Http.DeleteAsync("api/v1/request-event/webhook-rule");
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Request events history deleted", Severity.Success);
+            RequestEvents = new List<RequestEventDto>();
+            StateHasChanged();
+        }
+        else
+        {
+            Snackbar.Add("Request events history couldn't be deleted", Severity.Error);
+        }
     }
 
     private async Task ViewAsync(RequestEventDto requestEvent)

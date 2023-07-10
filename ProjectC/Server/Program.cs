@@ -76,6 +76,7 @@ namespace ProjectC
 
             app.MapHub<RequestsHub>("/request-rule-events");
             app.MapHub<WebhookHub>("/webhook-rule-events");
+            app.MapHub<WorkflowActionHub>("/workflow-action-events");
 
             app.MapFallbackToFile("index.html");
 
