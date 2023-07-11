@@ -13,11 +13,11 @@
             {
                 <MudExpansionPanel>
                     <TitleContent>
-                        <div class="d-flex justify-space-between">
+                        <div class="d-flex justify-space-between align-center">
                             <MudText Class="mt-1">@workflow.Name</MudText>
                             <div class="d-flex align-center" @onclick:stopPropagation="true" @onclick:preventDefault="true">
-                                <MudIcon Class="mr-2" Icon="@Icons.Material.Filled.Edit" @onclick="@(async () => await EditAsync(workflow))" />
-                                <MudIcon Class="mr-2" Icon="@Icons.Material.Filled.Storage" @onclick="@(async () => await ViewStorageAsync(workflow))" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflow))"></MudIconButton>
+                                <MudIconButton Icon="@Icons.Material.Filled.Storage" OnClick="@(async () => await ViewStorageAsync(workflow))"></MudIconButton>
                                 <MudChip Class="mr-2" Variant="Variant.Text" Color="Color.Primary" @onclick="@(async () => await ViewWorkflowActionsAsync(workflow))">
                                     @workflow.WorkflowActions.Count
                                 </MudChip>

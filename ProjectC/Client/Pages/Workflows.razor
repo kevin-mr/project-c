@@ -4,12 +4,14 @@
 <MudGrid Spacing="2" Class="mt-5">
     <MudItem sm="6">
         <div class="mb-5">
-            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestEventsAsync"></MudIconButton>
+            <MudTooltip Text="Clear Request Events" Arrow="true" Placement="Placement.Right">
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestEventsAsync"></MudIconButton>
+            </MudTooltip>
         </div>
         <WorkflowActionEventsComponent @ref="WorkflowActionEventsComponent"></WorkflowActionEventsComponent>
     </MudItem>
     <MudItem sm="6">
-        <div class="d-flex justify-end mt-5">
+        <div class="d-flex justify-end mb-5">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddWorkflow">Add Workflow</MudButton>
         </div>
         <WorkflowsComponent @ref="WorkflowsComponent"></WorkflowsComponent>

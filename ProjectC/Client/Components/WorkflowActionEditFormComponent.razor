@@ -6,65 +6,63 @@
 <MudDialog>
     <DialogContent>
         <div class="pa-5">
-            <MudContainer Style="max-height: 80%; overflow-y: scroll">
-                @if (InvalidRequestRule)
-                {
-                    <MudAlert Severity="Severity.Error">
-                        Please, Select a Request Rule
-                    </MudAlert>
-                }
-                <MudForm Model="@WorkflowAction" @ref=Form Validation="@(WorkflowActionValidator.ValidateValue)">
-                    <MudAutocomplete @ref="RequestRuleMudAutocompleteComponent"
-                                     T="RequestRuleDto"
-                                     Label="Search Request Rule"
-                                     SearchFunc="@(async (value) => await Task.FromResult(SearchRequestRule(value)))"
-                                     Value="RequestRule"
-                                     Text="@($"{RequestRule?.Path} - {RequestRule?.MethodLabel}")"
-                                     ValueChanged="@OnRequestRuleSelected">
-                        <ItemSelectedTemplate Context="requestRule">
-                            <MudText>
-                                @($"{requestRule?.Path} - {requestRule?.MethodLabel}")
-                            </MudText>
-                        </ItemSelectedTemplate>
-                        <ItemTemplate Context="requestRule">
-                            <MudText>
-                                @($"{requestRule?.Path} - {requestRule?.MethodLabel}")
-                            </MudText>
-                        </ItemTemplate>
-                    </MudAutocomplete>
-                    <div class="my-3">
-                        @if (RequestRule is not null)
-                        {
-                            <MudPaper Class="pa-3">
-                                <div class="d-flex justify-space-between">
-                                    <div>
-                                        <MudText>Path:</MudText>
-                                        <MudText Typo="Typo.body2">@RequestRule.Path</MudText>
-                                    </div>
-                                    <div>
-                                        <MudText>Method:</MudText>
-                                        <MudText Typo="Typo.body2">@RequestRule.MethodLabel</MudText>
-                                    </div>
+            @if (InvalidRequestRule)
+            {
+                <MudAlert Severity="Severity.Error">
+                    Please, Select a Request Rule
+                </MudAlert>
+            }
+            <MudForm Model="@WorkflowAction" @ref=Form Validation="@(WorkflowActionValidator.ValidateValue)">
+                <MudAutocomplete @ref="RequestRuleMudAutocompleteComponent"
+                                    T="RequestRuleDto"
+                                    Label="Search Request Rule"
+                                    SearchFunc="@(async (value) => await Task.FromResult(SearchRequestRule(value)))"
+                                    Value="RequestRule"
+                                    Text="@($"{RequestRule?.Path} - {RequestRule?.MethodLabel}")"
+                                    ValueChanged="@OnRequestRuleSelected">
+                    <ItemSelectedTemplate Context="requestRule">
+                        <MudText>
+                            @($"{requestRule?.Path} - {requestRule?.MethodLabel}")
+                        </MudText>
+                    </ItemSelectedTemplate>
+                    <ItemTemplate Context="requestRule">
+                        <MudText>
+                            @($"{requestRule?.Path} - {requestRule?.MethodLabel}")
+                        </MudText>
+                    </ItemTemplate>
+                </MudAutocomplete>
+                <div class="my-3">
+                    @if (RequestRule is not null)
+                    {
+                        <MudPaper Class="pa-3">
+                            <div class="d-flex justify-space-between">
+                                <div>
+                                    <MudText>Path:</MudText>
+                                    <MudText Typo="Typo.body2">@RequestRule.Path</MudText>
                                 </div>
-                            </MudPaper>
-                        }
-                        <MudTextField @bind-Value="WorkflowAction.Name"
-                                      Label="Name"
-                                      For="@(() => Workflow.Name)"
-                                      Variant="Variant.Text" />
-                        <MudNumericField @bind-Value="WorkflowAction.ResponseStatus"
-                                         Label="Status"
-                                         Variant="Variant.Text" />
-                        <MudNumericField @bind-Value="WorkflowAction.ResponseDelay"
-                                         Label="Delay"
-                                         Variant="Variant.Text" />
-                        <MudTextField @bind-Value="WorkflowAction.ResponseBody"
-                                      Label="Body"
-                                      Variant="Variant.Text"
-                                      Lines="5" />
-                    </div>
-                </MudForm>
-            </MudContainer>
+                                <div>
+                                    <MudText>Method:</MudText>
+                                    <MudText Typo="Typo.body2">@RequestRule.MethodLabel</MudText>
+                                </div>
+                            </div>
+                        </MudPaper>
+                    }
+                    <MudTextField @bind-Value="WorkflowAction.Name"
+                                    Label="Name"
+                                    For="@(() => Workflow.Name)"
+                                    Variant="Variant.Text" />
+                    <MudNumericField @bind-Value="WorkflowAction.ResponseStatus"
+                                        Label="Status"
+                                        Variant="Variant.Text" />
+                    <MudNumericField @bind-Value="WorkflowAction.ResponseDelay"
+                                        Label="Delay"
+                                        Variant="Variant.Text" />
+                    <MudTextField @bind-Value="WorkflowAction.ResponseBody"
+                                    Label="Body"
+                                    Variant="Variant.Text"
+                                    Lines="5" />
+                </div>
+            </MudForm>
         </div>
     </DialogContent>
     <DialogActions>

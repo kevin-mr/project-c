@@ -6,14 +6,12 @@
 <MudDialog>
     <DialogContent>
         <div class="pa-5">
-            <MudContainer Style="max-height: 80%; overflow-y: scroll">
-                <MudForm Model="@WorkflowStorage" @ref=Form Validation="@(WorkflowStorageValidator.ValidateValue)">
-                    <MudTextField @bind-Value="WorkflowStorage.PropertyIdentifier"
-                                  Label="Identifier"
-                                  For="@(() => WorkflowStorage.PropertyIdentifier)"
-                                  Variant="Variant.Text" />
-                </MudForm>
-            </MudContainer>
+            <MudForm Model="@WorkflowStorage" @ref=Form Validation="@(WorkflowStorageValidator.ValidateValue)">
+                <MudTextField @bind-Value="WorkflowStorage.PropertyIdentifier"
+                                Label="Identifier"
+                                For="@(() => WorkflowStorage.PropertyIdentifier)"
+                                Variant="Variant.Text" />
+            </MudForm>
         </div>
     </DialogContent>
     <DialogActions>

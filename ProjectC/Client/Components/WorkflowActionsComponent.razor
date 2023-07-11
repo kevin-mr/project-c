@@ -11,10 +11,10 @@
                 {
                     <MudExpansionPanel>
                         <TitleContent>
-                            <div class="d-flex justify-space-between">
+                            <div class="d-flex justify-space-between align-center">
                                 <MudText>@workflowAction.Name</MudText>
                                 <div class="mr-3" @onclick:stopPropagation="true" @onclick:preventDefault="true">
-                                    <MudIcon Icon="@Icons.Material.Filled.Edit" @onclick="@(async () => await EditAsync(workflowAction))" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflowAction))"></MudIconButton>
                                 </div>
                             </div>
                         </TitleContent>

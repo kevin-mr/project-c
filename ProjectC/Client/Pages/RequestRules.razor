@@ -5,7 +5,9 @@
 <MudGrid Spacing="2" Class="mt-5">
     <MudItem sm="6">
         <div class="mb-5">
-            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestEventsAsync"></MudIconButton>
+            <MudTooltip Text="Clear Request Events" Arrow="true" Placement="Placement.Right">
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestEventsAsync"></MudIconButton>
+            </MudTooltip>
         </div>
         <RequestEventsComponent @ref="RequestEventsComponent"></RequestEventsComponent>
     </MudItem>
@@ -23,7 +25,7 @@
 
     private async Task AddRequestRuleAsync()
     {
-        var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>("Request Rule", DialogUtils.DefaultDialogOptions);
+        var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>("Request Rule", DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
         var result = await dialog.Result;
 
         if (!result.Canceled)

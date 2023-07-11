@@ -6,27 +6,25 @@
 <MudDialog>
     <DialogContent>
         <div class="pa-5">
-            <MudContainer Style="max-height: 80%; overflow-y: scroll">
-                <MudForm Model="@WebhookRule" @ref=Form Validation="@(WebhookRuleValidator.ValidateValue)">
-                    <MudSelect @bind-Value="WebhookRule.Method"
-                               Label="Method"
-                               Variant="Variant.Text">
-                        <MudSelectItem Value="@WebhookRuleMethodDto.POST">POST</MudSelectItem>
-                        <MudSelectItem Value="@WebhookRuleMethodDto.PUT">PUT</MudSelectItem>
-                    </MudSelect>
-                    <MudTextField @bind-Value="WebhookRule.Path"
-                                  Label="Path"
-                                  For="@(() => WebhookRule.Path)"
-                                  Variant="Variant.Text" />
-                    <MudTextField @bind-Value="WebhookRule.Description"
-                                  Label="Description"
-                                  For="@(() => WebhookRule.Description)"
-                                  Variant="Variant.Text" />
-                    <MudTextField @bind-Value="WebhookRule.RedirectUrl"
-                                  Label="Redirect Url"
-                                  Variant="Variant.Text" />
-                </MudForm>
-            </MudContainer>
+            <MudForm Model="@WebhookRule" @ref=Form Validation="@(WebhookRuleValidator.ValidateValue)">
+                <MudSelect @bind-Value="WebhookRule.Method"
+                            Label="Method"
+                            Variant="Variant.Text">
+                    <MudSelectItem Value="@WebhookRuleMethodDto.POST">POST</MudSelectItem>
+                    <MudSelectItem Value="@WebhookRuleMethodDto.PUT">PUT</MudSelectItem>
+                </MudSelect>
+                <MudTextField @bind-Value="WebhookRule.Path"
+                                Label="Path"
+                                For="@(() => WebhookRule.Path)"
+                                Variant="Variant.Text" />
+                <MudTextField @bind-Value="WebhookRule.Description"
+                                Label="Description"
+                                For="@(() => WebhookRule.Description)"
+                                Variant="Variant.Text" />
+                <MudTextField @bind-Value="WebhookRule.RedirectUrl"
+                                Label="Redirect Url"
+                                Variant="Variant.Text" />
+            </MudForm>
         </div>
     </DialogContent>
     <DialogActions>

@@ -6,41 +6,39 @@
 <MudDialog>
     <DialogContent>
         <div class="pa-5">
-            <MudContainer Style="max-height: 80%; overflow-y: scroll">
-                <MudForm Model="@RequestRule" @ref=Form Validation="@(RequestRuleDtoValidator.ValidateValue)">
-                    <MudTextField @bind-Value="RequestRule.Path"
-                                  For="@(() => RequestRule.Path)"
-                                  Label="Path"
-                                  Variant="Variant.Text" />
-                    <MudSelect @bind-Value="RequestRule.Method"
-                               For="@(() => RequestRule.Method)"
-                               Label="Method"
-                               Variant="Variant.Text">
-                        <MudSelectItem Value="@RequestRuleMethodDto.GET">GET</MudSelectItem>
-                        <MudSelectItem Value="@RequestRuleMethodDto.POST">POST</MudSelectItem>
-                        <MudSelectItem Value="@RequestRuleMethodDto.PUT">PUT</MudSelectItem>
-                        <MudSelectItem Value="@RequestRuleMethodDto.DELETE">DELETE</MudSelectItem>
-                    </MudSelect>
-                    <MudNumericField @bind-Value="RequestRule.ResponseStatus"
-                                     For="@(() => RequestRule.ResponseStatus)"
-                                     Label="Status"
-                                     Variant="Variant.Text" />
-                    <MudNumericField @bind-Value="RequestRule.ResponseDelay"
-                                     For="@(() => RequestRule.ResponseDelay)"
-                                     Label="Delay"
-                                     Variant="Variant.Text" />
-                    <div class="d-flex">
-                        <MudTextField @bind-Value="RequestRule.ResponseHeaders"
-                                      Label="Headers"
-                                      Variant="Variant.Text"
-                                      Lines="5" />
-                        <MudTextField @bind-Value="RequestRule.ResponseBody"
-                                      Label="Body"
-                                      Variant="Variant.Text"
-                                      Lines="5" />
-                    </div>
-                </MudForm>
-            </MudContainer>
+            <MudForm Model="@RequestRule" @ref=Form Validation="@(RequestRuleDtoValidator.ValidateValue)">
+                <MudTextField @bind-Value="RequestRule.Path"
+                                For="@(() => RequestRule.Path)"
+                                Label="Path"
+                                Variant="Variant.Text" />
+                <MudSelect @bind-Value="RequestRule.Method"
+                            For="@(() => RequestRule.Method)"
+                            Label="Method"
+                            Variant="Variant.Text">
+                    <MudSelectItem Value="@RequestRuleMethodDto.GET">GET</MudSelectItem>
+                    <MudSelectItem Value="@RequestRuleMethodDto.POST">POST</MudSelectItem>
+                    <MudSelectItem Value="@RequestRuleMethodDto.PUT">PUT</MudSelectItem>
+                    <MudSelectItem Value="@RequestRuleMethodDto.DELETE">DELETE</MudSelectItem>
+                </MudSelect>
+                <MudNumericField @bind-Value="RequestRule.ResponseStatus"
+                                    For="@(() => RequestRule.ResponseStatus)"
+                                    Label="Status"
+                                    Variant="Variant.Text" />
+                <MudNumericField @bind-Value="RequestRule.ResponseDelay"
+                                    For="@(() => RequestRule.ResponseDelay)"
+                                    Label="Delay"
+                                    Variant="Variant.Text" />
+                <div class="d-flex">
+                    <MudTextField @bind-Value="RequestRule.ResponseHeaders"
+                                    Label="Headers"
+                                    Variant="Variant.Text"
+                                    Lines="5" />
+                    <MudTextField @bind-Value="RequestRule.ResponseBody"
+                                    Label="Body"
+                                    Variant="Variant.Text"
+                                    Lines="5" />
+                </div>
+            </MudForm>
         </div>
     </DialogContent>
     <DialogActions>
