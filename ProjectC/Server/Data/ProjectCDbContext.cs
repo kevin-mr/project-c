@@ -17,6 +17,20 @@ namespace ProjectC.Server.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<RequestEvent>().ToTable("RequestEvent");
+            modelBuilder.Entity<RequestEvent>().Ignore(x => x.Headers);
+            modelBuilder.Entity<RequestEvent>().Ignore(x => x.Body);
+            modelBuilder
+                .Entity<RequestEvent>()
+                .HasOne(x => x.RequestRule)
+                .WithMany(x => x.RequestRuleEvents)
+                .HasForeignKey(x => x.RequestRuleId);
+            modelBuilder
+                .Entity<RequestEvent>()
+                .HasOne(x => x.WebhookRule)
+                .WithMany(x => x.WebhookRuleEvents)
+                .HasForeignKey(x => x.WebhookRuleId);
+
             modelBuilder.Entity<RequestRule>().ToTable("RequestRule");
             modelBuilder
                 .Entity<RequestRule>()
@@ -25,11 +39,6 @@ namespace ProjectC.Server.Data
                     x => x.ToString(),
                     x => (RequestRuleMethod)Enum.Parse(typeof(RequestRuleMethod), x)
                 );
-            modelBuilder
-                .Entity<RequestRule>()
-                .HasMany(x => x.RequestEvents)
-                .WithOne()
-                .HasForeignKey(x => x.RequestRuleId);
             modelBuilder
                 .Entity<RequestRule>()
                 .HasMany(x => x.WorkflowActions)
@@ -44,28 +53,23 @@ namespace ProjectC.Server.Data
                     x => x.ToString(),
                     x => (WebhookRuleMethod)Enum.Parse(typeof(WebhookRuleMethod), x)
                 );
-            modelBuilder
-                .Entity<WebhookRule>()
-                .HasMany(x => x.RequestEvents)
-                .WithOne()
-                .HasForeignKey(x => x.WebhookRuleId);
 
             modelBuilder.Entity<Workflow>().ToTable("Workflow");
             modelBuilder
                 .Entity<Workflow>()
                 .HasMany(x => x.WorkflowActions)
-                .WithOne()
+                .WithOne(x => x.Workflow)
                 .HasForeignKey(x => x.WorkflowId);
             modelBuilder
                 .Entity<Workflow>()
                 .HasOne(x => x.WorkflowStorage)
-                .WithOne()
+                .WithOne(x => x.Workflow)
                 .HasForeignKey<WorkflowStorage>(x => x.WorkflowId);
 
             modelBuilder.Entity<WorkflowAction>().ToTable("WorkflowAction");
             modelBuilder
                 .Entity<WorkflowAction>()
-                .HasOne<Workflow>()
+                .HasOne(x => x.Workflow)
                 .WithMany(x => x.WorkflowActions)
                 .HasForeignKey(x => x.WorkflowId);
             modelBuilder
@@ -77,23 +81,9 @@ namespace ProjectC.Server.Data
             modelBuilder.Entity<WorkflowStorage>().ToTable("WorkflowStorage");
             modelBuilder
                 .Entity<WorkflowStorage>()
-                .HasOne<Workflow>()
+                .HasOne(x => x.Workflow)
                 .WithOne(x => x.WorkflowStorage)
                 .HasForeignKey<WorkflowStorage>(x => x.WorkflowId);
-
-            modelBuilder.Entity<RequestEvent>().ToTable("RequestEvent");
-            modelBuilder.Entity<RequestEvent>().Ignore(x => x.Headers);
-            modelBuilder.Entity<RequestEvent>().Ignore(x => x.Body);
-            modelBuilder
-                .Entity<RequestEvent>()
-                .HasOne<RequestRule>()
-                .WithMany(x => x.RequestEvents)
-                .HasForeignKey(x => x.RequestRuleId);
-            modelBuilder
-                .Entity<RequestEvent>()
-                .HasOne<WebhookRule>()
-                .WithMany(x => x.RequestEvents)
-                .HasForeignKey(x => x.WebhookRuleId);
 
             base.OnModelCreating(modelBuilder);
         }

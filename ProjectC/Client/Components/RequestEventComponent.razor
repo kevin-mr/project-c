@@ -1,9 +1,15 @@
 ﻿@if (RequestEvent is not null)
 {
-    <div class="d-flex justify-space-between">
-        <MudText>@RequestEvent.Method</MudText>
-        <MudText>@RequestEvent.ArrivedTimeLabel()</MudText>
-        <MudIcon Icon="@Icons.Material.Filled.Preview" Title="View" @onclick="@(async () => await View())" />
+    <div class="d-flex justify-space-between align-center">
+        <MudText Class="flex-1"><MudChip Variant="Variant.Text">@RequestEvent.Method</MudChip>@RequestEvent.Path</MudText>
+        <MudText Class="flex-1">@RequestEvent.ArrivedTimeLabel()</MudText>
+        <div>
+            @if(RequestEvent.WebhookRuleId is not null)
+            {
+                <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Send" Title="Resend" @onclick="@(async () => await View())" />
+            }
+            <MudIcon Icon="@Icons.Material.Filled.Preview" Title="View" @onclick="@(async () => await View())" />
+        </div>
     </div>
 }
 

@@ -23,7 +23,9 @@ namespace ProjectC.Server.Data.Entities
         public bool ForWorkflowAction { get; set; }
 
         public int? RequestRuleId { get; set; }
+        public RequestRule? RequestRule { get; set; }
         public int? WebhookRuleId { get; set; }
+        public WebhookRule? WebhookRule { get; set; }
 
         public Dictionary<string, string> Headers =>
             JsonSerializer.Deserialize<Dictionary<string, string>>(JsonHeaders)

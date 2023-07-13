@@ -4,12 +4,15 @@
     {
         public RequestEventDto()
         {
+            Path = string.Empty;
             Method = string.Empty;
             Headers = new Dictionary<string, string>();
             JsonHeaders = string.Empty;
             Body = string.Empty;
             JsonBody = string.Empty;
             ArrivalDate = DateTime.Now;
+            Path = string.Empty;
+            RedirectUrl = string.Empty;
         }
 
         public int Id { get; set; }
@@ -17,8 +20,15 @@
         public string JsonHeaders { get; set; }
         public string JsonBody { get; set; }
         public DateTime ArrivalDate { get; set; }
+        public bool ForWorkflowAction { get; set; }
+        public string Path { get; set; }
+        public string RedirectUrl { get; set; }
+
         public Dictionary<string, string> Headers { get; set; }
         public string Body { get; set; }
+
+        public int? RequestRuleId { get; set; }
+        public int? WebhookRuleId { get; set; }
 
         public string ArrivedTimeLabel()
         {

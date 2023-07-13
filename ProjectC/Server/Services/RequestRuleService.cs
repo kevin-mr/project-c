@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectC.Server.Data;
 using ProjectC.Server.Data.Entities;
+using ProjectC.Server.Models;
 using ProjectC.Server.Services.Interfaces;
 
 namespace ProjectC.Server.Services
@@ -17,6 +18,14 @@ namespace ProjectC.Server.Services
         public async Task<IEnumerable<RequestRule>> GetAsync()
         {
             return await context.RequestRule.ToArrayAsync();
+        }
+
+        public async Task<IEnumerable<RequestRuleMethodCounter>> GetMethodCountersAsync()
+        {
+            return await context.RequestRule
+                .GroupBy(x => x.Method)
+                .Select(x => new RequestRuleMethodCounter { Method = x.Key, Counter = x.Count() })
+                .ToArrayAsync();
         }
 
         public async Task CreateAsync(RequestRule requestRule)

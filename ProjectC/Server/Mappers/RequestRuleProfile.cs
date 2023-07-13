@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.Extensions.EnumMapping;
 using ProjectC.Server.Data.Entities;
+using ProjectC.Server.Models;
 using ProjectC.Shared.Models;
 
 namespace ProjectC.Server.Mappers
@@ -23,6 +24,8 @@ namespace ProjectC.Server.Mappers
 
             CreateMap<CreateRequestRuleDto, RequestRule>().ReverseMap();
             CreateMap<EditRequestRuleDto, RequestRule>().ReverseMap();
+
+            CreateMap<RequestRuleMethodCounter, RequestRuleMethodCounterDto>().ReverseMap();
         }
     }
 }

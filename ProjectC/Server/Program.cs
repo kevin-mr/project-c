@@ -8,6 +8,7 @@ using ProjectC.Server.Services.Interfaces;
 using System.Reflection;
 using FluentValidation;
 using ProjectC.Server.Middlewares;
+using System.Text.Json.Serialization;
 
 namespace ProjectC
 {
@@ -17,7 +18,14 @@ namespace ProjectC
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllersWithViews();
+            builder.Services
+                .AddControllersWithViews()
+                .AddJsonOptions(
+                    options =>
+                        options.JsonSerializerOptions.ReferenceHandler =
+                            ReferenceHandler.IgnoreCycles
+                );
+            ;
             builder.Services.AddRazorPages();
 
             //SignalR

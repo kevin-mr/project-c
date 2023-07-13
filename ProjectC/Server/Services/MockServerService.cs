@@ -20,6 +20,7 @@ namespace ProjectC.Server.Services
         private readonly ProjectCDbContext context;
         private readonly IHubContext<RequestsHub> requestHubContext;
         private readonly IHubContext<WebhookHub> webhookHubContext;
+        private readonly IHubContext<WorkflowActionHub> workflowHubContext;
         private readonly IRequestInspectorService requestInspectorService;
         private readonly IMapper mapper;
 
@@ -27,6 +28,7 @@ namespace ProjectC.Server.Services
             ProjectCDbContext context,
             IHubContext<RequestsHub> requestHubContext,
             IHubContext<WebhookHub> webhookHubContext,
+            IHubContext<WorkflowActionHub> workflowHubContext,
             IRequestInspectorService requestInspectorService,
             IMapper mapper
         )
@@ -34,6 +36,7 @@ namespace ProjectC.Server.Services
             this.context = context;
             this.requestHubContext = requestHubContext;
             this.webhookHubContext = webhookHubContext;
+            this.workflowHubContext = workflowHubContext;
             this.requestInspectorService = requestInspectorService;
             this.mapper = mapper;
         }
@@ -118,9 +121,11 @@ namespace ProjectC.Server.Services
                 context.RequestEvent.Add(requestEvent);
                 await context.SaveChangesAsync();
 
+                var requestEventDto = mapper.Map<RequestEventDto>(requestEvent);
+                requestEventDto.Path = requestRule.Path;
                 await requestHubContext.Clients.All.SendAsync(
                     "RequestRuleEventCaught",
-                    mapper.Map<RequestEventDto>(requestEvent)
+                    requestEventDto
                 );
             }
         }
@@ -164,9 +169,11 @@ namespace ProjectC.Server.Services
                 context.RequestEvent.Add(requestEvent);
                 await context.SaveChangesAsync();
 
-                await requestHubContext.Clients.All.SendAsync(
+                var requestEventDto = mapper.Map<RequestEventDto>(requestEvent);
+                requestEventDto.Path = workflowAction.RequestRule.Path;
+                await workflowHubContext.Clients.All.SendAsync(
                     "WorkflowActionEventCaught",
-                    mapper.Map<RequestEventDto>(requestEvent)
+                    requestEventDto
                 );
             }
         }
@@ -200,9 +207,12 @@ namespace ProjectC.Server.Services
                         requestBody,
                         webhookRule.RedirectUrl
                     );
+                    var requestEventDto = mapper.Map<WebhookEventDto>(webhookEvent);
+                    requestEventDto.Path = webhookEvent.Path;
+                    requestEventDto.RedirectUrl = webhookEvent.RedirectUrl;
                     await webhookHubContext.Clients.All.SendAsync(
                         "WebhookRuleEventToRedirect",
-                        mapper.Map<WebhookEventDto>(webhookEvent)
+                        requestEventDto
                     );
                 }
             }

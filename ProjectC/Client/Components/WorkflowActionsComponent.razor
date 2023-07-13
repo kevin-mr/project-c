@@ -21,6 +21,25 @@
                         <ChildContent>
                             <MudSimpleTable Dense="true">
                                 <tbody>
+                                    @if (workflowAction.RequestRule is not null)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <MudText>Path</MudText>
+                                            </td>
+                                            <td>
+                                                <MudText Typo="Typo.body2">@workflowAction.RequestRule.Path</MudText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <MudText>Method</MudText>
+                                            </td>
+                                            <td>
+                                                <MudText Typo="Typo.body2">@workflowAction.RequestRule.Method</MudText>
+                                            </td>
+                                        </tr>
+                                    }
                                     <tr>
                                         <td>
                                             <MudText>Status</MudText>

@@ -17,7 +17,6 @@ namespace ProjectC.Server.Services
         public async Task<IEnumerable<Workflow>> GetAsync()
         {
             return await context.Workflow
-                .AsNoTracking()
                 .Include(x => x.WorkflowStorage)
                 .Include(x => x.WorkflowActions)
                 .ThenInclude(x => x.RequestRule)
@@ -27,7 +26,6 @@ namespace ProjectC.Server.Services
         public async Task<Workflow?> GetAsync(int id)
         {
             return await context.Workflow
-                .AsNoTracking()
                 .Include(x => x.WorkflowStorage)
                 .Include(x => x.WorkflowActions)
                 .ThenInclude(x => x.RequestRule)

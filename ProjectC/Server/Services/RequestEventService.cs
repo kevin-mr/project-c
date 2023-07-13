@@ -17,18 +17,23 @@ namespace ProjectC.Server.Services
         public async Task<IEnumerable<RequestEvent>> GetByRequestRuleAsync()
         {
             return await context.RequestEvent
+                .Include(x => x.RequestRule)
                 .Where(x => x.RequestRuleId != null && !x.ForWorkflowAction)
                 .ToArrayAsync();
         }
 
         public async Task<IEnumerable<RequestEvent>> GetByWebhookRuleAsync()
         {
-            return await context.RequestEvent.Where(x => x.WebhookRuleId != null).ToArrayAsync();
+            return await context.RequestEvent
+                .Include(x => x.WebhookRule)
+                .Where(x => x.WebhookRuleId != null)
+                .ToArrayAsync();
         }
 
         public async Task<IEnumerable<RequestEvent>> GetByWorkflowActionAsync()
         {
             return await context.RequestEvent
+                .Include(x => x.RequestRule)
                 .Where(x => x.RequestRuleId != null && x.ForWorkflowAction)
                 .ToArrayAsync();
         }

@@ -1,0 +1,53 @@
+﻿@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<MudCard Class="mt-5">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Request Rules</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Explore" OnClick="GoToRequestRules" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudChart ChartType="ChartType.Donut" Width="50%" InputData="@Data" InputLabels="@Labels">
+            <CustomGraphics>
+                <text class="donut-inner-text" x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="5">Total</text>
+                <text class="donut-inner-text" x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="5">@Data.Sum().ToString()</text>
+            </CustomGraphics>
+        </MudChart>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private string[] Labels = { "GET", "POST", "PUT", "DELETE" };
+    private double[] Data = Array.Empty<double>();
+    private RequestRuleMethodCounterDto[] RequestRulesCounters = Array.Empty<RequestRuleMethodCounterDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRequestRulesMethodCountersAsync();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadRequestRulesMethodCountersAsync()
+    {
+        var requestRulesCounters = await Http.GetFromJsonAsync<RequestRuleMethodCounterDto[]>("api/v1/request/counter");
+        if (requestRulesCounters is not null)
+        {
+            RequestRulesCounters = requestRulesCounters;
+            var getCounter = requestRulesCounters.First(x => x.Method == RequestRuleMethodDto.GET).Counter;
+            var postCounter = requestRulesCounters.First(x => x.Method == RequestRuleMethodDto.POST).Counter;
+            var putCounter = requestRulesCounters.First(x => x.Method == RequestRuleMethodDto.PUT).Counter;
+            var deleteCounter = requestRulesCounters.First(x => x.Method == RequestRuleMethodDto.DELETE).Counter;
+            Data = new double[] { getCounter, postCounter, putCounter, deleteCounter };
+            StateHasChanged();
+        }
+    }
+
+    private void GoToRequestRules()
+    {
+        NavigationManager.NavigateTo("/request-rules");
+    }
+}

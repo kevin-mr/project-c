@@ -25,5 +25,6 @@
         public RequestRule? RequestRule { get; set; }
 
         public int WorkflowId { get; set; }
+        public Workflow? Workflow { get; set; }
     }
 }

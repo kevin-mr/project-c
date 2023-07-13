@@ -23,6 +23,7 @@
         public string? ResponseBody { get; set; }
 
         public int WorkflowId { get; set; }
+        public WorkflowDto Workflow { get; set; }
 
         public int RequestRuleId { get; set; }
         public RequestRuleDto? RequestRule { get; set; }

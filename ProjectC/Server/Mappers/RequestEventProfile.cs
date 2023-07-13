@@ -8,7 +8,27 @@ namespace ProjectC.Server.Mappers
     {
         public RequestEventProfile()
         {
-            CreateMap<RequestEvent, RequestEventDto>();
+            CreateMap<RequestEvent, RequestEventDto>()
+                .ForMember(
+                    x => x.Path,
+                    opt =>
+                    {
+                        opt.PreCondition(
+                            x => x.RequestRule is not null || x.WebhookRule is not null
+                        );
+                        opt.MapFrom(
+                            x => x.RequestRule != null ? x.RequestRule.Path : x.WebhookRule!.Path
+                        );
+                    }
+                )
+                .ForMember(
+                    x => x.RedirectUrl,
+                    opt =>
+                    {
+                        opt.PreCondition(x => x.WebhookRule is not null);
+                        opt.MapFrom(x => x.WebhookRule!.RedirectUrl);
+                    }
+                );
         }
     }
 }

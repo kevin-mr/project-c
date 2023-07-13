@@ -16,13 +16,14 @@ namespace ProjectC.Server.Services
 
         public async Task<IEnumerable<WorkflowAction>> GetAsync()
         {
-            return await context.WorkflowAction.ToArrayAsync();
+            return await context.WorkflowAction.Include(x => x.RequestRule).ToArrayAsync();
         }
 
         public async Task<IEnumerable<WorkflowAction>> GetByWorkflowIdAsync(int workflowId)
         {
             return await context.WorkflowAction
                 .Where(x => x.WorkflowId == workflowId)
+                .Include(x => x.RequestRule)
                 .ToArrayAsync();
         }
 

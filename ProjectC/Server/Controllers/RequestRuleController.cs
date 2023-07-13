@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using ProjectC.Client.Pages;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Services.Interfaces;
 using ProjectC.Shared.Models;
@@ -32,6 +33,14 @@ namespace ProjectC.Server.Controllers
             var requestRules = await requestRuleService.GetAsync();
 
             return requestRules.Select(x => mapper.Map<RequestRuleDto>(x)).ToArray();
+        }
+
+        [HttpGet("counter")]
+        public async Task<IEnumerable<RequestRuleMethodCounterDto>> GetSummaryAsync()
+        {
+            var counters = await requestRuleService.GetMethodCountersAsync();
+
+            return counters.Select(x => mapper.Map<RequestRuleMethodCounterDto>(x)).ToArray();
         }
 
         [HttpPost()]

@@ -14,5 +14,6 @@
         public string Data { get; set; }
 
         public int WorkflowId { get; set; }
+        public Workflow? Workflow { get; set; }
     }
 }
