@@ -7,6 +7,7 @@ namespace ProjectC.Server.Services.Interfaces
     {
         RequestEvent BuildRequestEventAsync(HttpRequest httpRequest, string body);
         WebhookEvent BuildWebhookEventAsync(HttpRequest request, string body, string redirectUrl);
+        WebhookEvent BuildWebhookEventAsync(RequestEvent request, string redirectUrl);
         Task<string> ReadRequestBodyAsync(HttpRequest request);
     }
 }

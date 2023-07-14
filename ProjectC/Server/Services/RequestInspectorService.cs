@@ -53,6 +53,23 @@ namespace ProjectC.Server.Services
             };
         }
 
+        public WebhookEvent BuildWebhookEventAsync(RequestEvent request, string redirectUrl)
+        {
+            var headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToArray());
+
+            return new WebhookEvent
+            {
+                Method = request.Method,
+                Headers = request.Headers.ToDictionary(
+                    x => x.Key,
+                    x => (string?[])x.Value.Split(",")
+                ),
+                ContentType = request.Headers["Content-Type"],
+                RedirectUrl = redirectUrl,
+                Body = request.Body
+            };
+        }
+
         public async Task<string> ReadRequestBodyAsync(HttpRequest request)
         {
             var stringBuilder = new StringBuilder();

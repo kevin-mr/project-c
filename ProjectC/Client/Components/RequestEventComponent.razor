@@ -12,9 +12,9 @@
         <div>
             @if (RequestEvent.WebhookRuleId is not null)
             {
-                <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Send" Title="Resend" @onclick="@(async () => await View())" />
+                <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Send" Title="Resend" @onclick="Resend" />
             }
-            <MudIcon Icon="@Icons.Material.Filled.Preview" Title="View" @onclick="@(async () => await View())" />
+            <MudIcon Icon="@Icons.Material.Filled.Preview" Title="View" @onclick="View" />
         </div>
     </div>
 }
@@ -26,8 +26,16 @@
     [Parameter]
     public EventCallback OnView { get; set; }
 
+    [Parameter]
+    public EventCallback OnResend { get; set; }
+
     private async Task View()
     {
         await OnView.InvokeAsync();
+    }
+
+    private async Task Resend()
+    {
+        await OnResend.InvokeAsync();
     }
 }

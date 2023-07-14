@@ -7,6 +7,7 @@
             Id = 0;
             Method = RequestRuleMethod.GET;
             Path = string.Empty;
+            PathRegex = string.Empty;
             Description = string.Empty;
             ResponseStatus = 200;
             ResponseHeaders = string.Empty;
@@ -19,6 +20,7 @@
         public int Id { get; set; }
         public RequestRuleMethod Method { get; set; }
         public string Path { get; set; }
+        public string PathRegex { get; set; }
         public string Description { get; set; }
         public int ResponseStatus { get; set; }
         public int ResponseDelay { get; set; }

@@ -82,7 +82,7 @@ namespace ProjectC
             app.MapRazorPages();
             app.MapControllers();
 
-            app.MapHub<RequestRuleHub>("/request-events");
+            app.MapHub<RequestHub>("/request-events");
             app.MapHub<RequestRuleHub>("/request-rule-events");
             app.MapHub<WebhookRuleHub>("/webhook-rule-events");
             app.MapHub<WorkflowActionHub>("/workflow-action-events");

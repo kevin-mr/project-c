@@ -50,6 +50,12 @@ namespace ProjectC.Server.Controllers
             return requestEvents.Select(x => mapper.Map<RequestEventDto>(x)).ToArray();
         }
 
+        [HttpPost("webhook-rule/resend")]
+        public Task ResentRequestAsync(RequestEventDto requestEvent)
+        {
+            return requestEventService.ResentRequestAsync(requestEvent.Id);
+        }
+
         [HttpDelete("request-rule")]
         public Task DeleteByRequestRuleAsync()
         {

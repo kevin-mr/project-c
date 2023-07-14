@@ -9,7 +9,9 @@
     {
         <MudDivider />
         <MudListItem>
-            <RequestEventComponent RequestEvent=@requestEvent OnView="@(async () => await ViewAsync(requestEvent))"></RequestEventComponent>
+            <RequestEventComponent RequestEvent=@requestEvent 
+                                   OnView="@(async () => await ViewAsync(requestEvent))"
+                                   OnResend="@(async () => await ResendAsync(requestEvent))"></RequestEventComponent>
         </MudListItem>
         <MudDivider />
     }
@@ -49,6 +51,19 @@
             ["RequestEvent"] = requestEvent
         };
         await DialogService.ShowAsync<ViewRequestEventComponent>("Request", parameters, DialogUtils.DefaultDialogOptions);
+    }
+
+    private async Task ResendAsync(RequestEventDto requestEvent)
+    {
+        var response = await Http.PostAsJsonAsync("api/v1/request-event/webhook-rule/resend", requestEvent);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Request successfully resend", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Request couldn't be resend", Severity.Error);
+        }
     }
 
     private async Task LoadRequestEventsAsync()

@@ -8,6 +8,7 @@ namespace ProjectC.Server.Services.Interfaces
         Task<IEnumerable<RequestEvent>> GetByRequestRuleAsync();
         Task<IEnumerable<RequestEvent>> GetByWebhookRuleAsync();
         Task<IEnumerable<RequestEvent>> GetByWorkflowActionAsync();
+        Task ResentRequestAsync(int requestEventId);
         Task DeleteByRequestRuleAsync();
         Task DeleteByWebhookRuleAsync();
         Task DeleteByWorkflowActionAsync();

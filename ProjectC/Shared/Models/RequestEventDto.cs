@@ -14,7 +14,6 @@ namespace ProjectC.Shared.Models
             JsonBody = string.Empty;
             ArrivalDate = DateTime.Now;
             Path = string.Empty;
-            RedirectUrl = string.Empty;
             WorkflowActionName = string.Empty;
         }
 
@@ -24,7 +23,7 @@ namespace ProjectC.Shared.Models
         public string JsonBody { get; set; }
         public DateTime ArrivalDate { get; set; }
         public string Path { get; set; }
-        public string RedirectUrl { get; set; }
+        public string? RedirectUrl { get; set; }
         public string WorkflowActionName { get; set; }
 
         public Dictionary<string, string> Headers { get; set; }
