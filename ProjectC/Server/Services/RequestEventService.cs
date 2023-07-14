@@ -14,11 +14,20 @@ namespace ProjectC.Server.Services
             this.context = context;
         }
 
+        public async Task<IEnumerable<RequestEvent>> GetAsync()
+        {
+            return await context.RequestEvent
+                .Include(x => x.RequestRule)
+                .Include(x => x.WebhookRule)
+                .Include(x => x.WorkflowAction)
+                .ToArrayAsync();
+        }
+
         public async Task<IEnumerable<RequestEvent>> GetByRequestRuleAsync()
         {
             return await context.RequestEvent
                 .Include(x => x.RequestRule)
-                .Where(x => x.RequestRuleId != null && !x.ForWorkflowAction)
+                .Where(x => x.RequestRuleId != null && x.WorkflowActionId == null)
                 .ToArrayAsync();
         }
 
@@ -34,7 +43,8 @@ namespace ProjectC.Server.Services
         {
             return await context.RequestEvent
                 .Include(x => x.RequestRule)
-                .Where(x => x.RequestRuleId != null && x.ForWorkflowAction)
+                .Include(x => x.WorkflowAction)
+                .Where(x => x.RequestRuleId != null && x.WorkflowActionId != null)
                 .ToArrayAsync();
         }
 

@@ -18,6 +18,14 @@ namespace ProjectC.Server.Controllers
             this.requestEventService = requestEventService;
         }
 
+        [HttpGet()]
+        public async Task<IEnumerable<RequestEventDto>> GetAsync()
+        {
+            var requestEvents = await requestEventService.GetAsync();
+
+            return requestEvents.Select(x => mapper.Map<RequestEventDto>(x)).ToArray();
+        }
+
         [HttpGet("request-rule")]
         public async Task<IEnumerable<RequestEventDto>> GetByRequestRuleAsync()
         {

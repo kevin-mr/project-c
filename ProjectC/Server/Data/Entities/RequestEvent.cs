@@ -12,7 +12,6 @@ namespace ProjectC.Server.Data.Entities
             JsonHeaders = string.Empty;
             JsonBody = string.Empty;
             ArrivalDate = DateTime.Now;
-            ForWorkflowAction = false;
         }
 
         public int Id { get; set; }
@@ -20,8 +19,9 @@ namespace ProjectC.Server.Data.Entities
         public string JsonHeaders { get; set; }
         public string JsonBody { get; set; }
         public DateTime ArrivalDate { get; set; }
-        public bool ForWorkflowAction { get; set; }
 
+        public int? WorkflowActionId { get; set; }
+        public WorkflowAction? WorkflowAction { get; set; }
         public int? RequestRuleId { get; set; }
         public RequestRule? RequestRule { get; set; }
         public int? WebhookRuleId { get; set; }

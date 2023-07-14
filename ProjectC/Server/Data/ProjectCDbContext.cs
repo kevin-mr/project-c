@@ -30,6 +30,11 @@ namespace ProjectC.Server.Data
                 .HasOne(x => x.WebhookRule)
                 .WithMany(x => x.WebhookRuleEvents)
                 .HasForeignKey(x => x.WebhookRuleId);
+            modelBuilder
+                .Entity<RequestEvent>()
+                .HasOne(x => x.WorkflowAction)
+                .WithMany(x => x.WorkflowActionEvents)
+                .HasForeignKey(x => x.WorkflowActionId);
 
             modelBuilder.Entity<RequestRule>().ToTable("RequestRule");
             modelBuilder

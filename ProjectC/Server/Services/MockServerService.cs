@@ -18,16 +18,16 @@ namespace ProjectC.Server.Services
         public static readonly string MOCK_SERVER_PREFIX = "/mockserver";
         public static readonly string WEBHOOK_PREFIX = "/webhook";
         private readonly ProjectCDbContext context;
-        private readonly IHubContext<RequestsHub> requestHubContext;
-        private readonly IHubContext<WebhookHub> webhookHubContext;
+        private readonly IHubContext<RequestRuleHub> requestHubContext;
+        private readonly IHubContext<WebhookRuleHub> webhookHubContext;
         private readonly IHubContext<WorkflowActionHub> workflowHubContext;
         private readonly IRequestInspectorService requestInspectorService;
         private readonly IMapper mapper;
 
         public MockServerService(
             ProjectCDbContext context,
-            IHubContext<RequestsHub> requestHubContext,
-            IHubContext<WebhookHub> webhookHubContext,
+            IHubContext<RequestRuleHub> requestHubContext,
+            IHubContext<WebhookRuleHub> webhookHubContext,
             IHubContext<WorkflowActionHub> workflowHubContext,
             IRequestInspectorService requestInspectorService,
             IMapper mapper
@@ -164,13 +164,14 @@ namespace ProjectC.Server.Services
             );
             if (requestEvent is not null)
             {
+                requestEvent.WorkflowActionId = workflowAction.Id;
                 requestEvent.RequestRuleId = workflowAction.RequestRule.Id;
-                requestEvent.ForWorkflowAction = true;
                 context.RequestEvent.Add(requestEvent);
                 await context.SaveChangesAsync();
 
                 var requestEventDto = mapper.Map<RequestEventDto>(requestEvent);
                 requestEventDto.Path = workflowAction.RequestRule.Path;
+                requestEventDto.WorkflowActionName = workflowAction.Name;
                 await workflowHubContext.Clients.All.SendAsync(
                     "WorkflowActionEventCaught",
                     requestEventDto

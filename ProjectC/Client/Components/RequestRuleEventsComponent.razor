@@ -27,6 +27,21 @@
         await base.OnInitializedAsync();
     }
 
+    public async Task DeleteRequestEventsAsync()
+    {
+        var response = await Http.DeleteAsync("api/v1/request-event/request-rule");
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Request events history deleted", Severity.Success);
+            RequestEvents = new List<RequestEventDto>();
+            StateHasChanged();
+        }
+        else
+        {
+            Snackbar.Add("Request events history couldn't be deleted", Severity.Error);
+        }
+    }
+
     private async Task ViewAsync(RequestEventDto requestEvent)
     {
         var parameters = new DialogParameters
@@ -38,7 +53,7 @@
 
     private async Task LoadRequestEventsAsync()
     {
-        var requestEvents = await Http.GetFromJsonAsync<RequestEventDto[]>("api/v1/request-event");
+        var requestEvents = await Http.GetFromJsonAsync<RequestEventDto[]>("api/v1/request-event/request-rule");
         if (requestEvents is not null)
         {
             RequestEvents = requestEvents.ToList();
@@ -51,10 +66,10 @@
     private async Task ConnectToHubAsync()
     {
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/request-events"))
+            .WithUrl(Navigation.ToAbsoluteUri("/request-rule-events"))
             .Build();
 
-        hubConnection.On<RequestEventDto>("RequestEventCaught", (requestEvent) =>
+        hubConnection.On<RequestEventDto>("RequestRuleEventCaught", (requestEvent) =>
         {
             if (requestEvent is not null)
             {

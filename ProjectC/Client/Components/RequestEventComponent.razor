@@ -1,10 +1,16 @@
 ﻿@if (RequestEvent is not null)
 {
     <div class="d-flex justify-space-between align-center">
-        <MudText Class="flex-1"><MudChip Variant="Variant.Text">@RequestEvent.Method</MudChip>@RequestEvent.Path</MudText>
+        <MudText Class="flex-1"><MudChip Variant="Variant.Outlined" Color="@RequestEvent.GetMethodColor()">@RequestEvent.Method</MudChip></MudText>
+        <MudText Class="flex-1">@RequestEvent.Path 
+            @if (RequestEvent.WorkflowActionId is not null)
+            {
+                <MudChip Text="Workflow">W</MudChip>
+            }
+        </MudText>
         <MudText Class="flex-1">@RequestEvent.ArrivedTimeLabel()</MudText>
         <div>
-            @if(RequestEvent.WebhookRuleId is not null)
+            @if (RequestEvent.WebhookRuleId is not null)
             {
                 <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Send" Title="Resend" @onclick="@(async () => await View())" />
             }

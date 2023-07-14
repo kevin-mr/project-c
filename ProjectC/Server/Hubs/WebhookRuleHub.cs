@@ -3,7 +3,7 @@ using ProjectC.Shared.Models;
 
 namespace ProjectC.Server.Hubs
 {
-    public class WebhookHub : Hub
+    public class WebhookRuleHub : Hub
     {
         public async Task NotifyWebhookRuleEventCaught(RequestEventDto webhookEventDto)
         {

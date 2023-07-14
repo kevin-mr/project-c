@@ -28,6 +28,14 @@ namespace ProjectC.Server.Mappers
                         opt.PreCondition(x => x.WebhookRule is not null);
                         opt.MapFrom(x => x.WebhookRule!.RedirectUrl);
                     }
+                )
+                .ForMember(
+                    x => x.WorkflowActionName,
+                    opt =>
+                    {
+                        opt.PreCondition(x => x.WorkflowAction is not null);
+                        opt.MapFrom(x => x.WorkflowAction!.Name);
+                    }
                 );
         }
     }

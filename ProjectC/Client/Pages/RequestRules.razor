@@ -9,7 +9,7 @@
                 <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestEventsAsync"></MudIconButton>
             </MudTooltip>
         </div>
-        <RequestEventsComponent @ref="RequestEventsComponent"></RequestEventsComponent>
+        <RequestRuleEventsComponent @ref="RequestEventsComponent"></RequestRuleEventsComponent>
     </MudItem>
     <MudItem sm="6">
         <div class="d-flex justify-end mb-5">
@@ -21,7 +21,7 @@
 
 @code {
     private RequestRulesComponent? RequestRulesComponent;
-    private RequestEventsComponent? RequestEventsComponent;
+    private RequestRuleEventsComponent? RequestEventsComponent;
 
     private async Task AddRequestRuleAsync()
     {

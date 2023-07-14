@@ -3,7 +3,7 @@ using ProjectC.Shared.Models;
 
 namespace ProjectC.Server.Hubs
 {
-    public class RequestsHub : Hub
+    public class RequestRuleHub : Hub
     {
         public async Task NotifyRequestRuleEventCaught(RequestEventDto requestRuleEvent)
         {

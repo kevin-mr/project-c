@@ -1,4 +1,6 @@
-﻿namespace ProjectC.Shared.Models
+﻿using System.Drawing;
+
+namespace ProjectC.Shared.Models
 {
     public class RequestEventDto
     {
@@ -13,6 +15,7 @@
             ArrivalDate = DateTime.Now;
             Path = string.Empty;
             RedirectUrl = string.Empty;
+            WorkflowActionName = string.Empty;
         }
 
         public int Id { get; set; }
@@ -20,13 +23,14 @@
         public string JsonHeaders { get; set; }
         public string JsonBody { get; set; }
         public DateTime ArrivalDate { get; set; }
-        public bool ForWorkflowAction { get; set; }
         public string Path { get; set; }
         public string RedirectUrl { get; set; }
+        public string WorkflowActionName { get; set; }
 
         public Dictionary<string, string> Headers { get; set; }
         public string Body { get; set; }
 
+        public int? WorkflowActionId { get; set; }
         public int? RequestRuleId { get; set; }
         public int? WebhookRuleId { get; set; }
 
