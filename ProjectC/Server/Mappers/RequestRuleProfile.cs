@@ -11,7 +11,6 @@ namespace ProjectC.Server.Mappers
         public RequestRuleProfile()
         {
             CreateMap<RequestRule, RequestRuleDto>().ReverseMap();
-
             CreateMap<RequestRuleMethod, RequestRuleMethodDto>()
                 .ConvertUsingEnumMapping(x =>
                 {
@@ -21,10 +20,8 @@ namespace ProjectC.Server.Mappers
                     x.MapValue(RequestRuleMethod.DELETE, RequestRuleMethodDto.DELETE);
                 })
                 .ReverseMap();
-
             CreateMap<CreateRequestRuleDto, RequestRule>().ReverseMap();
             CreateMap<EditRequestRuleDto, RequestRule>().ReverseMap();
-
             CreateMap<RequestRuleMethodCounter, RequestRuleMethodCounterDto>().ReverseMap();
         }
     }

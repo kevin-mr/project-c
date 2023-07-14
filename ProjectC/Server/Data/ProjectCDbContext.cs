@@ -74,6 +74,13 @@ namespace ProjectC.Server.Data
             modelBuilder.Entity<WorkflowAction>().ToTable("WorkflowAction");
             modelBuilder
                 .Entity<WorkflowAction>()
+                .Property(x => x.Method)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => (RequestRuleMethod)Enum.Parse(typeof(RequestRuleMethod), x)
+                );
+            modelBuilder
+                .Entity<WorkflowAction>()
                 .HasOne(x => x.Workflow)
                 .WithMany(x => x.WorkflowActions)
                 .HasForeignKey(x => x.WorkflowId);

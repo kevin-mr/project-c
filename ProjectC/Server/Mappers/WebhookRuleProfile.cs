@@ -10,7 +10,6 @@ namespace ProjectC.Server.Mappers
         public WebhookRuleProfile()
         {
             CreateMap<WebhookRule, WebhookRuleDto>().ReverseMap();
-
             CreateMap<WebhookRuleMethod, WebhookRuleMethodDto>()
                 .ConvertUsingEnumMapping(x =>
                 {
@@ -18,7 +17,6 @@ namespace ProjectC.Server.Mappers
                     x.MapValue(WebhookRuleMethod.PUT, WebhookRuleMethodDto.PUT);
                 })
                 .ReverseMap();
-
             CreateMap<CreateWebhookRuleDto, WebhookRule>().ReverseMap();
             CreateMap<EditWebhookRuleDto, WebhookRule>().ReverseMap();
         }

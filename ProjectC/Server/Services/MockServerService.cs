@@ -103,15 +103,30 @@ namespace ProjectC.Server.Services
             var method = GetRequestRuleMethod(request.Method);
             var path = request.Path.Value.Remove(0, MOCK_SERVER_PREFIX.Length);
 
-            return await context.WorkflowAction
+            var workflowActions = await context.WorkflowAction
                 .Include(x => x.RequestRule)
-                .FirstOrDefaultAsync(
+                .Where(x => x.WorkflowId == workflowId)
+                .Select(
                     x =>
-                        x.RequestRule != null
-                        && x.RequestRule.Method == method
-                        && x.RequestRule.Path == path
-                        && x.WorkflowId == workflowId
-                );
+                        new
+                        {
+                            x.Id,
+                            PathRegex = x.RequestRule != null
+                                ? x.RequestRule.PathRegex
+                                : x.PathRegex!,
+                            Method = x.RequestRule != null ? x.RequestRule.Method : x.Method,
+                        }
+                )
+                .ToArrayAsync();
+            var workflowAction = workflowActions.FirstOrDefault(
+                x => x.Method == method && Regex.IsMatch(path, x.PathRegex)
+            );
+
+            return workflowAction is null
+                ? null
+                : await context.WorkflowAction
+                    .Include(x => x.RequestRule)
+                    .FirstOrDefaultAsync(x => x.Id == workflowAction.Id);
         }
 
         public async Task HandleRequestRuleResponseAsync(
@@ -159,24 +174,12 @@ namespace ProjectC.Server.Services
             WorkflowAction workflowAction
         )
         {
-            if (workflowAction.RequestRule is null)
+            if (workflowAction.ResponseDelay is not null)
             {
-                return;
+                Thread.Sleep(workflowAction.ResponseDelay.Value);
             }
-
-            if (workflowAction.ResponseDelay > 0 || workflowAction.RequestRule.ResponseDelay > 0)
-            {
-                Thread.Sleep(
-                    workflowAction.ResponseDelay ?? workflowAction.RequestRule.ResponseDelay
-                );
-            }
-
-            httpContext.Response.StatusCode =
-                workflowAction.ResponseStatus ?? workflowAction.RequestRule.ResponseStatus;
-
-            await httpContext.Response.WriteAsync(
-                workflowAction.ResponseBody ?? workflowAction.RequestRule.ResponseBody
-            );
+            httpContext.Response.StatusCode = workflowAction.ResponseStatus ?? 500;
+            await httpContext.Response.WriteAsync(workflowAction.ResponseBody ?? string.Empty);
 
             var requestBody = await requestInspectorService.ReadRequestBodyAsync(
                 httpContext.Request
@@ -188,13 +191,24 @@ namespace ProjectC.Server.Services
             if (requestEvent is not null)
             {
                 requestEvent.WorkflowActionId = workflowAction.Id;
-                requestEvent.RequestRuleId = workflowAction.RequestRule.Id;
+                if (workflowAction.RequestRule is not null)
+                {
+                    requestEvent.RequestRuleId = workflowAction.RequestRule.Id;
+                }
                 context.RequestEvent.Add(requestEvent);
                 await context.SaveChangesAsync();
 
                 var requestEventDto = mapper.Map<RequestEventDto>(requestEvent);
-                requestEventDto.Path = workflowAction.RequestRule.Path;
-                requestEventDto.WorkflowActionName = workflowAction.Name;
+                if (workflowAction.RequestRule is not null)
+                {
+                    requestEventDto.Path = workflowAction.RequestRule.Path;
+                }
+                else
+                {
+                    requestEventDto.Path =
+                        workflowAction.Path ?? throw new Exception("Invalid Requets Path");
+                }
+                requestEventDto.WorkflowActionDescription = workflowAction.Description;
                 await workflowActionHubContext.Clients.All.SendAsync(
                     "WorkflowActionEventCaught",
                     requestEventDto

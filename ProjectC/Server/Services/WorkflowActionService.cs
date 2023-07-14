@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProjectC.Client.Pages;
 using ProjectC.Server.Data;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Services.Interfaces;
+using ProjectC.Server.Utils;
 
 namespace ProjectC.Server.Services
 {
@@ -29,6 +31,19 @@ namespace ProjectC.Server.Services
 
         public async Task CreateAsync(WorkflowAction workflowAction)
         {
+            if (workflowAction.RequestRuleId is null || workflowAction.RequestRuleId == 0)
+            {
+                if (!string.IsNullOrEmpty(workflowAction.Path) && workflowAction.Method is not null)
+                {
+                    workflowAction.PathRegex = RequestUtils.BuildRegexPath(workflowAction.Path);
+                    workflowAction.RequestRuleId = null;
+                }
+                else
+                {
+                    throw new Exception("Invalid data");
+                }
+            }
+
             context.WorkflowAction.Add(workflowAction);
             await context.SaveChangesAsync();
         }
@@ -49,16 +64,32 @@ namespace ProjectC.Server.Services
                 await context.WorkflowAction.FirstOrDefaultAsync(x => x.Id == workflowAction.Id)
                 ?? throw new Exception("Request rule not found");
 
-            currentWorkflowAction.Name = workflowAction.Name;
-            currentWorkflowAction.ResponseStatus = workflowAction.ResponseStatus;
-            currentWorkflowAction.ResponseDelay = workflowAction.ResponseDelay;
-            currentWorkflowAction.ResponseBody = workflowAction.ResponseBody;
-            currentWorkflowAction.ResponseHeaders = workflowAction.ResponseHeaders;
-
             if (workflowAction.RequestRuleId > 0)
             {
                 currentWorkflowAction.RequestRuleId = workflowAction.RequestRuleId;
             }
+            else
+            {
+                if (!string.IsNullOrEmpty(workflowAction.Path) && workflowAction.Method is not null)
+                {
+                    currentWorkflowAction.Path = workflowAction.Path;
+                    currentWorkflowAction.Method = workflowAction.Method;
+                    currentWorkflowAction.PathRegex = RequestUtils.BuildRegexPath(
+                        workflowAction.Path
+                    );
+                    currentWorkflowAction.RequestRuleId = null;
+                }
+                else
+                {
+                    throw new Exception("Invalid data");
+                }
+            }
+
+            currentWorkflowAction.Description = workflowAction.Description;
+            currentWorkflowAction.ResponseStatus = workflowAction.ResponseStatus;
+            currentWorkflowAction.ResponseDelay = workflowAction.ResponseDelay;
+            currentWorkflowAction.ResponseHeaders = workflowAction.ResponseHeaders;
+            currentWorkflowAction.ResponseBody = workflowAction.ResponseBody;
 
             await context.SaveChangesAsync();
         }

@@ -3,6 +3,7 @@ using ProjectC.Server.Data;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Models;
 using ProjectC.Server.Services.Interfaces;
+using ProjectC.Server.Utils;
 
 namespace ProjectC.Server.Services
 {
@@ -30,7 +31,7 @@ namespace ProjectC.Server.Services
 
         public async Task CreateAsync(RequestRule requestRule)
         {
-            requestRule.PathRegex = BuildRegexPath(requestRule.Path);
+            requestRule.PathRegex = RequestUtils.BuildRegexPath(requestRule.Path);
             context.RequestRule.Add(requestRule);
             await context.SaveChangesAsync();
         }
@@ -42,7 +43,7 @@ namespace ProjectC.Server.Services
                 ?? throw new Exception("Request rule not found");
 
             currentRequestRule.Path = requestRule.Path;
-            currentRequestRule.PathRegex = BuildRegexPath(requestRule.Path);
+            currentRequestRule.PathRegex = RequestUtils.BuildRegexPath(requestRule.Path);
             currentRequestRule.Method = requestRule.Method;
             currentRequestRule.ResponseStatus = requestRule.ResponseStatus;
             currentRequestRule.ResponseHeaders = requestRule.ResponseHeaders;
@@ -60,11 +61,6 @@ namespace ProjectC.Server.Services
                 context.RequestRule.Remove(requestRule);
                 await context.SaveChangesAsync();
             }
-        }
-
-        private string BuildRegexPath(string path)
-        {
-            return path.Contains("{number}") ? path.Replace("{number}", "[0-9]+") : path;
         }
     }
 }

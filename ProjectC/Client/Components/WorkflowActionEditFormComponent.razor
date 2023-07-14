@@ -2,6 +2,7 @@
 @inject HttpClient Http
 @inject IMapper mapper
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <MudDialog>
     <DialogContent>
@@ -14,12 +15,12 @@
             }
             <MudForm Model="@WorkflowAction" @ref=Form Validation="@(WorkflowActionValidator.ValidateValue)">
                 <MudAutocomplete @ref="RequestRuleMudAutocompleteComponent"
-                                    T="RequestRuleDto"
-                                    Label="Search Request Rule"
-                                    SearchFunc="@(async (value) => await Task.FromResult(SearchRequestRule(value)))"
-                                    Value="RequestRule"
-                                    Text="@($"{RequestRule?.Path} - {RequestRule?.MethodLabel}")"
-                                    ValueChanged="@OnRequestRuleSelected">
+                                 T="RequestRuleDto"
+                                 Label="Search Request Rule"
+                                 SearchFunc="@(async (value) => await Task.FromResult(SearchRequestRule(value)))"
+                                 Value="RequestRule"
+                                 Text="@($" {RequestRule?.Path} - {RequestRule?.MethodLabel}")"
+                                 ValueChanged="@OnRequestRuleSelected">
                     <ItemSelectedTemplate Context="requestRule">
                         <MudText>
                             @($"{requestRule?.Path} - {requestRule?.MethodLabel}")
@@ -32,9 +33,12 @@
                     </ItemTemplate>
                 </MudAutocomplete>
                 <div class="my-3">
-                    @if (RequestRule is not null)
+                    @if (RequestRule is not null && !WorkflowActionDisattached)
                     {
                         <MudPaper Class="pa-3">
+                            <div class="d-flex justify-end">
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="DetachFromRequestRuleAsync"></MudIconButton>
+                            </div>
                             <div class="d-flex justify-space-between">
                                 <div>
                                     <MudText>Path:</MudText>
@@ -47,20 +51,45 @@
                             </div>
                         </MudPaper>
                     }
-                    <MudTextField @bind-Value="WorkflowAction.Name"
-                                    Label="Name"
-                                    For="@(() => Workflow.Name)"
-                                    Variant="Variant.Text" />
+                    @if (WorkflowActionDisattached)
+                    {
+                        <MudTextField @bind-Value="WorkflowAction.Path"
+                                      For="@(() => WorkflowAction.Path)"
+                                      Label="Path"
+                                      Variant="Variant.Text" />
+                        <MudSelect @bind-Value="WorkflowAction.Method"
+                                   For="@(() => WorkflowAction.Method)"
+                                   Label="Method"
+                                   Variant="Variant.Text">
+                            <MudSelectItem Value="@RequestRuleMethodDto.GET">GET</MudSelectItem>
+                            <MudSelectItem Value="@RequestRuleMethodDto.POST">POST</MudSelectItem>
+                            <MudSelectItem Value="@RequestRuleMethodDto.PUT">PUT</MudSelectItem>
+                            <MudSelectItem Value="@RequestRuleMethodDto.DELETE">DELETE</MudSelectItem>
+                        </MudSelect>
+                    }
+                    <MudTextField @bind-Value="WorkflowAction.Description"
+                                  Label="Description"
+                                  For="@(() => WorkflowAction.Description)"
+                                  Variant="Variant.Text" />
                     <MudNumericField @bind-Value="WorkflowAction.ResponseStatus"
-                                        Label="Status"
-                                        Variant="Variant.Text" />
+                                     Label="Status"
+                                     Variant="Variant.Text" />
                     <MudNumericField @bind-Value="WorkflowAction.ResponseDelay"
-                                        Label="Delay"
-                                        Variant="Variant.Text" />
-                    <MudTextField @bind-Value="WorkflowAction.ResponseBody"
-                                    Label="Body"
-                                    Variant="Variant.Text"
-                                    Lines="5" />
+                                     Label="Delay"
+                                     Variant="Variant.Text" />
+                    <div class="d-flex">
+                        @if (WorkflowActionDisattached)
+                        {
+                            <MudTextField @bind-Value="WorkflowAction.ResponseHeaders"
+                                          Label="Headers"
+                                          Variant="Variant.Text"
+                                          Lines="5" />
+                        }
+                        <MudTextField @bind-Value="WorkflowAction.ResponseBody"
+                                      Label="Body"
+                                      Variant="Variant.Text"
+                                      Lines="5" />
+                    </div>
                 </div>
             </MudForm>
         </div>
@@ -122,6 +151,7 @@
     private bool Deleting = false;
     private bool Saving = false;
     private bool InvalidRequestRule = false;
+    private bool WorkflowActionDisattached = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -130,12 +160,19 @@
         {
             RequestRules = requestRules;
         }
-        if (WorkflowAction is not null && WorkflowAction.RequestRuleId > 0)
+        if (WorkflowAction.Id > 0)
         {
-            var requestRule = RequestRules.FirstOrDefault(x => x.Id == WorkflowAction.RequestRuleId);
-            if (requestRule is not null)
+            if (WorkflowAction.RequestRuleId > 0)
             {
-                RequestRule = requestRule;
+                var requestRule = RequestRules.FirstOrDefault(x => x.Id == WorkflowAction.RequestRuleId);
+                if (requestRule is not null)
+                {
+                    RequestRule = requestRule;
+                }
+            }
+            else
+            {
+                WorkflowActionDisattached = true;
             }
         }
 
@@ -229,8 +266,38 @@
         WorkflowAction.ResponseDelay = RequestRule.ResponseDelay;
         WorkflowAction.ResponseBody = RequestRule.ResponseBody;
 
-        InvalidRequestRule = WorkflowAction.RequestRuleId == 0;
+        if(WorkflowAction.RequestRuleId == 0)
+        {
+            InvalidRequestRule = true;
+        }
+        else
+        {
+            WorkflowActionDisattached = false;
+        }
 
         StateHasChanged();
+    }
+
+    private async Task DetachFromRequestRuleAsync()
+    {
+        var parameters = new DialogParameters
+        {
+            ["ContentText"] = "If you detach this workflow action from the request rule, it's going to be completely independent and it's not going to react to changes to the original request rule.",
+            ["ButtonText"] = "Yes",
+            ["Color"] = Color.Warning
+        };
+
+        var dialog = await DialogService.ShowAsync<ConfirmDialogComponent>("Disattach From Request Rule To Edit", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.ExtraSmall));
+        var result = await dialog.Result;
+        if((bool)result.Data)
+        {
+            WorkflowActionDisattached = true;
+            if(RequestRule is not null)
+            {
+                WorkflowAction.Path = RequestRule.Path;
+                WorkflowAction.Method = RequestRule.Method;
+            }
+            WorkflowAction.RequestRuleId = null;
+        }
     }
 }

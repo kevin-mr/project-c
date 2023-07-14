@@ -10,9 +10,9 @@
             PathRegex = string.Empty;
             Description = string.Empty;
             ResponseStatus = 200;
+            ResponseDelay = 0;
             ResponseHeaders = string.Empty;
             ResponseBody = string.Empty;
-            ResponseDelay = 0;
             WorkflowActions = new List<WorkflowAction>();
             RequestRuleEvents = new List<RequestEvent>();
         }

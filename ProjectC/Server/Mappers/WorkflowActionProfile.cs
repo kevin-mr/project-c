@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.Extensions.EnumMapping;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Shared.Models;
 

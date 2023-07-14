@@ -14,10 +14,20 @@ namespace ProjectC.Server.Mappers
                     opt =>
                     {
                         opt.PreCondition(
-                            x => x.RequestRule is not null || x.WebhookRule is not null
+                            x =>
+                                x.RequestRule is not null
+                                || x.WebhookRule is not null
+                                || x.WorkflowAction is not null
                         );
                         opt.MapFrom(
-                            x => x.RequestRule != null ? x.RequestRule.Path : x.WebhookRule!.Path
+                            x =>
+                                x.RequestRule != null
+                                    ? x.RequestRule.Path
+                                    : x.WebhookRule != null
+                                        ? x.WebhookRule.Path
+                                        : x.WorkflowAction != null
+                                            ? x.WorkflowAction.Path
+                                            : string.Empty
                         );
                     }
                 )
@@ -30,11 +40,11 @@ namespace ProjectC.Server.Mappers
                     }
                 )
                 .ForMember(
-                    x => x.WorkflowActionName,
+                    x => x.WorkflowActionDescription,
                     opt =>
                     {
                         opt.PreCondition(x => x.WorkflowAction is not null);
-                        opt.MapFrom(x => x.WorkflowAction!.Name);
+                        opt.MapFrom(x => x.WorkflowAction!.Description);
                     }
                 );
         }
