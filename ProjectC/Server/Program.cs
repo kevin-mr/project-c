@@ -52,7 +52,6 @@ namespace ProjectC
             builder.Services.AddHostedService<WebhookEventBackgroudService>();
             builder.Services.AddSingleton<WebhookEventQueue>();
             builder.Services.AddTransient<IRequestRuleService, RequestRuleService>();
-            builder.Services.AddSingleton<IRequestInspectorService, RequestInspectorService>();
             builder.Services.AddTransient<IMockServerService, MockServerService>();
             builder.Services.AddTransient<IWebookRuleService, WebookRuleService>();
             builder.Services.AddTransient<IWorkflowService, WorkflowService>();

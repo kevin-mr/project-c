@@ -9,6 +9,7 @@ using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Hubs;
 using ProjectC.Server.Models;
 using ProjectC.Server.Services.Interfaces;
+using ProjectC.Server.Utils;
 using ProjectC.Shared.Models;
 using System.Reflection.PortableExecutable;
 using System.Text.Json;
@@ -25,7 +26,6 @@ namespace ProjectC.Server.Services
         private readonly IHubContext<RequestRuleHub> requestRuleHubContext;
         private readonly IHubContext<WebhookRuleHub> webhookRuleHubContext;
         private readonly IHubContext<WorkflowActionHub> workflowActionHubContext;
-        private readonly IRequestInspectorService requestInspectorService;
         private readonly IWorkflowTriggerService workflowTriggerService;
         private readonly WebhookEventQueue workflowTriggersQueue;
         private readonly IMapper mapper;
@@ -36,7 +36,6 @@ namespace ProjectC.Server.Services
             IHubContext<RequestRuleHub> requestRuleHubContext,
             IHubContext<WebhookRuleHub> webhookRuleHubContext,
             IHubContext<WorkflowActionHub> workflowActionHubContext,
-            IRequestInspectorService requestInspectorService,
             IWorkflowTriggerService workflowTriggerService,
             WebhookEventQueue workflowTriggersQueue,
             IMapper mapper
@@ -47,7 +46,6 @@ namespace ProjectC.Server.Services
             this.requestRuleHubContext = requestRuleHubContext;
             this.webhookRuleHubContext = webhookRuleHubContext;
             this.workflowActionHubContext = workflowActionHubContext;
-            this.requestInspectorService = requestInspectorService;
             this.workflowTriggerService = workflowTriggerService;
             this.workflowTriggersQueue = workflowTriggersQueue;
             this.mapper = mapper;
@@ -149,10 +147,8 @@ namespace ProjectC.Server.Services
             SetHeaders(httpContext, requestRule.ResponseHeaders);
             await httpContext.Response.WriteAsync(requestRule.ResponseBody);
 
-            var requestBody = await requestInspectorService.ReadRequestBodyAsync(
-                httpContext.Request
-            );
-            var requestEvent = requestInspectorService.BuildRequestEventAsync(
+            var requestBody = await RequestUtils.ReadRequestBodyAsync(httpContext.Request);
+            var requestEvent = RequestUtils.BuildRequestEventAsync(
                 httpContext.Request,
                 requestBody
             );
@@ -188,10 +184,8 @@ namespace ProjectC.Server.Services
             httpContext.Response.StatusCode = workflowAction.ResponseStatus ?? 500;
             await httpContext.Response.WriteAsync(workflowAction.ResponseBody ?? string.Empty);
 
-            var requestBody = await requestInspectorService.ReadRequestBodyAsync(
-                httpContext.Request
-            );
-            var requestEvent = requestInspectorService.BuildRequestEventAsync(
+            var requestBody = await RequestUtils.ReadRequestBodyAsync(httpContext.Request);
+            var requestEvent = RequestUtils.BuildRequestEventAsync(
                 httpContext.Request,
                 requestBody
             );
@@ -239,10 +233,8 @@ namespace ProjectC.Server.Services
             WebhookRule webhookRule
         )
         {
-            var requestBody = await requestInspectorService.ReadRequestBodyAsync(
-                httpContext.Request
-            );
-            var requestEvent = requestInspectorService.BuildRequestEventAsync(
+            var requestBody = await RequestUtils.ReadRequestBodyAsync(httpContext.Request);
+            var requestEvent = RequestUtils.BuildRequestEventAsync(
                 httpContext.Request,
                 requestBody
             );
@@ -265,7 +257,7 @@ namespace ProjectC.Server.Services
                 );
                 if (!string.IsNullOrEmpty(webhookRule.RedirectUrl))
                 {
-                    var webhookRequest = requestInspectorService.BuildWebhookRequestAsync(
+                    var webhookRequest = RequestUtils.BuildWebhookRequestAsync(
                         httpContext.Request,
                         requestBody,
                         webhookRule.RedirectUrl

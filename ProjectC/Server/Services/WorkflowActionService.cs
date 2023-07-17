@@ -10,18 +10,10 @@ namespace ProjectC.Server.Services
     public class WorkflowActionService : IWorkflowActionService
     {
         private readonly ProjectCDbContext context;
-        private readonly IWorkflowTriggerService workflowTriggerService;
-        private readonly IWebhookEventService webhookEventService;
 
-        public WorkflowActionService(
-            ProjectCDbContext context,
-            IWorkflowTriggerService workflowTriggerService,
-            IWebhookEventService webhookEventService
-        )
+        public WorkflowActionService(ProjectCDbContext context)
         {
             this.context = context;
-            this.workflowTriggerService = workflowTriggerService;
-            this.webhookEventService = webhookEventService;
         }
 
         public async Task<IEnumerable<WorkflowAction>> GetAsync()
@@ -100,21 +92,6 @@ namespace ProjectC.Server.Services
             currentWorkflowAction.ResponseBody = workflowAction.ResponseBody;
 
             await context.SaveChangesAsync();
-        }
-
-        public async Task ExecuteTriggersAsync(int workflowActionId)
-        {
-            var workflowTriggers = await workflowTriggerService.GetByWorkflowActionIdAsync(
-                workflowActionId
-            );
-
-            foreach (var workflowTrigger in workflowTriggers)
-            {
-                if (workflowTrigger.WebhookEvent is not null)
-                {
-                    await webhookEventService.ResendAsync(workflowTrigger.WebhookEvent.Id);
-                }
-            }
         }
     }
 }

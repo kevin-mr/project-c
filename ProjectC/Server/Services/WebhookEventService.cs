@@ -5,6 +5,7 @@ using ProjectC.Server.Data;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Hubs;
 using ProjectC.Server.Services.Interfaces;
+using ProjectC.Server.Utils;
 using ProjectC.Shared.Models;
 
 namespace ProjectC.Server.Services
@@ -13,19 +14,16 @@ namespace ProjectC.Server.Services
     {
         private readonly ProjectCDbContext context;
         private readonly IMapper mapper;
-        private readonly IRequestInspectorService requestInspectorService;
         private readonly IHubContext<WebhookRuleHub> webhookRuleHubContext;
 
         public WebhookEventService(
             ProjectCDbContext context,
             IMapper mapper,
-            IRequestInspectorService requestInspectorService,
             IHubContext<WebhookRuleHub> webhookRuleHubContext
         )
         {
             this.context = context;
             this.mapper = mapper;
-            this.requestInspectorService = requestInspectorService;
             this.webhookRuleHubContext = webhookRuleHubContext;
         }
 
@@ -75,7 +73,7 @@ namespace ProjectC.Server.Services
                 throw new Exception("Invalid webhook event");
             }
 
-            var webhookRequest = requestInspectorService.BuildWebhookRequestAsync(
+            var webhookRequest = RequestUtils.BuildWebhookRequestAsync(
                 webhookEvent,
                 webhookEvent.WebhookRule.RedirectUrl
             );
