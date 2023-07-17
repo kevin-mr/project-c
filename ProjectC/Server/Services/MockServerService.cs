@@ -25,6 +25,7 @@ namespace ProjectC.Server.Services
         private readonly IHubContext<WebhookRuleHub> webhookRuleHubContext;
         private readonly IHubContext<WorkflowActionHub> workflowActionHubContext;
         private readonly IRequestInspectorService requestInspectorService;
+        private readonly IWorkflowActionService workflowActionService;
         private readonly IMapper mapper;
 
         public MockServerService(
@@ -34,6 +35,7 @@ namespace ProjectC.Server.Services
             IHubContext<WebhookRuleHub> webhookRuleHubContext,
             IHubContext<WorkflowActionHub> workflowActionHubContext,
             IRequestInspectorService requestInspectorService,
+            IWorkflowActionService workflowActionService,
             IMapper mapper
         )
         {
@@ -43,6 +45,7 @@ namespace ProjectC.Server.Services
             this.webhookRuleHubContext = webhookRuleHubContext;
             this.workflowActionHubContext = workflowActionHubContext;
             this.requestInspectorService = requestInspectorService;
+            this.workflowActionService = workflowActionService;
             this.mapper = mapper;
         }
 
@@ -217,6 +220,12 @@ namespace ProjectC.Server.Services
                     "RequestEventCaught",
                     requestEventDto
                 );
+
+                await workflowActionService.ExecuteTriggersAsync(workflowAction.Id);
+                //await Task.Run(async () =>
+                //{
+                //    await Task.Delay(30000);
+                //});
             }
         }
 

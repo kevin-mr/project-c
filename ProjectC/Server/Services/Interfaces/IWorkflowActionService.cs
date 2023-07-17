@@ -9,5 +9,6 @@ namespace ProjectC.Server.Services.Interfaces
         Task CreateAsync(WorkflowAction workflowAction);
         Task UpdateAsync(WorkflowAction workflowAction);
         Task DeleteAsync(int id);
+        Task ExecuteTriggersAsync(int workflowActionId);
     }
 }
