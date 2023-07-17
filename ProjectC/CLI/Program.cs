@@ -35,13 +35,13 @@ namespace ProjectC.CLI
         {
             var hubConnection = new HubConnectionBuilder().WithUrl(HUB_URL).Build();
 
-            hubConnection.On<WebhookEventDto>(
-                "WebhookRuleEventToRedirect",
-                async (webhookEvent) =>
+            hubConnection.On<WebhookRequestDto>(
+                "WebhookRequestToRedirect",
+                async (webhookRequest) =>
                 {
-                    if (webhookEvent is not null)
+                    if (webhookRequest is not null)
                     {
-                        await webhookService.RedirectWebhookEventAsync(webhookEvent);
+                        await webhookService.RedirectWebhookRequestAsync(webhookRequest);
                     }
                 }
             );

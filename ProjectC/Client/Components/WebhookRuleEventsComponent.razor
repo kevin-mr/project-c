@@ -11,7 +11,9 @@
         <MudListItem>
             <RequestEventComponent RequestEvent=@requestEvent 
                                    OnView="@(async () => await ViewAsync(requestEvent))"
-                                   OnResend="@(async () => await ResendAsync(requestEvent))"></RequestEventComponent>
+                                   OnResend="@(async () => await ResendAsync(requestEvent))"
+                                   OnSave="@(async () => await SaveAsync(requestEvent))"
+                                   OnDelete="@(async () => await DeleteAsync(requestEvent))"></RequestEventComponent>
         </MudListItem>
         <MudDivider />
     }
@@ -29,18 +31,26 @@
         await base.OnInitializedAsync();
     }
 
-    public async Task DeleteRequestEventsAsync()
+    public async Task DeleteAsync()
     {
-        var response = await Http.DeleteAsync("api/v1/request-event/webhook-rule");
-        if (response.IsSuccessStatusCode)
+        var result = await DialogService.ShowConfirmDialog(
+           "Confirm",
+           "Are you sure you want to delete all the Webook Rule Event?",
+           "Delete",
+           Color.Error);
+        if (result)
         {
-            Snackbar.Add("Request events history deleted", Severity.Success);
-            RequestEvents = new List<RequestEventDto>();
-            StateHasChanged();
-        }
-        else
-        {
-            Snackbar.Add("Request events history couldn't be deleted", Severity.Error);
+            var response = await Http.DeleteAsync("api/v1/request-event/webhook-rule");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Request history deleted", Severity.Success);
+                RequestEvents = new List<RequestEventDto>();
+                StateHasChanged();
+            }
+            else
+            {
+                Snackbar.Add("Request history couldn't be deleted", Severity.Error);
+            }
         }
     }
 
@@ -63,6 +73,41 @@
         else
         {
             Snackbar.Add("Request couldn't be resend", Severity.Error);
+        }
+    }
+
+    private async Task SaveAsync(RequestEventDto requestEvent)
+    {
+        var response = await Http.PostAsJsonAsync("api/v1/request-event/webhook-rule/save-event", requestEvent);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Request successfully saved", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Request couldn't be saved", Severity.Error);
+        }
+    }
+
+    private async Task DeleteAsync(RequestEventDto requestEvent)
+    {
+        var result = await DialogService.ShowConfirmDialog(
+           "Confirm",
+           "Are you sure you want to delete this Webhook Rule Event?",
+           "Delete",
+           Color.Error);
+        if (result)
+        {
+            var response = await Http.DeleteAsync($"api/v1/request-event/{requestEvent.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Request deleted", Severity.Success);
+                await LoadRequestEventsAsync();
+            }
+            else
+            {
+                Snackbar.Add("Request couldn't be deleted", Severity.Error);
+            }
         }
     }
 

@@ -6,7 +6,8 @@
         </div>
         <MudText Class="flex-1">@WebhookRule.Path</MudText>
         <MudText Class="flex-1">@WebhookRule.Description</MudText>
-        <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync())"></MudIconButton>
+        <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="EditAsync"></MudIconButton>
+        <MudIconButton Icon="@Icons.Material.Filled.ViewArray" OnClick="ViewEventsAsync"></MudIconButton>
     </div>
 }
 
@@ -17,8 +18,16 @@
     [Parameter]
     public EventCallback OnEdit { get; set; }
 
+    [Parameter]
+    public EventCallback OnViewEvents { get; set; }
+
     private async Task EditAsync()
     {
         await OnEdit.InvokeAsync();
+    }
+
+    private async Task ViewEventsAsync()
+    {
+        await OnViewEvents.InvokeAsync();
     }
 }

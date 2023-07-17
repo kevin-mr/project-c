@@ -38,5 +38,22 @@ namespace ProjectC.Client.Utils
                     return Color.Default;
             }
         }
+
+        public static Color GetMethodColor(this WebhookEventDto requestEvent)
+        {
+            switch (requestEvent.Method)
+            {
+                case "GET":
+                    return Color.Success;
+                case "POST":
+                    return Color.Warning;
+                case "PUT":
+                    return Color.Info;
+                case "DELETE":
+                    return Color.Error;
+                default:
+                    return Color.Default;
+            }
+        }
     }
 }

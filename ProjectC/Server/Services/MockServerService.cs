@@ -251,14 +251,14 @@ namespace ProjectC.Server.Services
                 );
                 if (!string.IsNullOrEmpty(webhookRule.RedirectUrl))
                 {
-                    var webhookEvent = requestInspectorService.BuildWebhookEventAsync(
+                    var webhookRequest = requestInspectorService.BuildWebhookRequestAsync(
                         httpContext.Request,
                         requestBody,
                         webhookRule.RedirectUrl
                     );
                     await webhookRuleHubContext.Clients.All.SendAsync(
-                        "WebhookRuleEventToRedirect",
-                        mapper.Map<WebhookEventDto>(webhookEvent)
+                        "WebhookRequestToRedirect",
+                        mapper.Map<WebhookRequestDto>(webhookRequest)
                     );
                 }
             }

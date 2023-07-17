@@ -5,14 +5,14 @@ namespace ProjectC.Server.Hubs
 {
     public class WebhookRuleHub : Hub
     {
-        public async Task NotifyWebhookRuleEventCaught(RequestEventDto webhookEventDto)
+        public async Task NotifyWebhookRuleEventCaught(RequestEventDto webhookRequestDto)
         {
-            await Clients.All.SendAsync("WebhookRuleEventCaught", webhookEventDto);
+            await Clients.All.SendAsync("WebhookRuleEventCaught", webhookRequestDto);
         }
 
-        public async Task NotifyWebhookRuleEventToRedirect(WebhookEventDto webhookEventDto)
+        public async Task NotifyWebhookRequestToRedirect(WebhookRequestDto webhookRequestDto)
         {
-            await Clients.All.SendAsync("WebhookRuleEventToRedirect", webhookEventDto);
+            await Clients.All.SendAsync("WebhookRequestToRedirect", webhookRequestDto);
         }
     }
 }

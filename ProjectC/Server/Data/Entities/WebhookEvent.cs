@@ -2,27 +2,21 @@
 
 namespace ProjectC.Server.Data.Entities
 {
-    public class RequestEvent
+    public class WebhookEvent
     {
-        public RequestEvent()
+        public WebhookEvent()
         {
             Id = 0;
             Method = string.Empty;
             JsonHeaders = string.Empty;
             JsonBody = string.Empty;
-            ArrivalDate = DateTime.Now;
         }
 
         public int Id { get; set; }
         public string Method { get; set; }
         public string JsonHeaders { get; set; }
         public string JsonBody { get; set; }
-        public DateTime ArrivalDate { get; set; }
 
-        public int? WorkflowActionId { get; set; }
-        public WorkflowAction? WorkflowAction { get; set; }
-        public int? RequestRuleId { get; set; }
-        public RequestRule? RequestRule { get; set; }
         public int? WebhookRuleId { get; set; }
         public WebhookRule? WebhookRule { get; set; }
 

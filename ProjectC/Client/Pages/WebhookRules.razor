@@ -8,7 +8,7 @@
                 <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestEventsAsync"></MudIconButton>
             </MudTooltip>
         </div>
-        <WebhookRuleEventsComponent @ref="WebhookEventsComponent"></WebhookRuleEventsComponent>
+        <WebhookRuleEventsComponent @ref="WebhookRuleEventsComponent"></WebhookRuleEventsComponent>
     </MudItem>
     <MudItem sm="6">
         <div class="d-flex justify-end mb-5">
@@ -20,7 +20,7 @@
 
 @code {
     private WebhookRulesComponent? WebhookRulesComponent;
-    private WebhookRuleEventsComponent? WebhookEventsComponent;
+    private WebhookRuleEventsComponent? WebhookRuleEventsComponent;
 
     private async Task AddWebhookRule()
     {
@@ -38,9 +38,9 @@
 
     private async Task DeleteRequestEventsAsync()
     {
-        if (WebhookEventsComponent is not null)
+        if (WebhookRuleEventsComponent is not null)
         {
-            await WebhookEventsComponent.DeleteRequestEventsAsync();
+            await WebhookRuleEventsComponent.DeleteAsync();
         }
     }
 }

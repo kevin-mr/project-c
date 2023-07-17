@@ -5,11 +5,12 @@ namespace ProjectC.Server.Data
 {
     public class ProjectCDbContext : DbContext
     {
+        public DbSet<RequestEvent> RequestEvent { get; set; }
         public DbSet<RequestRule> RequestRule { get; set; }
         public DbSet<WebhookRule> WebhookRule { get; set; }
+        public DbSet<WebhookEvent> WebhookEvents { get; set; }
         public DbSet<Workflow> Workflow { get; set; }
         public DbSet<WorkflowAction> WorkflowAction { get; set; }
-        public DbSet<RequestEvent> RequestEvent { get; set; }
         public DbSet<WorkflowStorage> WorkflowStorage { get; set; }
 
         public ProjectCDbContext(DbContextOptions<ProjectCDbContext> options)
@@ -58,6 +59,13 @@ namespace ProjectC.Server.Data
                     x => x.ToString(),
                     x => (WebhookRuleMethod)Enum.Parse(typeof(WebhookRuleMethod), x)
                 );
+
+            modelBuilder.Entity<WebhookEvent>().ToTable("WebhookEvent");
+            modelBuilder
+                .Entity<WebhookEvent>()
+                .HasOne(x => x.WebhookRule)
+                .WithMany(x => x.WebhookEvents)
+                .HasForeignKey(x => x.WebhookRuleId);
 
             modelBuilder.Entity<Workflow>().ToTable("Workflow");
             modelBuilder

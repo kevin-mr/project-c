@@ -12,7 +12,9 @@
             @foreach (var webhookRule in WebhookRules)
             {
                 <MudListItem>
-                    <WebhookRuleComponent WebhookRule=@webhookRule OnEdit="@(async () => await EditAsync(webhookRule))"></WebhookRuleComponent>
+                    <WebhookRuleComponent WebhookRule=@webhookRule 
+                                          OnEdit="@(async () => await EditAsync(webhookRule))"
+                                          OnViewEvents="@(async () => await ViewEventsAsync(webhookRule))"></WebhookRuleComponent>
                 </MudListItem>
             }
         </MudList>
@@ -48,6 +50,21 @@
             ["WebhookRule"] = webhookRule
         };
         var dialog = await DialogService.ShowAsync<WebhookRuleEditFormComponent>("Request Rule", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWebhookRulesAsync();
+        }
+    }
+
+    private async Task ViewEventsAsync(WebhookRuleDto webhookRule)
+    {
+        var parameters = new DialogParameters
+        {
+            ["WebhookRule"] = webhookRule
+        };
+        var dialog = await DialogService.ShowAsync<WebhookEventsComponent>("Webhook Events", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
         if (!result.Canceled)

@@ -30,7 +30,7 @@ namespace ProjectC.Server.Services
             return requestEvent;
         }
 
-        public WebhookEvent BuildWebhookEventAsync(
+        public WebhookRequest BuildWebhookRequestAsync(
             HttpRequest request,
             string body,
             string redirectUrl
@@ -38,7 +38,7 @@ namespace ProjectC.Server.Services
         {
             var headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToArray());
 
-            return new WebhookEvent
+            return new WebhookRequest
             {
                 Scheme = request.Scheme,
                 Host = request.Host.Host,
@@ -53,20 +53,43 @@ namespace ProjectC.Server.Services
             };
         }
 
-        public WebhookEvent BuildWebhookEventAsync(RequestEvent request, string redirectUrl)
+        public WebhookRequest BuildWebhookRequestAsync(
+            RequestEvent requestEvent,
+            string redirectUrl
+        )
         {
-            var headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToArray());
+            var headers = requestEvent.Headers.ToDictionary(x => x.Key, x => x.Value.ToArray());
 
-            return new WebhookEvent
+            return new Models.WebhookRequest
             {
-                Method = request.Method,
-                Headers = request.Headers.ToDictionary(
+                Method = requestEvent.Method,
+                Headers = requestEvent.Headers.ToDictionary(
                     x => x.Key,
                     x => (string?[])x.Value.Split(",")
                 ),
-                ContentType = request.Headers["Content-Type"],
+                ContentType = requestEvent.Headers["Content-Type"],
                 RedirectUrl = redirectUrl,
-                Body = request.Body
+                Body = requestEvent.Body
+            };
+        }
+
+        public WebhookRequest BuildWebhookRequestAsync(
+            WebhookEvent webhookEvent,
+            string redirectUrl
+        )
+        {
+            var headers = webhookEvent.Headers.ToDictionary(x => x.Key, x => x.Value.ToArray());
+
+            return new Models.WebhookRequest
+            {
+                Method = webhookEvent.Method,
+                Headers = webhookEvent.Headers.ToDictionary(
+                    x => x.Key,
+                    x => (string?[])x.Value.Split(",")
+                ),
+                ContentType = webhookEvent.Headers["Content-Type"],
+                RedirectUrl = redirectUrl,
+                Body = webhookEvent.Body
             };
         }
 

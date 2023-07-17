@@ -63,7 +63,7 @@ namespace ProjectC.Server.Services
                 .ToArrayAsync();
         }
 
-        public async Task ResentRequestAsync(int requestEventId)
+        public async Task ResendRequestAsync(int requestEventId)
         {
             var requestEvent = await context.RequestEvent
                 .Include(x => x.WebhookRule)
@@ -80,14 +80,24 @@ namespace ProjectC.Server.Services
                 throw new Exception("Invalid request event");
             }
 
-            var webhookEvent = requestInspectorService.BuildWebhookEventAsync(
+            var webhookRequest = requestInspectorService.BuildWebhookRequestAsync(
                 requestEvent,
                 requestEvent.WebhookRule.RedirectUrl
             );
             await webhookRuleHubContext.Clients.All.SendAsync(
-                "WebhookRuleEventToRedirect",
-                mapper.Map<WebhookEventDto>(webhookEvent)
+                "WebhookRequestToRedirect",
+                mapper.Map<WebhookRequestDto>(webhookRequest)
             );
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var requestEvent = await context.RequestEvent.FirstOrDefaultAsync(x => x.Id == id);
+            if (requestEvent is not null)
+            {
+                context.RequestEvent.Remove(requestEvent);
+                await context.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteByRequestRuleAsync()

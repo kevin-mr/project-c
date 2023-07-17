@@ -2,41 +2,42 @@
 @inject HttpClient Http
 @inject IMapper mapper
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <MudDialog>
     <DialogContent>
         <div class="pa-5">
             <MudForm Model="@RequestRule" @ref=Form Validation="@(RequestRuleDtoValidator.ValidateValue)">
                 <MudTextField @bind-Value="RequestRule.Path"
-                                For="@(() => RequestRule.Path)"
-                                Label="Path"
-                                Variant="Variant.Text" />
+                              For="@(() => RequestRule.Path)"
+                              Label="Path"
+                              Variant="Variant.Text" />
                 <MudSelect @bind-Value="RequestRule.Method"
-                            For="@(() => RequestRule.Method)"
-                            Label="Method"
-                            Variant="Variant.Text">
+                           For="@(() => RequestRule.Method)"
+                           Label="Method"
+                           Variant="Variant.Text">
                     <MudSelectItem Value="@RequestRuleMethodDto.GET">GET</MudSelectItem>
                     <MudSelectItem Value="@RequestRuleMethodDto.POST">POST</MudSelectItem>
                     <MudSelectItem Value="@RequestRuleMethodDto.PUT">PUT</MudSelectItem>
                     <MudSelectItem Value="@RequestRuleMethodDto.DELETE">DELETE</MudSelectItem>
                 </MudSelect>
                 <MudNumericField @bind-Value="RequestRule.ResponseStatus"
-                                    For="@(() => RequestRule.ResponseStatus)"
-                                    Label="Status"
-                                    Variant="Variant.Text" />
+                                 For="@(() => RequestRule.ResponseStatus)"
+                                 Label="Status"
+                                 Variant="Variant.Text" />
                 <MudNumericField @bind-Value="RequestRule.ResponseDelay"
-                                    For="@(() => RequestRule.ResponseDelay)"
-                                    Label="Delay"
-                                    Variant="Variant.Text" />
+                                 For="@(() => RequestRule.ResponseDelay)"
+                                 Label="Delay"
+                                 Variant="Variant.Text" />
                 <div class="d-flex">
                     <MudTextField @bind-Value="RequestRule.ResponseHeaders"
-                                    Label="Headers"
-                                    Variant="Variant.Text"
-                                    Lines="5" />
+                                  Label="Headers"
+                                  Variant="Variant.Text"
+                                  Lines="5" />
                     <MudTextField @bind-Value="RequestRule.ResponseBody"
-                                    Label="Body"
-                                    Variant="Variant.Text"
-                                    Lines="5" />
+                                  Label="Body"
+                                  Variant="Variant.Text"
+                                  Lines="5" />
                 </div>
             </MudForm>
         </div>
@@ -144,19 +145,27 @@
 
     private async Task Delete()
     {
-        Deleting = true;
-
-        var response = await Http.DeleteAsync($"api/v1/request/{RequestRule.Id}");
-        if (response.IsSuccessStatusCode)
+        var result = await DialogService.ShowConfirmDialog(
+            "Confirm",
+            "Are you sure you want to delete this Request Rule?",
+            "Delete",
+            Color.Error);
+        if (result)
         {
-            Snackbar.Add("Request rule successfully deleted", Severity.Success);
-            MudDialog?.Close(DialogResult.Ok(true));
-        }
-        else
-        {
-            Snackbar.Add("Request rule couldn't be deleted", Severity.Error);
-        }
+            Deleting = true;
 
-        Deleting = false;
+            var response = await Http.DeleteAsync($"api/v1/request/{RequestRule.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Request rule successfully deleted", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Request rule couldn't be deleted", Severity.Error);
+            }
+
+            Deleting = false;
+        }
     }
 }

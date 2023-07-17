@@ -1,8 +1,8 @@
-﻿namespace ProjectC.Server.Models
+﻿namespace ProjectC.Shared.Models
 {
-    public class WebhookEvent
+    public class WebhookRequestDto
     {
-        public WebhookEvent()
+        public WebhookRequestDto()
         {
             Scheme = string.Empty;
             Host = string.Empty;

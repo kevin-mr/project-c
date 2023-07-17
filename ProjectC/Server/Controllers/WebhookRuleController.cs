@@ -16,16 +16,19 @@ namespace ProjectC.Server.Controllers
         private readonly IMapper mapper;
         private readonly IWebookRuleService webhookRuleService;
         private readonly IValidator<WebhookRule> webhookRuleValidator;
+        private readonly IWebhookEventService webhookEventService;
 
         public WebhookRuleController(
             IMapper mapper,
             IWebookRuleService webhookRuleService,
-            IValidator<WebhookRule> webhookRuleValidator
+            IValidator<WebhookRule> webhookRuleValidator,
+            IWebhookEventService webhookEventService
         )
         {
             this.mapper = mapper;
             this.webhookRuleService = webhookRuleService;
             this.webhookRuleValidator = webhookRuleValidator;
+            this.webhookEventService = webhookEventService;
         }
 
         [HttpGet()]
@@ -34,6 +37,14 @@ namespace ProjectC.Server.Controllers
             var webhookRules = await webhookRuleService.GetAsync();
 
             return webhookRules.Select(x => mapper.Map<WebhookRuleDto>(x)).ToArray();
+        }
+
+        [HttpGet("{id}/events")]
+        public async Task<IEnumerable<WebhookEventDto>> GetEventsAsync(int id)
+        {
+            var webhookEvents = await webhookEventService.GetByWebhookRuleIdAsync(id);
+
+            return webhookEvents.Select(x => mapper.Map<WebhookEventDto>(x)).ToArray();
         }
 
         [HttpPost()]

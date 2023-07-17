@@ -16,34 +16,34 @@ namespace ProjectC.CLI.Services
             this.http = http;
         }
 
-        public async Task RedirectWebhookEventAsync(WebhookEventDto webhookEvent)
+        public async Task RedirectWebhookRequestAsync(WebhookRequestDto webhookRequest)
         {
             try
             {
-                var httpRequestMessage = BuildHttpRequestMessage(webhookEvent);
+                var httpRequestMessage = BuildHttpRequestMessage(webhookRequest);
                 await http.SendAsync(httpRequestMessage);
             }
             catch (Exception) { }
         }
 
-        private HttpRequestMessage BuildHttpRequestMessage(WebhookEventDto webhookEvent)
+        private HttpRequestMessage BuildHttpRequestMessage(WebhookRequestDto webhookRequest)
         {
             var httpRequestMessage = new HttpRequestMessage
             {
-                RequestUri = (new UriBuilder(webhookEvent.RedirectUrl)).Uri,
-                Method = new HttpMethod(webhookEvent.Method)
+                RequestUri = (new UriBuilder(webhookRequest.RedirectUrl)).Uri,
+                Method = new HttpMethod(webhookRequest.Method)
             };
 
-            foreach (var header in webhookEvent.Headers)
+            foreach (var header in webhookRequest.Headers)
             {
                 httpRequestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value);
             }
-            if (!string.IsNullOrEmpty(webhookEvent.Body))
+            if (!string.IsNullOrEmpty(webhookRequest.Body))
             {
                 httpRequestMessage.Content = new StreamContent(
-                    new MemoryStream(Encoding.UTF8.GetBytes(webhookEvent.Body))
+                    new MemoryStream(Encoding.UTF8.GetBytes(webhookRequest.Body))
                 );
-                httpRequestMessage.Content.Headers.Add("Content-Type", webhookEvent.ContentType);
+                httpRequestMessage.Content.Headers.Add("Content-Type", webhookRequest.ContentType);
             }
 
             return httpRequestMessage;

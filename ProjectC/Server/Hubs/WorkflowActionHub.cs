@@ -13,9 +13,9 @@ namespace ProjectC.Server.Hubs
             await base.OnConnectedAsync();
         }
 
-        public async Task NotifyWorkflowActionEventCaught(RequestEventDto webhookEventDto)
+        public async Task NotifyWorkflowActionEventCaught(RequestEventDto workflowActionEventDto)
         {
-            await Clients.All.SendAsync("WorkflowActionEventCaught", webhookEventDto);
+            await Clients.All.SendAsync("WorkflowActionEventCaught", workflowActionEventDto);
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)

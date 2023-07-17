@@ -232,20 +232,28 @@
 
     private async Task Delete()
     {
-        Deleting = true;
-
-        var response = await Http.DeleteAsync($"api/v1/workflow-action/{WorkflowAction.Id}");
-        if (response.IsSuccessStatusCode)
+        var result = await DialogService.ShowConfirmDialog(
+            "Confirm",
+            "Are you sure you want to delete this Workflow Action?",
+            "Delete",
+            Color.Error);
+        if (result)
         {
-            Snackbar.Add("Workflow action successfully deleted", Severity.Success);
-            MudDialog?.Close(DialogResult.Ok(true));
-        }
-        else
-        {
-            Snackbar.Add("Workflow action couldn't be deleted", Severity.Error);
-        }
+            Deleting = true;
 
-        Deleting = false;
+            var response = await Http.DeleteAsync($"api/v1/workflow-action/{WorkflowAction.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Workflow action successfully deleted", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Workflow action couldn't be deleted", Severity.Error);
+            }
+
+            Deleting = false;
+        }
     }
 
     private IEnumerable<RequestRuleDto> SearchRequestRule(string value)
@@ -280,16 +288,12 @@
 
     private async Task DetachFromRequestRuleAsync()
     {
-        var parameters = new DialogParameters
-        {
-            ["ContentText"] = "If you detach this workflow action from the request rule, it's going to be completely independent and it's not going to react to changes to the original request rule.",
-            ["ButtonText"] = "Yes",
-            ["Color"] = Color.Warning
-        };
-
-        var dialog = await DialogService.ShowAsync<ConfirmDialogComponent>("Disattach From Request Rule To Edit", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.ExtraSmall));
-        var result = await dialog.Result;
-        if((bool)result.Data)
+        var result = await DialogService.ShowConfirmDialog(
+            "Disattach From Request Rule To Edit",
+            "If you detach this workflow action from the request rule, it's going to be completely independent and it's not going to react to changes to the original request rule.",
+            "Yes",
+            Color.Warning);
+        if(result)
         {
             WorkflowActionDisattached = true;
             if(RequestRule is not null)

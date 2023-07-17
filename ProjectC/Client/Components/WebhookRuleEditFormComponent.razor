@@ -2,28 +2,29 @@
 @inject HttpClient Http
 @inject IMapper mapper
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <MudDialog>
     <DialogContent>
         <div class="pa-5">
             <MudForm Model="@WebhookRule" @ref=Form Validation="@(WebhookRuleValidator.ValidateValue)">
                 <MudSelect @bind-Value="WebhookRule.Method"
-                            Label="Method"
-                            Variant="Variant.Text">
+                           Label="Method"
+                           Variant="Variant.Text">
                     <MudSelectItem Value="@WebhookRuleMethodDto.POST">POST</MudSelectItem>
                     <MudSelectItem Value="@WebhookRuleMethodDto.PUT">PUT</MudSelectItem>
                 </MudSelect>
                 <MudTextField @bind-Value="WebhookRule.Path"
-                                Label="Path"
-                                For="@(() => WebhookRule.Path)"
-                                Variant="Variant.Text" />
+                              Label="Path"
+                              For="@(() => WebhookRule.Path)"
+                              Variant="Variant.Text" />
                 <MudTextField @bind-Value="WebhookRule.Description"
-                                Label="Description"
-                                For="@(() => WebhookRule.Description)"
-                                Variant="Variant.Text" />
+                              Label="Description"
+                              For="@(() => WebhookRule.Description)"
+                              Variant="Variant.Text" />
                 <MudTextField @bind-Value="WebhookRule.RedirectUrl"
-                                Label="Redirect Url"
-                                Variant="Variant.Text" />
+                              Label="Redirect Url"
+                              Variant="Variant.Text" />
             </MudForm>
         </div>
     </DialogContent>
@@ -130,19 +131,27 @@
 
     private async Task Delete()
     {
-        Deleting = true;
-
-        var response = await Http.DeleteAsync($"api/v1/webhook/{WebhookRule.Id}");
-        if (response.IsSuccessStatusCode)
+        var result = await DialogService.ShowConfirmDialog(
+            "Confirm",
+            "Are you sure you want to delete this Webhook Rule?",
+            "Delete",
+            Color.Error);
+        if (result)
         {
-            Snackbar.Add("Webhook rule successfully deleted", Severity.Success);
-            MudDialog?.Close(DialogResult.Ok(true));
-        }
-        else
-        {
-            Snackbar.Add("Webhook rule couldn't be deleted", Severity.Error);
-        }
+            Deleting = true;
 
-        Deleting = false;
+            var response = await Http.DeleteAsync($"api/v1/webhook/{WebhookRule.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Webhook rule successfully deleted", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Webhook rule couldn't be deleted", Severity.Error);
+            }
+
+            Deleting = false;
+        }
     }
 }

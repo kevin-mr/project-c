@@ -2,15 +2,16 @@
 @inject HttpClient Http
 @inject IMapper mapper
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <MudDialog>
     <DialogContent>
         <div class="pa-5">
             <MudForm Model="@Workflow" @ref=Form Validation="@(WorkflowValidator.ValidateValue)">
                 <MudTextField @bind-Value="Workflow.Name"
-                                Label="Name"
-                                For="@(() => Workflow.Name)"
-                                Variant="Variant.Text" />
+                              Label="Name"
+                              For="@(() => Workflow.Name)"
+                              Variant="Variant.Text" />
             </MudForm>
         </div>
     </DialogContent>
@@ -116,17 +117,25 @@
 
     private async Task Delete()
     {
-        var response = await Http.DeleteAsync($"api/v1/workflow/{Workflow.Id}");
-        if (response.IsSuccessStatusCode)
+        var result = await DialogService.ShowConfirmDialog(
+            "Confirm",
+            "Are you sure you want to delete this Workflow?",
+            "Delete",
+            Color.Error);
+        if (result)
         {
-            Snackbar.Add("Workflow successfully deleted", Severity.Success);
-            MudDialog?.Close(DialogResult.Ok(true));
-        }
-        else
-        {
-            Snackbar.Add("Workflow couldn't be deleted", Severity.Error);
-        }
+            var response = await Http.DeleteAsync($"api/v1/workflow/{Workflow.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Workflow successfully deleted", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Workflow couldn't be deleted", Severity.Error);
+            }
 
-        Deleting = false;
+            Deleting = false;
+        }
     }
 }

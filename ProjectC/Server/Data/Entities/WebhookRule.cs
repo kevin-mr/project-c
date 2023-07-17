@@ -10,6 +10,7 @@
             Description = string.Empty;
             RedirectUrl = string.Empty;
             WebhookRuleEvents = new List<RequestEvent>();
+            WebhookEvents = new List<WebhookEvent>();
         }
 
         public int Id { get; set; }
@@ -19,5 +20,6 @@
         public string? RedirectUrl { get; set; }
 
         public IEnumerable<RequestEvent> WebhookRuleEvents { get; set; }
+        public IEnumerable<WebhookEvent> WebhookEvents { get; set; }
     }
 }

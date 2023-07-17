@@ -2,11 +2,11 @@
 
 namespace ProjectC.Shared.Models
 {
-    public class RequestEventDto
+    public class RequestEventDto : IRequestEventDto
     {
         public RequestEventDto()
         {
-            Path = string.Empty;
+            Id = 0;
             Method = string.Empty;
             Headers = new Dictionary<string, string>();
             JsonHeaders = string.Empty;
