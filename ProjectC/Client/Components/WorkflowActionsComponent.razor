@@ -15,6 +15,7 @@
                                 <MudText>@workflowAction.Description</MudText>
                                 <div class="mr-3" @onclick:stopPropagation="true" @onclick:preventDefault="true">
                                     <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflowAction))"></MudIconButton>
+                                    <MudIconButton Icon="@Icons.Material.Filled.ViewArray" OnClick="@(async () => await ViewWorkflowTriggersAsync(workflowAction))"></MudIconButton>
                                 </div>
                             </div>
                         </TitleContent>
@@ -115,6 +116,21 @@
             ["WorkflowAction"] = new WorkflowActionDto(),
         };
         var dialog = await DialogService.ShowAsync<WorkflowActionEditFormComponent>("Workflow Action", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowActionsAsync();
+        }
+    }
+
+    private async Task ViewWorkflowTriggersAsync(WorkflowActionDto workflowAction)
+    {
+        var parameters = new DialogParameters
+        {
+            ["WorkflowAction"] = workflowAction,
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowTriggersComponent>("Workflow Triggers", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
         if (!result.Canceled)

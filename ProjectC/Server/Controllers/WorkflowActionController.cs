@@ -14,16 +14,19 @@ namespace ProjectC.Server.Controllers
     {
         private readonly IMapper mapper;
         private readonly IWorkflowActionService workflowActionService;
+        private readonly IWorkflowTriggerService workflowTriggerService;
         private readonly IValidator<WorkflowAction> workflowActionValidator;
 
         public WorkflowActionController(
             IMapper mapper,
             IWorkflowActionService workflowActionService,
+            IWorkflowTriggerService workflowTriggerService,
             IValidator<WorkflowAction> workflowActionValidator
         )
         {
             this.mapper = mapper;
             this.workflowActionService = workflowActionService;
+            this.workflowTriggerService = workflowTriggerService;
             this.workflowActionValidator = workflowActionValidator;
         }
 
@@ -33,6 +36,14 @@ namespace ProjectC.Server.Controllers
             var workflowActions = await workflowActionService.GetAsync();
 
             return workflowActions.Select(x => mapper.Map<WorkflowActionDto>(x)).ToArray();
+        }
+
+        [HttpGet("{id}/trigger")]
+        public async Task<IEnumerable<WorkflowTriggerDto>> GetTriggersAsync(int id)
+        {
+            var workflowTriggers = await workflowTriggerService.GetByWorkflowActionIdAsync(id);
+
+            return workflowTriggers.Select(x => mapper.Map<WorkflowTriggerDto>(x)).ToArray();
         }
 
         [HttpPost()]

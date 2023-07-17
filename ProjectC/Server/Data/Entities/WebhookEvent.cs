@@ -10,6 +10,7 @@ namespace ProjectC.Server.Data.Entities
             Method = string.Empty;
             JsonHeaders = string.Empty;
             JsonBody = string.Empty;
+            WorkflowTriggers = new List<WorkflowTrigger>();
         }
 
         public int Id { get; set; }
@@ -19,6 +20,7 @@ namespace ProjectC.Server.Data.Entities
 
         public int? WebhookRuleId { get; set; }
         public WebhookRule? WebhookRule { get; set; }
+        public IEnumerable<WorkflowTrigger> WorkflowTriggers { get; set; }
 
         public Dictionary<string, string> Headers =>
             JsonSerializer.Deserialize<Dictionary<string, string>>(JsonHeaders)

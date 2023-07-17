@@ -29,6 +29,11 @@ namespace ProjectC.Server.Services
             this.webhookRuleHubContext = webhookRuleHubContext;
         }
 
+        public async Task<IEnumerable<WebhookEvent>> GetAsync()
+        {
+            return await context.WebhookEvents.Include(x => x.WebhookRule).ToArrayAsync();
+        }
+
         public async Task<IEnumerable<WebhookEvent>> GetByWebhookRuleIdAsync(int id)
         {
             return await context.WebhookEvents

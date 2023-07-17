@@ -1,0 +1,219 @@
+﻿@using AutoMapper;
+@inject HttpClient Http
+@inject IMapper mapper
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        @if (InvalidWebhookEvent)
+        {
+            <MudAlert Severity="Severity.Error">
+                Please, Select a Webhook Event
+            </MudAlert>
+        }
+        <MudForm Model="@WorkflowTrigger" @ref=Form Validation="@(WorkflowTriggerValidator.ValidateValue)">
+            <MudAutocomplete @ref="WebhookEventMudAutocompleteComponent"
+                             T="WebhookEventDto"
+                             Label="Search Webhook Event"
+                             SearchFunc="@(async (value) => await Task.FromResult(SearchRequestRule(value)))"
+                             Value="WebhookEvent"
+                             Text="@($" {WebhookEvent?.WebhookRuleDescription} - {WebhookEvent?.Path}")"
+                             ValueChanged="@OnRequestRuleSelected">
+                <ItemSelectedTemplate Context="webhookEvent">
+                    <MudText>
+                        @($"{webhookEvent?.WebhookRuleDescription} - {webhookEvent?.Path}")
+                    </MudText>
+                </ItemSelectedTemplate>
+                <ItemTemplate Context="webhookEvent">
+                    <MudText>
+                        @($"{webhookEvent?.WebhookRuleDescription} - {webhookEvent?.Path}")
+                    </MudText>
+                </ItemTemplate>
+            </MudAutocomplete>
+            <MudTextField @bind-Value="WorkflowTrigger.Description"
+                          Label="Description"
+                          For="@(() => WorkflowTrigger.Description)"
+                          Variant="Variant.Text" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        @if (WorkflowTrigger.Id != 0)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Error"
+                       Disabled="@Deleting"
+                       OnClick="Delete">
+                @if (Deleting)
+                {
+                    <div class="d-flex justify-space-between align-center">
+                        <div>Deleting</div>
+                        <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                    </div>
+                }
+                else
+                {
+                    <span>Delete</span>
+                }
+            </MudButton>
+        }
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Disabled="@Saving"
+                   OnClick="Save">
+            @if (Saving)
+            {
+                <div class="d-flex justify-space-between align-center">
+                    <div>Saving</div>
+                    <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                </div>
+            }
+            else
+            {
+                <span>Save</span>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    public MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public WorkflowActionDto WorkflowAction { get; set; } = new WorkflowActionDto();
+
+    [Parameter]
+    public WorkflowTriggerDto WorkflowTrigger { get; set; } = new WorkflowTriggerDto();
+
+    private WebhookEventDto[] WebhookEvents = Array.Empty<WebhookEventDto>();
+    private WebhookEventDto? WebhookEvent = null;
+    private MudAutocomplete<WebhookEventDto>? WebhookEventMudAutocompleteComponent;
+    private MudForm? Form;
+    private WorkflowTriggerValidator WorkflowTriggerValidator = new WorkflowTriggerValidator();
+    private bool Deleting = false;
+    private bool Saving = false;
+    private bool InvalidWebhookEvent = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var webhookEvents = await Http.GetFromJsonAsync<WebhookEventDto[]>("api/v1/webhook-event");
+        if (webhookEvents is not null)
+        {
+            WebhookEvents = webhookEvents;
+        }
+        if (WorkflowTrigger.Id > 0)
+        {
+            if (WorkflowTrigger.WebhookEventId > 0)
+            {
+                var webhookEvent = WebhookEvents.FirstOrDefault(x => x.Id == WorkflowTrigger.WebhookEventId);
+                if (webhookEvent is not null)
+                {
+                    WebhookEvent = webhookEvent;
+                }
+            }
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Save()
+    {
+        Saving = true;
+
+        if (Form is null)
+        {
+            Snackbar.Add("Form couldn't be loaded", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        await Form.Validate();
+        InvalidWebhookEvent = WorkflowTrigger.WebhookEventId == 0;
+        if (!Form.IsValid || InvalidWebhookEvent)
+        {
+            Snackbar.Add("Invalid workflow trigger data", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        if (WorkflowTrigger.Id != 0)
+        {
+            var response = await Http.PutAsJsonAsync<EditWorkflowTriggerDto>("api/v1/workflow-trigger", mapper.Map<EditWorkflowTriggerDto>(WorkflowTrigger));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Workflow trigger successfully updated", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Workflow trigger couldn't be updated", Severity.Error);
+            }
+        }
+        else
+        {
+            WorkflowTrigger.WorkflowActionId = WorkflowAction.Id;
+            var response = await Http.PostAsJsonAsync<CreateWorkflowTriggerDto>("api/v1/workflow-trigger", mapper.Map<CreateWorkflowTriggerDto>(WorkflowTrigger));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Workflow trigger successfully created", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Workflow trigger couldn't be created", Severity.Error);
+            }
+        }
+
+        Saving = false;
+    }
+
+    private async Task Delete()
+    {
+        var result = await DialogService.ShowConfirmDialog(
+            "Confirm",
+            "Are you sure you want to delete this Workflow Trigger?",
+            "Delete",
+            Color.Error);
+        if (result)
+        {
+            Deleting = true;
+
+            var response = await Http.DeleteAsync($"api/v1/workflow-trigger/{WorkflowTrigger.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Workflow trigger successfully deleted", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Workflow trigger couldn't be deleted", Severity.Error);
+            }
+
+            Deleting = false;
+        }
+    }
+
+    private IEnumerable<WebhookEventDto> SearchRequestRule(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return WebhookEvents;
+        }
+        return WebhookEvents.Where(x => x.Path.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private void OnRequestRuleSelected(WebhookEventDto webhookEvent)
+    {
+        WebhookEvent = webhookEvent;
+
+        WorkflowTrigger.WebhookEventId = webhookEvent.Id;
+
+        if (WorkflowTrigger.WebhookEventId == 0)
+        {
+            InvalidWebhookEvent = true;
+        }
+
+        StateHasChanged();
+    }
+}

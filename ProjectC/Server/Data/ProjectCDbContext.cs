@@ -12,6 +12,7 @@ namespace ProjectC.Server.Data
         public DbSet<Workflow> Workflow { get; set; }
         public DbSet<WorkflowAction> WorkflowAction { get; set; }
         public DbSet<WorkflowStorage> WorkflowStorage { get; set; }
+        public DbSet<WorkflowTrigger> WorkflowTrigger { get; set; }
 
         public ProjectCDbContext(DbContextOptions<ProjectCDbContext> options)
             : base(options) { }
@@ -104,6 +105,18 @@ namespace ProjectC.Server.Data
                 .HasOne(x => x.Workflow)
                 .WithOne(x => x.WorkflowStorage)
                 .HasForeignKey<WorkflowStorage>(x => x.WorkflowId);
+
+            modelBuilder.Entity<WorkflowTrigger>().ToTable("WorkflowTrigger");
+            modelBuilder
+                .Entity<WorkflowTrigger>()
+                .HasOne(x => x.WorkflowAction)
+                .WithMany(x => x.WorkflowTriggers)
+                .HasForeignKey(x => x.WorkflowActionId);
+            modelBuilder
+                .Entity<WorkflowTrigger>()
+                .HasOne(x => x.WebhookEvent)
+                .WithMany(x => x.WorkflowTriggers)
+                .HasForeignKey(x => x.WebhookEventId);
 
             base.OnModelCreating(modelBuilder);
         }

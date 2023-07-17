@@ -1,0 +1,97 @@
+﻿@using AutoMapper;
+@inject HttpClient Http
+@inject IMapper mapper
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <div class="pa-5">
+            <MudSimpleTable Dense="true">
+                <tbody>
+                    @foreach (var workflowTrigger in WorkflowTriggers)
+                    {
+                        <tr>
+                            <td>
+                                <MudText Class="flex-1">@workflowTrigger.Description</MudText>
+                            </td>
+                            <td>
+                                <MudText Class="flex-1">@workflowTrigger.WebhookRuleDescription</MudText>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-end">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflowTrigger))"></MudIconButton>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   @onclick="@(async () => await AddAsync())">
+            Add Action
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    public MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public WorkflowActionDto WorkflowAction { get; set; } = new WorkflowActionDto();
+
+    [Parameter]
+    public List<WorkflowTriggerDto> WorkflowTriggers { get; set; } = new List<WorkflowTriggerDto>();
+
+    private async Task EditAsync(WorkflowTriggerDto workflowTrigger)
+    {
+        var parameters = new DialogParameters
+        {
+            ["WorkflowAction"] = WorkflowAction,
+            ["WorkflowTrigger"] = workflowTrigger
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowTriggerEditFormComponent>("Workflow Trigger", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowTriggersAsync();
+        }
+    }
+
+    private async Task AddAsync()
+    {
+        var parameters = new DialogParameters
+        {
+            ["WorkflowAction"] = WorkflowAction,
+            ["WorkflowTrigger"] = new WorkflowTriggerDto(),
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowTriggerEditFormComponent>("Workflow Trigger", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowTriggersAsync();
+        }
+    }
+
+    public async Task RefreshWorkflowTriggersAsync()
+    {
+        var workflowTriggers = await Http.GetFromJsonAsync<WorkflowTriggerDto[]>($"api/v1/workflow-action/{WorkflowAction.Id}/trigger");
+        if (workflowTriggers is not null)
+        {
+            WorkflowTriggers = workflowTriggers.ToList();
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshWorkflowTriggersAsync();
+        await base.OnInitializedAsync();
+    }
+}

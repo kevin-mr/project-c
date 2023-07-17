@@ -13,6 +13,7 @@
             WorkflowId = 0;
             RequestRuleId = 0;
             WorkflowActionEvents = new List<RequestEvent>();
+            WorkflowTriggers = new List<WorkflowTrigger>();
         }
 
         public int Id { get; set; }
@@ -31,5 +32,6 @@
         public int WorkflowId { get; set; }
         public Workflow? Workflow { get; set; }
         public IEnumerable<RequestEvent> WorkflowActionEvents { get; set; }
+        public IEnumerable<WorkflowTrigger> WorkflowTriggers { get; set; }
     }
 }

@@ -19,6 +19,7 @@
         public string JsonBody { get; set; }
         public string Path { get; set; }
         public string? RedirectUrl { get; set; }
+        public string? WebhookRuleDescription { get; set; }
 
         public Dictionary<string, string> Headers { get; set; }
         public string Body { get; set; }
