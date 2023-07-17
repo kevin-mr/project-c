@@ -9,6 +9,7 @@ using System.Reflection;
 using FluentValidation;
 using ProjectC.Server.Middlewares;
 using System.Text.Json.Serialization;
+using ProjectC.Server.BackgroudServices;
 
 namespace ProjectC
 {
@@ -48,6 +49,8 @@ namespace ProjectC
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             //Services
+            builder.Services.AddHostedService<WebhookEventBackgroudService>();
+            builder.Services.AddSingleton<WebhookEventQueue>();
             builder.Services.AddTransient<IRequestRuleService, RequestRuleService>();
             builder.Services.AddSingleton<IRequestInspectorService, RequestInspectorService>();
             builder.Services.AddTransient<IMockServerService, MockServerService>();

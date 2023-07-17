@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ProjectC.Client.Pages;
+using ProjectC.Server.BackgroudServices;
 using ProjectC.Server.Data;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Hubs;
@@ -25,7 +26,8 @@ namespace ProjectC.Server.Services
         private readonly IHubContext<WebhookRuleHub> webhookRuleHubContext;
         private readonly IHubContext<WorkflowActionHub> workflowActionHubContext;
         private readonly IRequestInspectorService requestInspectorService;
-        private readonly IWorkflowActionService workflowActionService;
+        private readonly IWorkflowTriggerService workflowTriggerService;
+        private readonly WebhookEventQueue workflowTriggersQueue;
         private readonly IMapper mapper;
 
         public MockServerService(
@@ -35,7 +37,8 @@ namespace ProjectC.Server.Services
             IHubContext<WebhookRuleHub> webhookRuleHubContext,
             IHubContext<WorkflowActionHub> workflowActionHubContext,
             IRequestInspectorService requestInspectorService,
-            IWorkflowActionService workflowActionService,
+            IWorkflowTriggerService workflowTriggerService,
+            WebhookEventQueue workflowTriggersQueue,
             IMapper mapper
         )
         {
@@ -45,7 +48,8 @@ namespace ProjectC.Server.Services
             this.webhookRuleHubContext = webhookRuleHubContext;
             this.workflowActionHubContext = workflowActionHubContext;
             this.requestInspectorService = requestInspectorService;
-            this.workflowActionService = workflowActionService;
+            this.workflowTriggerService = workflowTriggerService;
+            this.workflowTriggersQueue = workflowTriggersQueue;
             this.mapper = mapper;
         }
 
@@ -221,11 +225,12 @@ namespace ProjectC.Server.Services
                     requestEventDto
                 );
 
-                await workflowActionService.ExecuteTriggersAsync(workflowAction.Id);
-                //await Task.Run(async () =>
-                //{
-                //    await Task.Delay(30000);
-                //});
+                var workflowTriggers = await workflowTriggerService.GetByWorkflowActionIdAsync(
+                    workflowAction.Id
+                );
+                workflowTriggersQueue.AddRange(
+                    workflowTriggers.Select(x => x.WebhookEventId).ToArray()
+                );
             }
         }
 
