@@ -45,6 +45,12 @@ namespace ProjectC.Server.Controllers
             await workflowStorageService.CreateAsync(workflowStorage);
         }
 
+        [HttpPost("{id}/clear")]
+        public async Task ClearDataAsync(int id)
+        {
+            await workflowStorageService.ClearDataAsync(id);
+        }
+
         [HttpPut()]
         public async Task UpdateAsync(EditWorkflowStorageDto editWorkflowStorage)
         {

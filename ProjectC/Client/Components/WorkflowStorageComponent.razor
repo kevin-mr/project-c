@@ -1,6 +1,8 @@
 ﻿@using AutoMapper;
+@using System.Text.Json;
 @inject HttpClient Http
 @inject IMapper mapper
+@inject ISnackbar Snackbar
 @inject IDialogService DialogService
 
 <MudDialog>
@@ -8,8 +10,26 @@
         <div class="pa-5">
             @if (WorkflowStorage is not null)
             {
-                <MudText>Identifier:</MudText>
-                <MudText Typo="Typo.body2">@WorkflowStorage.PropertyIdentifier</MudText>
+                <MudSimpleTable>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <MudText>Identifier:</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body2">@WorkflowStorage.PropertyIdentifier</MudText>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <MudText>Data:</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body2">@WorkflowStorage.Data</MudText>
+                            </td>
+                        </tr>
+                    </tbody>
+                </MudSimpleTable>
             }
             else
             {
@@ -18,6 +38,25 @@
         </div>
     </DialogContent>
     <DialogActions>
+        @if (WorkflowStorage is not null)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Error"
+                       Disabled="@Clearing"
+                       OnClick="ClearAsync">
+                @if (Clearing)
+                {
+                    <div class="d-flex justify-space-between align-center">
+                        <div>Clearing</div>
+                        <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                    </div>
+                }
+                else
+                {
+                    <span>Clear</span>
+                }
+            </MudButton>
+        }
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
                    @onclick="@(async () => await ConfigAsync())">
@@ -27,14 +66,17 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter]
-    public MudDialogInstance? MudDialog { get; set; }
-
     [Parameter]
     public WorkflowDto Workflow { get; set; } = new WorkflowDto();
 
-    [Parameter]
-    public WorkflowStorageDto? WorkflowStorage { get; set; }
+    private WorkflowStorageDto? WorkflowStorage;
+    private bool Clearing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshWorkflowStorageAsync();
+        await base.OnInitializedAsync();
+    }
 
     private async Task ConfigAsync()
     {
@@ -54,13 +96,43 @@
         }
     }
 
+    private async Task ClearAsync()
+    {
+        if (WorkflowStorage is not null)
+        {
+            var result = await DialogService.ShowConfirmDialog(
+                "Confirm",
+                "Are you sure you want to clear the Storage data?",
+                "Clear",
+                Color.Error);
+            if (result)
+            {
+                Clearing = true;
+
+                var response = await Http.PostAsync($"api/v1/workflow-storage/{WorkflowStorage.Id}/clear", null);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Storage data successfully cleared", Severity.Success);
+                    await RefreshWorkflowStorageAsync();
+                }
+                else
+                {
+                    Snackbar.Add("Storage data couldn't be cleared", Severity.Error);
+                }
+
+                Clearing = false;
+            }
+        }
+    }
+
     public async Task RefreshWorkflowStorageAsync()
     {
-        var workflowStorage = await Http.GetFromJsonAsync<WorkflowStorageDto>($"api/v1/workflow/{Workflow.Id}/storage");
-        if (workflowStorage is not null)
+        try
         {
+            var workflowStorage = await Http.GetFromJsonAsync<WorkflowStorageDto>($"api/v1/workflow/{Workflow.Id}/storage");
             WorkflowStorage = workflowStorage;
             StateHasChanged();
         }
+        catch (Exception) {}
     }
 }

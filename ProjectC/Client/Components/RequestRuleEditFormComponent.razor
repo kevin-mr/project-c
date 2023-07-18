@@ -46,9 +46,9 @@
         @if (RequestRule.Id != 0)
         {
             <MudButton Variant="Variant.Filled"
-                       Color="Color.Error"
-                       Disabled="@Deleting"
-                       OnClick="Delete">
+                        Color="Color.Error"
+                        Disabled="@Deleting"
+                        OnClick="Delete">
                 @if (Deleting)
                 {
                     <div class="d-flex justify-space-between align-center">
@@ -63,10 +63,9 @@
             </MudButton>
         }
         <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Class="ml-auto"
-                   Disabled="@Saving"
-                   OnClick="Save">
+                    Color="Color.Primary"
+                    Disabled="@Saving"
+                    OnClick="Save">
             @if (Saving)
             {
                 <div class="d-flex justify-space-between align-center">

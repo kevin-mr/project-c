@@ -18,6 +18,7 @@ namespace ProjectC.Server.Middlewares
                     )
                     {
                         var workflowKey = context.Request.Headers["workflow-key"].ToString();
+                        var storageQueryParam = context.Request.Query["storage"].ToString();
 
                         var mockServerService =
                             context.RequestServices.GetRequiredService<IMockServerService>();
@@ -47,7 +48,8 @@ namespace ProjectC.Server.Middlewares
                                     await mockServerService.HandleWorkflowActionResponseForRequestRuleAsync(
                                         context,
                                         workflow,
-                                        workflowAction
+                                        workflowAction,
+                                        bool.TryParse(storageQueryParam, out var storage) && storage
                                     );
                                 }
                             }

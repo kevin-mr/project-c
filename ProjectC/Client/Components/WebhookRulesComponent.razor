@@ -49,7 +49,7 @@
         {
             ["WebhookRule"] = webhookRule
         };
-        var dialog = await DialogService.ShowAsync<WebhookRuleEditFormComponent>("Request Rule", parameters, DialogUtils.DefaultDialogOptions);
+        var dialog = await DialogService.ShowAsync<WebhookRuleEditFormComponent>("Webhook Rule", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
         if (!result.Canceled)

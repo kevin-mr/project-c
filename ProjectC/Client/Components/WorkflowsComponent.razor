@@ -17,7 +17,7 @@
                             <MudText Class="mt-1">@workflow.Name</MudText>
                             <div class="d-flex align-center" @onclick:stopPropagation="true" @onclick:preventDefault="true">
                                 <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflow))"></MudIconButton>
-                                <MudIconButton Icon="@Icons.Material.Filled.Storage" OnClick="@(async () => await ViewStorageAsync(workflow))"></MudIconButton>
+                                <MudIconButton Icon="@Icons.Material.Filled.Storage" OnClick="@(async () => await ViewWorkflowStorageAsync(workflow))"></MudIconButton>
                                 <MudChip Class="mr-2" Variant="Variant.Text" Color="Color.Primary" @onclick="@(async () => await ViewWorkflowActionsAsync(workflow))">
                                     @workflow.WorkflowActions.Count
                                 </MudChip>
@@ -88,12 +88,11 @@
         }
     }
 
-    private async Task ViewStorageAsync(WorkflowDto workflow)
+    private async Task ViewWorkflowStorageAsync(WorkflowDto workflow)
     {
         var parameters = new DialogParameters
         {
             ["Workflow"] = workflow,
-            ["WorkflowStorage"] = workflow.WorkflowStorage,
         };
         var dialog = await DialogService.ShowAsync<WorkflowStorageComponent>("Workflow Storage", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;

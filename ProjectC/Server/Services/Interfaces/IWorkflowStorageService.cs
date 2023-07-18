@@ -9,5 +9,11 @@ namespace ProjectC.Server.Services.Interfaces
         Task CreateAsync(WorkflowStorage workflowStorage);
         Task UpdateAsync(WorkflowStorage workflowStorage);
         Task DeleteAsync(int id);
+        Task<string?> HandleRequestAsync(
+            IQueryCollection queryParams,
+            int workflowId,
+            int requestEventId
+        );
+        Task ClearDataAsync(int id);
     }
 }

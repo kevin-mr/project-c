@@ -27,6 +27,7 @@ namespace ProjectC.Server.Services
         private readonly IHubContext<WebhookRuleHub> webhookRuleHubContext;
         private readonly IHubContext<WorkflowActionHub> workflowActionHubContext;
         private readonly IWorkflowTriggerService workflowTriggerService;
+        private readonly IWorkflowStorageService workflowStorageService;
         private readonly WebhookEventQueue workflowTriggersQueue;
         private readonly IMapper mapper;
 
@@ -37,6 +38,7 @@ namespace ProjectC.Server.Services
             IHubContext<WebhookRuleHub> webhookRuleHubContext,
             IHubContext<WorkflowActionHub> workflowActionHubContext,
             IWorkflowTriggerService workflowTriggerService,
+            IWorkflowStorageService workflowStorageService,
             WebhookEventQueue workflowTriggersQueue,
             IMapper mapper
         )
@@ -47,6 +49,7 @@ namespace ProjectC.Server.Services
             this.webhookRuleHubContext = webhookRuleHubContext;
             this.workflowActionHubContext = workflowActionHubContext;
             this.workflowTriggerService = workflowTriggerService;
+            this.workflowStorageService = workflowStorageService;
             this.workflowTriggersQueue = workflowTriggersQueue;
             this.mapper = mapper;
         }
@@ -174,7 +177,8 @@ namespace ProjectC.Server.Services
         public async Task HandleWorkflowActionResponseForRequestRuleAsync(
             HttpContext httpContext,
             Workflow workflow,
-            WorkflowAction workflowAction
+            WorkflowAction workflowAction,
+            bool storage
         )
         {
             if (workflowAction.ResponseDelay is not null)
@@ -182,7 +186,6 @@ namespace ProjectC.Server.Services
                 Thread.Sleep(workflowAction.ResponseDelay.Value);
             }
             httpContext.Response.StatusCode = workflowAction.ResponseStatus ?? 500;
-            await httpContext.Response.WriteAsync(workflowAction.ResponseBody ?? string.Empty);
 
             var requestBody = await RequestUtils.ReadRequestBodyAsync(httpContext.Request);
             var requestEvent = RequestUtils.BuildRequestEventAsync(
@@ -222,9 +225,35 @@ namespace ProjectC.Server.Services
                 var workflowTriggers = await workflowTriggerService.GetByWorkflowActionIdAsync(
                     workflowAction.Id
                 );
+
                 workflowTriggersQueue.AddRange(
                     workflowTriggers.Select(x => x.WebhookEventId).ToArray()
                 );
+
+                if (storage)
+                {
+                    var result = await workflowStorageService.HandleRequestAsync(
+                        httpContext.Request.Query,
+                        workflow.Id,
+                        requestEvent.Id
+                    );
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        await httpContext.Response.WriteAsync(result);
+                    }
+                    else
+                    {
+                        await httpContext.Response.WriteAsync(
+                            workflowAction.ResponseBody ?? string.Empty
+                        );
+                    }
+                }
+                else
+                {
+                    await httpContext.Response.WriteAsync(
+                        workflowAction.ResponseBody ?? string.Empty
+                    );
+                }
             }
         }
 

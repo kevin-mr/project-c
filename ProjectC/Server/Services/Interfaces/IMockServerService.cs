@@ -12,7 +12,8 @@ namespace ProjectC.Server.Services.Interfaces
         Task HandleWorkflowActionResponseForRequestRuleAsync(
             HttpContext httpContext,
             Workflow workflow,
-            WorkflowAction workflowAction
+            WorkflowAction workflowAction,
+            bool storage
         );
     }
 }
