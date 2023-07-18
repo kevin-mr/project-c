@@ -26,6 +26,9 @@ namespace ProjectC.Server.Services
             return await context.WorkflowAction
                 .Where(x => x.WorkflowId == workflowId)
                 .Include(x => x.RequestRule)
+                .Include(x => x.WorkflowTriggers)
+                .ThenInclude(x => x.WebhookEvent)
+                .ThenInclude(x => x.WebhookRule)
                 .ToArrayAsync();
         }
 

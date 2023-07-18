@@ -64,7 +64,7 @@
         {
             ["WebhookRule"] = webhookRule
         };
-        var dialog = await DialogService.ShowAsync<WebhookEventsComponent>("Webhook Events", parameters, DialogUtils.DefaultDialogOptions);
+        var dialog = await DialogService.ShowAsync<WebhookEventsComponent>("Webhook Events", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
         var result = await dialog.Result;
 
         if (!result.Canceled)

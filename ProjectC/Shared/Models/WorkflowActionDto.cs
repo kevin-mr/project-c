@@ -12,6 +12,7 @@
             ResponseBody = string.Empty;
             WorkflowId = 0;
             RequestRuleId = 0;
+            WorkflowTriggers = new List<WorkflowTriggerDto>();
         }
 
         public int Id { get; set; }
@@ -28,5 +29,7 @@
 
         public int WorkflowId { get; set; }
         public WorkflowDto? Workflow { get; set; }
+
+        public IEnumerable<WorkflowTriggerDto> WorkflowTriggers { get; set; }
     }
 }

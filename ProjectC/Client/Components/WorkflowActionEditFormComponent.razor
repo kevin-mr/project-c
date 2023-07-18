@@ -35,9 +35,9 @@
                 <div class="my-3">
                     @if (RequestRule is not null && !WorkflowActionDisattached)
                     {
-                        <MudPaper Class="pa-3">
+                        <MudPaper Outlined="true" Class="pa-3">
                             <div class="d-flex justify-end">
-                                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="DetachFromRequestRuleAsync"></MudIconButton>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="DetachFromRequestRuleAsync"></MudIconButton>
                             </div>
                             <div class="d-flex justify-space-between">
                                 <div>

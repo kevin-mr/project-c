@@ -24,7 +24,7 @@ namespace ProjectC.Server.BackgroudServices
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
 
                 while (!workflowTriggersQueue.IsEmpty())
                 {

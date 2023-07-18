@@ -15,7 +15,6 @@
                                 <MudText>@workflowAction.Description</MudText>
                                 <div class="mr-3" @onclick:stopPropagation="true" @onclick:preventDefault="true">
                                     <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflowAction))"></MudIconButton>
-                                    <MudIconButton Icon="@Icons.Material.Filled.ViewArray" OnClick="@(async () => await ViewWorkflowTriggersAsync(workflowAction))"></MudIconButton>
                                 </div>
                             </div>
                         </TitleContent>
@@ -26,15 +25,13 @@
                                     {
                                         <tr>
                                             <td>
-                                                <MudText>Path</MudText>
+                                                <MudText>Path:</MudText>
                                             </td>
                                             <td>
                                                 <MudText Typo="Typo.body2">@workflowAction.RequestRule.Path</MudText>
                                             </td>
-                                        </tr>
-                                        <tr>
                                             <td>
-                                                <MudText>Method</MudText>
+                                                <MudText>Method:</MudText>
                                             </td>
                                             <td>
                                                 <MudText Typo="Typo.body2">@workflowAction.RequestRule.Method</MudText>
@@ -43,15 +40,13 @@
                                     }
                                     <tr>
                                         <td>
-                                            <MudText>Status</MudText>
+                                            <MudText>Status:</MudText>
                                         </td>
                                         <td>
                                             <MudText Typo="Typo.body2">@workflowAction.ResponseStatus</MudText>
                                         </td>
-                                    </tr>
-                                    <tr>
                                         <td>
-                                            <MudText>Delay</MudText>
+                                            <MudText>Delay:</MudText>
                                         </td>
                                         <td>
                                             <MudText Typo="Typo.body2">@workflowAction.ResponseDelay</MudText>
@@ -59,7 +54,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <MudText>Body</MudText>
+                                            <MudText>Body:</MudText>
                                         </td>
                                         <td>
                                             <MudText Typo="Typo.body2">@workflowAction.ResponseBody</MudText>
@@ -67,6 +62,37 @@
                                     </tr>
                                 </tbody>
                             </MudSimpleTable>
+                            <MudDivider Class="my-3"></MudDivider>
+                            <div class="d-flex justify-end">
+                                <MudButton Variant="Variant.Outlined"
+                                           Color="Color.Primary"
+                                           Size="Size.Small"
+                                           Class="mb-3"
+                                           OnClick="@(async () => await AddTriggerAsync(workflowAction))">
+                                    Add Trigger
+                                </MudButton>
+                            </div>
+                            <MudTable Items="workflowAction.WorkflowTriggers" Dense="true">
+                                <HeaderContent>
+                                    <MudTh>Webhook Rule</MudTh>
+                                    <MudTh>Description</MudTh>
+                                    <MudTh>Actions</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Webhook Rule">
+                                        @context.WebhookRuleDescription
+                                    </MudTd>
+                                    <MudTd DataLabel="Description">
+                                        @context.Description
+                                    </MudTd>
+                                    <MudTd DataLabel="Actions">
+                                        <div class="d-flex justify-end">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                                           OnClick="@(async () => await EditTriggerAsync(workflowAction, @context))"></MudIconButton>
+                                        </div>
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
                         </ChildContent>
                     </MudExpansionPanel>
                 }
@@ -91,6 +117,12 @@
 
     [Parameter]
     public List<WorkflowActionDto> WorkflowActions { get; set; } = new List<WorkflowActionDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshWorkflowActionsAsync();
+        await base.OnInitializedAsync();
+    }
 
     private async Task EditAsync(WorkflowActionDto workflowAction)
     {
@@ -124,21 +156,6 @@
         }
     }
 
-    private async Task ViewWorkflowTriggersAsync(WorkflowActionDto workflowAction)
-    {
-        var parameters = new DialogParameters
-        {
-            ["WorkflowAction"] = workflowAction,
-        };
-        var dialog = await DialogService.ShowAsync<WorkflowTriggersComponent>("Workflow Triggers", parameters, DialogUtils.DefaultDialogOptions);
-        var result = await dialog.Result;
-
-        if (!result.Canceled)
-        {
-            await RefreshWorkflowActionsAsync();
-        }
-    }
-
     public async Task RefreshWorkflowActionsAsync()
     {
         var workflowActions = await Http.GetFromJsonAsync<WorkflowActionDto[]>($"api/v1/workflow/{Workflow.Id}/action");
@@ -149,9 +166,35 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    private async Task EditTriggerAsync(WorkflowActionDto workflowAction,WorkflowTriggerDto workflowTrigger)
     {
-        await RefreshWorkflowActionsAsync();
-        await base.OnInitializedAsync();
+        var parameters = new DialogParameters
+        {
+            ["WorkflowAction"] = workflowAction,
+            ["WorkflowTrigger"] = workflowTrigger
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowTriggerEditFormComponent>("Workflow Trigger", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowActionsAsync();
+        }
+    }
+
+    private async Task AddTriggerAsync(WorkflowActionDto workflowAction)
+    {
+        var parameters = new DialogParameters
+        {
+            ["WorkflowAction"] = workflowAction,
+            ["WorkflowTrigger"] = new WorkflowTriggerDto(),
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowTriggerEditFormComponent>("Workflow Trigger", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowActionsAsync();
+        }
     }
 }

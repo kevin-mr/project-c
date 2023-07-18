@@ -79,7 +79,7 @@
             ["Workflow"] = workflow,
             ["WorkflowActions"] = workflow.WorkflowActions,
         };
-        var dialog = await DialogService.ShowAsync<WorkflowActionsComponent>("Workflow Actions", parameters, DialogUtils.DefaultDialogOptions);
+        var dialog = await DialogService.ShowAsync<WorkflowActionsComponent>("Workflow Actions", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
         var result = await dialog.Result;
 
         if (!result.Canceled)
