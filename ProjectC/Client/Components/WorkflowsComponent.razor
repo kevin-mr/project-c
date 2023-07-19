@@ -44,6 +44,15 @@
                                         @context.RequestRule.MethodLabel
                                     </MudTd>
                                 }
+                                else
+                                {
+                                    <MudTd DataLabel="Path">
+                                        @context.Path
+                                    </MudTd>
+                                    <MudTd DataLabel="Method">
+                                        @context.MethodLabel
+                                    </MudTd>
+                                }
                             </RowTemplate>
                         </MudTable>
                     </ChildContent>

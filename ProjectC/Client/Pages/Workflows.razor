@@ -8,7 +8,9 @@
                 <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestEventsAsync"></MudIconButton>
             </MudTooltip>
         </div>
-        <WorkflowActionEventsComponent @ref="WorkflowActionEventsComponent"></WorkflowActionEventsComponent>
+        <div class="overflow-y-scroll h-75">
+            <WorkflowActionEventsComponent @ref="WorkflowActionEventsComponent"></WorkflowActionEventsComponent>
+        </div>
     </MudItem>
     <MudItem sm="6">
         <div class="d-flex justify-end mb-5">

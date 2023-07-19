@@ -31,5 +31,7 @@
         public WorkflowDto? Workflow { get; set; }
 
         public IEnumerable<WorkflowTriggerDto> WorkflowTriggers { get; set; }
+
+        public string MethodLabel => Method.ToString();
     }
 }
