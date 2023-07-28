@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="ProjectC.Server.Controllers.RequestEventController">
+    <Position X="0.5" Y="0.5" Width="4.5" />
+    <Members>
+      <Method Name="DeleteByWebhookRuleAsync" Hidden="true" />
+      <Method Name="DeleteByWorkflowActionAsync" Hidden="true" />
+      <Method Name="GetByWebhookRuleAsync" Hidden="true" />
+      <Method Name="GetByWorkflowActionAsync" Hidden="true" />
+      <Method Name="RequestEventController" Hidden="true" />
+      <Method Name="ResentRequestAsync" Hidden="true" />
+      <Method Name="SaveWebhookEventRequestAsync" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAgAAIAAAAAIAAEAAACAACBAAgAAAAIAAAAJA=</HashCode>
+      <FileName>Controllers\RequestEventController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="mapper" />
+      <Field Name="requestEventService" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Services.RequestEventService">
+    <Position X="6" Y="3.5" Width="3.5" />
+    <Members>
+      <Method Name="DeleteByWebhookRuleAsync" Hidden="true" />
+      <Method Name="DeleteByWorkflowActionAsync" Hidden="true" />
+      <Method Name="GetByWebhookRuleAsync" Hidden="true" />
+      <Method Name="GetByWorkflowActionAsync" Hidden="true" />
+      <Method Name="RequestEventService" Hidden="true" />
+      <Method Name="ResendRequestAsync" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAACIAAAAAAIAAAAAIAAEAAACAACBABAAAAAIAAAAIA=</HashCode>
+      <FileName>Services\RequestEventService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="context" />
+      <Field Name="mapper" />
+      <Field Name="webhookRuleHubContext" />
+    </ShowAsAssociation>
+    <Lollipop Position="1.19" />
+  </Class>
+  <Class Name="ProjectC.Server.Data.ProjectCDbContext">
+    <Position X="7.75" Y="7.75" Width="3.75" />
+    <Members>
+      <Property Name="RequestRule" Hidden="true" />
+      <Property Name="WebhookEvents" Hidden="true" />
+      <Property Name="WebhookRule" Hidden="true" />
+      <Property Name="Workflow" Hidden="true" />
+      <Property Name="WorkflowAction" Hidden="true" />
+      <Property Name="WorkflowStorage" Hidden="true" />
+      <Property Name="WorkflowTrigger" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAgAAAAAAEEIAAAAAAAAAQAAQAIAg=</HashCode>
+      <FileName>Data\ProjectCDbContext.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="RequestEvent" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Hubs.RequestHub">
+    <Position X="10.25" Y="3" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Hubs\RequestHub.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.AspNetCore.SignalR.Hub" Collapsed="true">
+    <Position X="11.25" Y="5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ProjectC.Server.Mappers.RequestEventProfile" Collapsed="true">
+    <Position X="1.75" Y="8.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappers\RequestEventProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AutoMapper.Profile" Collapsed="true">
+    <Position X="2.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Microsoft.EntityFrameworkCore.DbSet&lt;TEntity&gt;" Collapsed="true">
+    <Position X="13.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Server.Data.Entities.RequestEvent">
+    <Position X="12.75" Y="8.5" Width="3" />
+    <Members>
+      <Property Name="RequestRule" Hidden="true" />
+      <Property Name="RequestRuleId" Hidden="true" />
+      <Property Name="WebhookRule" Hidden="true" />
+      <Property Name="WebhookRuleId" Hidden="true" />
+      <Property Name="WorkflowAction" Hidden="true" />
+      <Property Name="WorkflowActionId" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AIACAAAAAAAAAAAAQAAhAAgACIAAAAABAAgQAAAAIAA=</HashCode>
+      <FileName>Data\Entities\RequestEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Server.Controllers.RequestRuleController">
+    <Position X="0.75" Y="10.75" Width="8" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAIAAAIAAAAAAAAAAAAAAgAAAAAIICAAIA=</HashCode>
+      <FileName>Controllers\RequestRuleController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="requestRuleService" />
+      <Field Name="requestRuleValidator" />
+      <Field Name="mapper" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Shared.Models.RequestEventDto">
+    <Position X="16.25" Y="8.5" Width="3.25" />
+    <Members>
+      <Property Name="WebhookRuleId" Hidden="true" />
+      <Property Name="WorkflowActionDescription" Hidden="true" />
+      <Property Name="WorkflowActionId" Hidden="true" />
+    </Members>
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Server.Mappers.RequestRuleProfile" Collapsed="true">
+    <Position X="4.75" Y="8.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappers\RequestRuleProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Server.Services.RequestRuleService">
+    <Position X="6.5" Y="14.75" Width="5.25" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAIIAAAIA=</HashCode>
+      <FileName>Services\RequestRuleService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="context" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Server.Validators.RequestRuleValidator">
+    <Position X="3.75" Y="14.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Validators\RequestRuleValidator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Server.Data.Entities.RequestRule">
+    <Position X="12.75" Y="12.25" Width="4" />
+    <Members>
+      <Property Name="WorkflowActions" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAACgAAAAAAgAAoAgAAgAAAAAIAAAAAAAAAAAEAQAgA=</HashCode>
+      <FileName>Data\Entities\RequestRule.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Method" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Hubs.RequestRuleHub">
+    <Position X="14" Y="3" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Hubs\RequestRuleHub.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Client.Validators.RequestRuleDtoValidator">
+    <Position X="3.75" Y="18.5" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="FluentValidation.AbstractValidator&lt;T&gt;" Collapsed="true">
+    <Position X="4" Y="16.75" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Shared.Models.RequestRuleDto">
+    <Position X="3" Y="20.75" Width="3.25" />
+    <TypeIdentifier />
+    <ShowAsAssociation>
+      <Property Name="Method" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Shared.Models.RequestRuleMethodDto">
+    <Position X="7.25" Y="20.75" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ProjectC.Shared.Models.EditRequestRuleDto">
+    <Position X="6.75" Y="24" Width="3.25" />
+    <TypeIdentifier />
+    <ShowAsAssociation>
+      <Property Name="Method" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Shared.Models.CreateRequestRuleDto">
+    <Position X="10.75" Y="20.75" Width="3.25" />
+    <TypeIdentifier />
+    <ShowAsAssociation>
+      <Property Name="Method" />
+    </ShowAsAssociation>
+  </Class>
+  <Interface Name="ProjectC.Server.Services.Interfaces.IRequestEventService" Collapsed="true">
+    <Position X="6.5" Y="2.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAIAAAAAIAAEAAACAACBAAAAAAAIAAAAIA=</HashCode>
+      <FileName>Services\Interfaces\IRequestEventService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="AutoMapper.IMapper" Collapsed="true">
+    <Position X="2.25" Y="5" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Microsoft.AspNetCore.SignalR.IHubContext&lt;THub&gt;" Collapsed="true">
+    <Position X="10.75" Y="6" Width="2.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="ProjectC.Shared.Models.IRequestEventDto" Collapsed="true">
+    <Position X="16.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="ProjectC.Server.Services.Interfaces.IRequestRuleService" Collapsed="true">
+    <Position X="6.5" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAIIAAAIA=</HashCode>
+      <FileName>Services\Interfaces\IRequestRuleService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="FluentValidation.IValidator&lt;T&gt;" Collapsed="true">
+    <Position X="4" Y="13.75" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Enum Name="ProjectC.Server.Data.Entities.RequestRuleMethod" Collapsed="true">
+    <Position X="17.75" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAEAQAAAAAAAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\Entities\RequestRuleMethod.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

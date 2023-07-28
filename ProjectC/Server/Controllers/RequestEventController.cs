@@ -70,7 +70,7 @@ namespace ProjectC.Server.Controllers
         }
 
         [HttpDelete("{id}")]
-        public Task DeleteByRequestRuleAsync(int id)
+        public Task DeleteAsync(int id)
         {
             return requestEventService.DeleteAsync(id);
         }
