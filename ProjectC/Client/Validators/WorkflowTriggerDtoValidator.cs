@@ -3,11 +3,10 @@ using ProjectC.Shared.Models;
 
 namespace ProjectC.Client.Validators
 {
-    public class WebhookRuleValidator : AbstractValidator<WebhookRuleDto>
+    public class WorkflowTriggerDtoValidator : AbstractValidator<WorkflowTriggerDto>
     {
-        public WebhookRuleValidator()
+        public WorkflowTriggerDtoValidator()
         {
-            RuleFor(x => x.Path).NotEmpty();
             RuleFor(x => x.Description).NotEmpty();
         }
 
@@ -15,8 +14,8 @@ namespace ProjectC.Client.Validators
             async (model, propertyName) =>
             {
                 var result = await ValidateAsync(
-                    ValidationContext<WebhookRuleDto>.CreateWithOptions(
-                        (WebhookRuleDto)model,
+                    ValidationContext<WorkflowTriggerDto>.CreateWithOptions(
+                        (WorkflowTriggerDto)model,
                         x => x.IncludeProperties(propertyName)
                     )
                 );

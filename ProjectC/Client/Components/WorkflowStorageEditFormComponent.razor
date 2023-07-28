@@ -45,7 +45,7 @@
     public WorkflowStorageDto WorkflowStorage { get; set; } = new WorkflowStorageDto();
 
     private MudForm? Form;
-    private WorkflowStorageValidator WorkflowStorageValidator = new WorkflowStorageValidator();
+    private WorkflowStorageDtoValidator WorkflowStorageValidator = new WorkflowStorageDtoValidator();
     private bool Saving = false;
 
     private async Task Save()

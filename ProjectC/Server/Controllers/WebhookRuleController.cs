@@ -14,13 +14,13 @@ namespace ProjectC.Server.Controllers
     public class WebhookRuleController
     {
         private readonly IMapper mapper;
-        private readonly IWebookRuleService webhookRuleService;
+        private readonly IWebhookRuleService webhookRuleService;
         private readonly IValidator<WebhookRule> webhookRuleValidator;
         private readonly IWebhookEventService webhookEventService;
 
         public WebhookRuleController(
             IMapper mapper,
-            IWebookRuleService webhookRuleService,
+            IWebhookRuleService webhookRuleService,
             IValidator<WebhookRule> webhookRuleValidator,
             IWebhookEventService webhookEventService
         )

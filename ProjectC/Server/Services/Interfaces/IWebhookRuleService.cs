@@ -2,7 +2,7 @@
 
 namespace ProjectC.Server.Services.Interfaces
 {
-    public interface IWebookRuleService
+    public interface IWebhookRuleService
     {
         Task<IEnumerable<WebhookRule>> GetAsync();
         Task CreateAsync(WebhookRule webhookRule);

@@ -53,7 +53,7 @@ namespace ProjectC
             builder.Services.AddSingleton<WebhookEventQueue>();
             builder.Services.AddTransient<IRequestRuleService, RequestRuleService>();
             builder.Services.AddTransient<IMockServerService, MockServerService>();
-            builder.Services.AddTransient<IWebookRuleService, WebookRuleService>();
+            builder.Services.AddTransient<IWebhookRuleService, WebhookRuleService>();
             builder.Services.AddTransient<IWorkflowService, WorkflowService>();
             builder.Services.AddTransient<IWorkflowActionService, WorkflowActionService>();
             builder.Services.AddTransient<IRequestEventService, RequestEventService>();

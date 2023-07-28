@@ -3,19 +3,19 @@ using ProjectC.Shared.Models;
 
 namespace ProjectC.Client.Validators
 {
-    public class WorkflowStorageValidator : AbstractValidator<WorkflowStorageDto>
+    public class WorkflowDtoValidator : AbstractValidator<WorkflowDto>
     {
-        public WorkflowStorageValidator()
+        public WorkflowDtoValidator()
         {
-            RuleFor(x => x.PropertyIdentifier).NotEmpty();
+            RuleFor(x => x.Name).NotEmpty();
         }
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue =>
             async (model, propertyName) =>
             {
                 var result = await ValidateAsync(
-                    ValidationContext<WorkflowStorageDto>.CreateWithOptions(
-                        (WorkflowStorageDto)model,
+                    ValidationContext<WorkflowDto>.CreateWithOptions(
+                        (WorkflowDto)model,
                         x => x.IncludeProperties(propertyName)
                     )
                 );

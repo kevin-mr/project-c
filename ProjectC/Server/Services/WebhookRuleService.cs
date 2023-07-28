@@ -5,11 +5,11 @@ using ProjectC.Server.Services.Interfaces;
 
 namespace ProjectC.Server.Services
 {
-    public class WebookRuleService : IWebookRuleService
+    public class WebhookRuleService : IWebhookRuleService
     {
         private readonly ProjectCDbContext context;
 
-        public WebookRuleService(ProjectCDbContext context)
+        public WebhookRuleService(ProjectCDbContext context)
         {
             this.context = context;
         }

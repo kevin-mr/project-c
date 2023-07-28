@@ -3,24 +3,20 @@ using ProjectC.Shared.Models;
 
 namespace ProjectC.Client.Validators
 {
-    public class WorkflowActionValidator : AbstractValidator<WorkflowActionDto>
+    public class WebhookRuleDtoValidator : AbstractValidator<WebhookRuleDto>
     {
-        public WorkflowActionValidator()
+        public WebhookRuleDtoValidator()
         {
-            RuleFor(x => x.Path)
-                .NotEmpty()
-                .When(x => x.RequestRuleId is null || x.RequestRuleId == 0);
+            RuleFor(x => x.Path).NotEmpty();
             RuleFor(x => x.Description).NotEmpty();
-            RuleFor(x => x.ResponseStatus).InclusiveBetween(200, 600);
-            RuleFor(x => x.ResponseDelay).InclusiveBetween(0, 5000);
         }
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue =>
             async (model, propertyName) =>
             {
                 var result = await ValidateAsync(
-                    ValidationContext<WorkflowActionDto>.CreateWithOptions(
-                        (WorkflowActionDto)model,
+                    ValidationContext<WebhookRuleDto>.CreateWithOptions(
+                        (WebhookRuleDto)model,
                         x => x.IncludeProperties(propertyName)
                     )
                 );
