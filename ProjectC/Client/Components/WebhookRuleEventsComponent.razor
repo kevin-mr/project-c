@@ -101,12 +101,12 @@
             var response = await Http.DeleteAsync($"api/v1/request-event/{requestEvent.Id}");
             if (response.IsSuccessStatusCode)
             {
-                Snackbar.Add("Request deleted", Severity.Success);
+                Snackbar.Add("Webhook Rule Event deleted", Severity.Success);
                 await LoadRequestEventsAsync();
             }
             else
             {
-                Snackbar.Add("Request couldn't be deleted", Severity.Error);
+                Snackbar.Add("Webhook Rule Event couldn't be deleted", Severity.Error);
             }
         }
     }

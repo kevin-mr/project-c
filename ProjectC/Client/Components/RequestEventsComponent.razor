@@ -11,7 +11,8 @@
         <MudListItem>
             <RequestEventComponent RequestEvent=@requestEvent 
                                    OnView="@(async () => await ViewAsync(requestEvent))"
-                                   OnResend="@(async () => await ResendAsync(requestEvent))"></RequestEventComponent>
+                                   OnResend="@(async () => await ResendAsync(requestEvent))"
+                                   OnDelete="@(async () => await DeleteAsync(requestEvent))"></RequestEventComponent>
         </MudListItem>
         <MudDivider />
     }
@@ -48,6 +49,28 @@
         else
         {
             Snackbar.Add("Request couldn't be resend", Severity.Error);
+        }
+    }
+
+    private async Task DeleteAsync(RequestEventDto requestEvent)
+    {
+        var result = await DialogService.ShowConfirmDialog(
+           "Confirm",
+           "Are you sure you want to delete this Request Event?",
+           "Delete",
+           Color.Error);
+        if (result)
+        {
+            var response = await Http.DeleteAsync($"api/v1/request-event/{requestEvent.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Request Event deleted", Severity.Success);
+                await LoadRequestEventsAsync();
+            }
+            else
+            {
+                Snackbar.Add("Request Event couldn't be deleted", Severity.Error);
+            }
         }
     }
 
