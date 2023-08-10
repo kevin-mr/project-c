@@ -35,7 +35,7 @@ namespace ProjectC.Shared.Models
 
         public string ArrivedTimeLabel()
         {
-            var totalSeconds = (int)Math.Floor((DateTime.Now - ArrivalDate).TotalSeconds);
+            var totalSeconds = (int)Math.Floor((DateTime.UtcNow - ArrivalDate).TotalSeconds);
             if (totalSeconds < 60)
             {
                 return $"{totalSeconds} seconds ago";
