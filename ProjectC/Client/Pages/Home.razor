@@ -9,18 +9,24 @@
         </MudItem>
     </MudItem>
     <MudItem xs="6">
-        <MudCard>
+        <div class="mb-2">
+            <MudText Typo="Typo.h6">Latest Request Events</MudText>
+        </div>
+        <div class="h-75">
+            <RequestEventsComponent></RequestEventsComponent>
+        </div>
+        @*<MudCard>
             <MudCardHeader>
                 <CardHeaderContent>
                     <MudText Typo="Typo.h6">Latest Request Events</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
-                <div class="overflow-y-scroll h-75">
+                <div class="h-75">
                     <RequestEventsComponent></RequestEventsComponent>
                 </div>
             </MudCardContent>
-        </MudCard>
+        </MudCard>*@
     </MudItem>
 </MudGrid>
 

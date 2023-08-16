@@ -29,6 +29,6 @@ namespace ProjectC.Server.Data.Entities
         public Dictionary<string, string> Headers =>
             JsonSerializer.Deserialize<Dictionary<string, string>>(JsonHeaders)
             ?? new Dictionary<string, string>();
-        public string Body => JsonSerializer.Deserialize<string>(JsonBody) ?? string.Empty;
+        public string Body => JsonBody;
     }
 }

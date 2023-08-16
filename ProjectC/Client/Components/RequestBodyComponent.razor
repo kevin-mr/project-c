@@ -3,22 +3,36 @@
 <MudTabs>
     <MudTabPanel>
         <TabContent>
-            Raw
+            Pretty
         </TabContent>
         <ChildContent>
-            <p class="my-10">
-                @Body
-            </p>
+            @if (!string.IsNullOrEmpty(JsonBody.Trim()))
+            {
+                <pre class="py-10">
+                    @JsonBody
+                </pre>
+            }
+            else
+            {
+                <MudText Class="pt-10" Align="Align.Center">No Content</MudText>
+            }
         </ChildContent>
     </MudTabPanel>
     <MudTabPanel>
         <TabContent>
-            Pretty
+            Raw
         </TabContent>
         <ChildContent>
-            <p class="my-10">
-                @JsonBody
-            </p>
+            @if (!string.IsNullOrEmpty(Body.Trim()))
+            {
+                <p class="py-10">
+                    @Body
+                </p>
+            }
+            else
+            {
+                <MudText Class="pt-10" Align="Align.Center">No Content</MudText>
+            }
         </ChildContent>
     </MudTabPanel>
 </MudTabs>

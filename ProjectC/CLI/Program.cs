@@ -10,7 +10,8 @@ namespace ProjectC.CLI
 {
     public class Program
     {
-        private static readonly string HUB_URL = "https://localhost:7026/webhook-rule-events";
+        //private static readonly string HUB_URL = "https://localhost:7026/webhook-rule-events";
+        private static readonly string HUB_URL = "https://project-c-dev.azurewebsites.net/webhook-rule-events";
 
         static async Task Main(string[] args)
         {

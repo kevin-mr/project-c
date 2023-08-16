@@ -4,23 +4,42 @@
 @inject NavigationManager Navigation
 @using Microsoft.AspNetCore.SignalR.Client
 
-<MudList>
-    @foreach (var requestEvent in RequestEvents.OrderByDescending(x => x.ArrivalDate))
+@if (loading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-2" />
+}
+else
+{
+    @if (RequestEvents.Count > 0)
     {
-        <MudDivider />
-        <MudListItem>
-            <RequestEventComponent RequestEvent=@requestEvent 
-                                   OnView="@(async () => await ViewAsync(requestEvent))"
-                                   OnResend="@(async () => await ResendAsync(requestEvent))"
-                                   OnDelete="@(async () => await DeleteAsync(requestEvent))"></RequestEventComponent>
-        </MudListItem>
-        <MudDivider />
+        <div class="overflow-y-scroll ">
+            <MudList>
+                @foreach (var requestEvent in RequestEvents.OrderByDescending(x => x.ArrivalDate))
+                {
+                    <MudDivider />
+                    <MudListItem>
+                        <RequestEventComponent RequestEvent=@requestEvent
+                                               OnView="@(async () => await ViewAsync(requestEvent))"
+                                               OnResend="@(async () => await ResendAsync(requestEvent))"
+                                               OnDelete="@(async () => await DeleteAsync(requestEvent))"></RequestEventComponent>
+                    </MudListItem>
+                    <MudDivider />
+                }
+            </MudList>
+        </div>
     }
-</MudList>
+    else
+    {
+        <MudPaper Class="pa-10">
+            <MudText Align="Align.Center">You don't have any events yet.</MudText>
+        </MudPaper>
+    }
+}
 
 @code {
     private HubConnection? hubConnection;
     private List<RequestEventDto> RequestEvents = new List<RequestEventDto>();
+    private bool loading = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -76,12 +95,15 @@
 
     private async Task LoadRequestEventsAsync()
     {
+        loading = true;
+        StateHasChanged();
         var requestEvents = await Http.GetFromJsonAsync<RequestEventDto[]>("api/v1/request-event");
         if (requestEvents is not null)
         {
             RequestEvents = requestEvents.ToList();
-            StateHasChanged();
         }
+        loading = false;
+        StateHasChanged();
     }
 
     private bool IsConnected => hubConnection?.State == HubConnectionState.Connected;

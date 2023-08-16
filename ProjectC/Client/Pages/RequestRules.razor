@@ -1,15 +1,17 @@
 ﻿@page "/request-rules"
 @inject IDialogService DialogService
-@using ProjectC.Client.Components;
 
 <MudGrid Spacing="2" Class="mt-5">
     <MudItem sm="6">
-        <div class="mb-5">
-            <MudTooltip Text="Clear Request Events" Arrow="true" Placement="Placement.Right">
-                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestEventsAsync"></MudIconButton>
+        <div class="mb-2 d-flex justify-space-between">
+            <MudTooltip Text="Clear Request Rule Events" Arrow="true" Placement="Placement.Right">
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestRuleEventsAsync"></MudIconButton>
+            </MudTooltip>
+            <MudTooltip Text="Refresh Request Rule Events" Arrow="true" Placement="Placement.Left">
+                <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Default" OnClick="RefreshRequestRuleEventsAsync    "></MudIconButton>
             </MudTooltip>
         </div>
-        <div class="overflow-y-scroll h-75">
+        <div class="h-75">
             <RequestRuleEventsComponent @ref="RequestEventsComponent"></RequestRuleEventsComponent>
         </div>
     </MudItem>
@@ -39,11 +41,19 @@
         }
     }
 
-    private async Task DeleteRequestEventsAsync()
+    private async Task DeleteRequestRuleEventsAsync()
     {
         if (RequestEventsComponent is not null)
         {
             await RequestEventsComponent.DeleteAsync();
+        }
+    }
+
+    private async Task RefreshRequestRuleEventsAsync()
+    {
+        if (RequestEventsComponent is not null)
+        {
+            await RequestEventsComponent.RefreshRequestRuleEventsAsync();
         }
     }
 }

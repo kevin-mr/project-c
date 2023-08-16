@@ -3,22 +3,31 @@
 
 @if (loading)
 {
-    <MudProgressCircular Indeterminate="true" />
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-2" />
 }
-@if (WebhookRules.Count() > 0)
+else
 {
-    <MudPaper>
-        <MudList>
-            @foreach (var webhookRule in WebhookRules)
-            {
-                <MudListItem>
-                    <WebhookRuleComponent WebhookRule=@webhookRule 
-                                          OnEdit="@(async () => await EditAsync(webhookRule))"
-                                          OnViewEvents="@(async () => await ViewEventsAsync(webhookRule))"></WebhookRuleComponent>
-                </MudListItem>
-            }
-        </MudList>
-    </MudPaper>
+    @if (WebhookRules.Length > 0)
+    {
+        <MudPaper>
+            <MudList>
+                @foreach (var webhookRule in WebhookRules)
+                {
+                    <MudListItem>
+                        <WebhookRuleComponent WebhookRule=@webhookRule
+                                              OnEdit="@(async () => await EditAsync(webhookRule))"
+                                              OnViewEvents="@(async () => await ViewEventsAsync(webhookRule))"></WebhookRuleComponent>
+                    </MudListItem>
+                }
+            </MudList>
+        </MudPaper>
+    }
+    else
+    {
+        <MudPaper Class="pa-10">
+            <MudText Align="Align.Center">You don't have any <b>Webhook Rule</b>, start creating one to see all you can do with our <b>Webhook Module</b>.</MudText>
+        </MudPaper>
+    }
 }
 
 @code {
@@ -34,13 +43,14 @@
     public async Task RefreshWebhookRulesAsync()
     {
         loading = true;
+        StateHasChanged();
         var webhookRules = await Http.GetFromJsonAsync<WebhookRuleDto[]>("api/v1/webhook");
         if (webhookRules is not null)
         {
             WebhookRules = webhookRules;
-            loading = false;
-            StateHasChanged();
         }
+        loading = false;
+        StateHasChanged();
     }
 
     private async Task EditAsync(WebhookRuleDto webhookRule)

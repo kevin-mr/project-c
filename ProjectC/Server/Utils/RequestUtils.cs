@@ -2,6 +2,7 @@
 using ProjectC.Server.Models;
 using System.Text;
 using System.Text.Json;
+using System.Xml;
 
 namespace ProjectC.Server.Utils
 {
@@ -19,7 +20,7 @@ namespace ProjectC.Server.Utils
 
             try
             {
-                requestEvent.JsonBody = JsonSerializer.Serialize(body);
+                requestEvent.JsonBody = body;
                 requestEvent.JsonHeaders = JsonSerializer.Serialize(headers);
             }
             catch (Exception) { }

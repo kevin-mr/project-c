@@ -3,20 +3,29 @@
 
 @if (loading)
 {
-    <MudProgressCircular Indeterminate="true" />
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-2"/>
 }
-@if (RequestRules.Count() > 0)
+else
 {
-    <MudPaper>
-        <MudList>
-            @foreach (var requestRule in RequestRules)
-            {
-                <MudListItem>
-                    <RequestRuleComponent RequestRule=@requestRule OnEdit="@(async () => await EditAsync(requestRule))"></RequestRuleComponent>
-                </MudListItem>
-            }
-        </MudList>
-    </MudPaper>
+    @if (RequestRules.Length > 0)
+    {
+        <MudPaper>
+            <MudList>
+                @foreach (var requestRule in RequestRules)
+                {
+                    <MudListItem>
+                        <RequestRuleComponent RequestRule=@requestRule OnEdit="@(async () => await EditAsync(requestRule))"></RequestRuleComponent>
+                    </MudListItem>
+                }
+            </MudList>
+        </MudPaper>
+    }
+    else
+    {
+        <MudPaper Class="pa-10">
+            <MudText Align="Align.Center">You don't have any <b>Request Rule</b>, start creating one to see all you can do with our <b>Mock Server</b>.</MudText>
+        </MudPaper>
+    }
 }
 
 @code {
@@ -32,13 +41,14 @@
     public async Task RefreshRequestRulesAsync()
     {
         loading = true;
+        StateHasChanged();
         var requestRules = await Http.GetFromJsonAsync<RequestRuleDto[]>("api/v1/request");
         if (requestRules is not null)
         {
             RequestRules = requestRules;
-            loading = false;
-            StateHasChanged();
         }
+        loading = false;
+        StateHasChanged();
     }
 
     private async Task EditAsync(RequestRuleDto requestRule)
