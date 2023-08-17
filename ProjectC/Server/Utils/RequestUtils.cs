@@ -8,6 +8,8 @@ namespace ProjectC.Server.Utils
 {
     public static class RequestUtils
     {
+        private static readonly int PORT_DEFAULT = 80;
+
         public static RequestEvent BuildRequestEventAsync(HttpRequest request, string body)
         {
             var headers = request.Headers.ToDictionary(x => x.Key, x => x.Value.ToString());
@@ -40,7 +42,7 @@ namespace ProjectC.Server.Utils
             {
                 Scheme = request.Scheme,
                 Host = request.Host.Host,
-                Port = request.Host.Port ?? throw new Exception("Invalid port"),
+                Port = request.Host.Port ?? PORT_DEFAULT,
                 PathBase = request.PathBase,
                 Path = request.Path,
                 Method = request.Method,
