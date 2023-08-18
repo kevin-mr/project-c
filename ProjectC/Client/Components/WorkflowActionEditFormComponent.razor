@@ -78,13 +78,10 @@
                                      Label="Delay"
                                      Variant="Variant.Text" />
                     <div class="d-flex">
-                        @if (WorkflowActionDisattached)
-                        {
-                            <MudTextField @bind-Value="WorkflowAction.ResponseHeaders"
-                                          Label="Headers"
-                                          Variant="Variant.Text"
-                                          Lines="5" />
-                        }
+                        <MudTextField @bind-Value="WorkflowAction.ResponseHeaders"
+                                        Label="Headers"
+                                        Variant="Variant.Text"
+                                        Lines="5" />
                         <MudTextField @bind-Value="WorkflowAction.ResponseBody"
                                       Label="Body"
                                       Variant="Variant.Text"
@@ -272,6 +269,7 @@
         WorkflowAction.RequestRuleId = RequestRule.Id;
         WorkflowAction.ResponseStatus = RequestRule.ResponseStatus;
         WorkflowAction.ResponseDelay = RequestRule.ResponseDelay;
+        WorkflowAction.ResponseHeaders = RequestRule.ResponseHeaders;
         WorkflowAction.ResponseBody = RequestRule.ResponseBody;
 
         if(WorkflowAction.RequestRuleId == 0)
