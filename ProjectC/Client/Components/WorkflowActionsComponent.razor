@@ -5,116 +5,122 @@
 
 <MudDialog>
     <DialogContent>
-        <div class="pa-5">
+        @if (WorkflowActions.Count > 0)
+        {
             <MudExpansionPanels>
-                @foreach (var workflowAction in WorkflowActions)
-                {
-                    <MudExpansionPanel>
-                        <TitleContent>
-                            <div class="d-flex justify-space-between align-center">
-                                <MudText>@workflowAction.Description</MudText>
-                                <div class="mr-3" @onclick:stopPropagation="true" @onclick:preventDefault="true">
-                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflowAction))"></MudIconButton>
+                    @foreach (var workflowAction in WorkflowActions)
+                    {
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <div class="d-flex justify-space-between align-center">
+                                    <MudText>@workflowAction.Description</MudText>
+                                    <div class="mr-3" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflowAction))"></MudIconButton>
+                                    </div>
                                 </div>
-                            </div>
-                        </TitleContent>
-                        <ChildContent>
-                            <MudSimpleTable Dense="true">
-                                <tbody>
-                                    @if (workflowAction.RequestRule is not null)
-                                    {
+                            </TitleContent>
+                            <ChildContent>
+                                <MudSimpleTable Dense="true">
+                                    <tbody>
+                                        @if (workflowAction.RequestRule is not null)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <MudText>Path:</MudText>
+                                                </td>
+                                                <td>
+                                                    <MudText Typo="Typo.body2">@workflowAction.RequestRule.Path</MudText>
+                                                </td>
+                                                <td>
+                                                    <MudText>Method:</MudText>
+                                                </td>
+                                                <td>
+                                                    <MudText Typo="Typo.body2">@workflowAction.RequestRule.Method</MudText>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <MudText>Path:</MudText>
+                                                </td>
+                                                <td>
+                                                    <MudText Typo="Typo.body2">@workflowAction.Path</MudText>
+                                                </td>
+                                                <td>
+                                                    <MudText>Method:</MudText>
+                                                </td>
+                                                <td>
+                                                    <MudText Typo="Typo.body2">@workflowAction.MethodLabel</MudText>
+                                                </td>
+                                            </tr>
+                                        }
                                         <tr>
                                             <td>
-                                                <MudText>Path:</MudText>
+                                                <MudText>Status:</MudText>
                                             </td>
                                             <td>
-                                                <MudText Typo="Typo.body2">@workflowAction.RequestRule.Path</MudText>
+                                                <MudText Typo="Typo.body2">@workflowAction.ResponseStatus</MudText>
                                             </td>
                                             <td>
-                                                <MudText>Method:</MudText>
+                                                <MudText>Delay:</MudText>
                                             </td>
                                             <td>
-                                                <MudText Typo="Typo.body2">@workflowAction.RequestRule.Method</MudText>
+                                                <MudText Typo="Typo.body2">@workflowAction.ResponseDelay</MudText>
                                             </td>
                                         </tr>
-                                    }
-                                    else
-                                    {
                                         <tr>
                                             <td>
-                                                <MudText>Path:</MudText>
+                                                <MudText>Body:</MudText>
                                             </td>
                                             <td>
-                                                <MudText Typo="Typo.body2">@workflowAction.Path</MudText>
-                                            </td>
-                                            <td>
-                                                <MudText>Method:</MudText>
-                                            </td>
-                                            <td>
-                                                <MudText Typo="Typo.body2">@workflowAction.MethodLabel</MudText>
+                                                <MudText Typo="Typo.body2">@workflowAction.ResponseBody</MudText>
                                             </td>
                                         </tr>
-                                    }
-                                    <tr>
-                                        <td>
-                                            <MudText>Status:</MudText>
-                                        </td>
-                                        <td>
-                                            <MudText Typo="Typo.body2">@workflowAction.ResponseStatus</MudText>
-                                        </td>
-                                        <td>
-                                            <MudText>Delay:</MudText>
-                                        </td>
-                                        <td>
-                                            <MudText Typo="Typo.body2">@workflowAction.ResponseDelay</MudText>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <MudText>Body:</MudText>
-                                        </td>
-                                        <td>
-                                            <MudText Typo="Typo.body2">@workflowAction.ResponseBody</MudText>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </MudSimpleTable>
-                            <MudDivider Class="my-3"></MudDivider>
-                            <div class="d-flex justify-end">
-                                <MudButton Variant="Variant.Outlined"
-                                           Color="Color.Primary"
-                                           Size="Size.Small"
-                                           Class="mb-3"
-                                           OnClick="@(async () => await AddTriggerAsync(workflowAction))">
-                                    Add Trigger
-                                </MudButton>
-                            </div>
-                            <MudTable Items="workflowAction.WorkflowTriggers" Dense="true">
-                                <HeaderContent>
-                                    <MudTh>Webhook Rule</MudTh>
-                                    <MudTh>Description</MudTh>
-                                    <MudTh>Actions</MudTh>
-                                </HeaderContent>
-                                <RowTemplate>
-                                    <MudTd DataLabel="Webhook Rule">
-                                        @context.WebhookRuleDescription
-                                    </MudTd>
-                                    <MudTd DataLabel="Description">
-                                        @context.Description
-                                    </MudTd>
-                                    <MudTd DataLabel="Actions">
-                                        <div class="d-flex justify-end">
-                                            <MudIconButton Icon="@Icons.Material.Filled.Edit" 
-                                                           OnClick="@(async () => await EditTriggerAsync(workflowAction, @context))"></MudIconButton>
-                                        </div>
-                                    </MudTd>
-                                </RowTemplate>
-                            </MudTable>
-                        </ChildContent>
-                    </MudExpansionPanel>
-                }
-            </MudExpansionPanels>
-        </div>
+                                    </tbody>
+                                </MudSimpleTable>
+                                <div class="d-flex justify-end mt-3">
+                                    <MudButton Variant="Variant.Outlined"
+                                               Color="Color.Primary"
+                                               Size="Size.Small"
+                                               Class="mb-3"
+                                               OnClick="@(async () => await AddTriggerAsync(workflowAction))">
+                                        Add Trigger
+                                    </MudButton>
+                                </div>
+                                <MudTable Items="workflowAction.WorkflowTriggers" Dense="true">
+                                    <HeaderContent>
+                                        <MudTh>Webhook Rule</MudTh>
+                                        <MudTh>Description</MudTh>
+                                        <MudTh>Actions</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Webhook Rule">
+                                            @context.WebhookRuleDescription
+                                        </MudTd>
+                                        <MudTd DataLabel="Description">
+                                            @context.Description
+                                        </MudTd>
+                                        <MudTd DataLabel="Actions">
+                                            <div class="d-flex justify-end">
+                                                <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                               OnClick="@(async () => await EditTriggerAsync(workflowAction, @context))"></MudIconButton>
+                                            </div>
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </ChildContent>
+                        </MudExpansionPanel>
+                    }
+                </MudExpansionPanels>
+        }
+        else
+        {
+            <MudPaper Class="py-2 px-10">
+                <MudText Align="Align.Center">You don't have any <b>Action</b> configured, start creating one to see all you can do with our <b>Workflows Module</b>.</MudText>
+            </MudPaper>
+        }
     </DialogContent>
     <DialogActions>
         <MudButton Variant="Variant.Filled" 

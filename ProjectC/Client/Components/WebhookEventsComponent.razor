@@ -4,28 +4,37 @@
 
 <MudDialog>
     <DialogContent>
-        <MudSimpleTable Dense="true">
-            <tbody>
-                @foreach (var webhookEvent in WebhookEvents)
-                {
-                    <tr>
-                        <td>
-                            <MudText><MudChip Variant="Variant.Outlined" Color="@webhookEvent.GetMethodColor()">@webhookEvent.Method</MudChip></MudText>
-                        </td>
-                        <td>
-                            <MudText Class="flex-1">@webhookEvent.Path</MudText>
-                        </td>
-                        <td>
-                            <div class="d-flex justify-end">
-                                <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Send" Title="Resend" @onclick="@(async () => await ResendAsync(webhookEvent))" />
-                                <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Preview" Title="View" @onclick="@(async () => await ViewAsync(webhookEvent))" />
-                                <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Delete" Title="Delete" @onclick="@(async () => await DeleteAsync(webhookEvent))" />
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </MudSimpleTable>
+        @if (WebhookEvents.Count > 0)
+        {
+            <MudSimpleTable Dense="true">
+                <tbody>
+                    @foreach (var webhookEvent in WebhookEvents)
+                    {
+                        <tr>
+                            <td>
+                                <MudText><MudChip Variant="Variant.Outlined" Color="@webhookEvent.GetMethodColor()">@webhookEvent.Method</MudChip></MudText>
+                            </td>
+                            <td>
+                                <MudText Class="flex-1">@webhookEvent.Path</MudText>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-end">
+                                    <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Send" Title="Resend" @onclick="@(async () => await ResendAsync(webhookEvent))" />
+                                    <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Preview" Title="View" @onclick="@(async () => await ViewAsync(webhookEvent))" />
+                                    <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Delete" Title="Delete" @onclick="@(async () => await DeleteAsync(webhookEvent))" />
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        }
+        else
+        {
+            <MudPaper Class="py-2 px-10">
+                <MudText Align="Align.Center">You don't have any <b>Workflow Event</b> archived, you can save them from the events list.</MudText>
+            </MudPaper>
+        }
     </DialogContent>
     <DialogActions>
 

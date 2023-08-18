@@ -3,7 +3,7 @@
 
 @if (loading)
 {
-    <MudProgressCircular Indeterminate="true" />
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-2" />
 }
 else
 {
@@ -21,43 +21,59 @@ else
                                     <div class="d-flex align-center" @onclick:stopPropagation="true" @onclick:preventDefault="true">
                                         <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflow))"></MudIconButton>
                                         <MudIconButton Icon="@Icons.Material.Filled.Storage" OnClick="@(async () => await ViewWorkflowStorageAsync(workflow))"></MudIconButton>
-                                        <MudChip Class="mr-2" Variant="Variant.Text" Color="Color.Primary" @onclick="@(async () => await ViewWorkflowActionsAsync(workflow))">
-                                            @workflow.WorkflowActions.Count
-                                        </MudChip>
+                                        @if (workflow.WorkflowActions.Count > 0)
+                                        {
+                                            <MudChip Class="mr-2" Variant="Variant.Text" Color="Color.Primary" @onclick="@(async () => await ViewWorkflowActionsAsync(workflow))">
+                                                @workflow.WorkflowActions.Count
+                                            </MudChip>
+                                        }
+                                        else
+                                        {
+                                            <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(async () => await ViewWorkflowActionsAsync(workflow))"></MudIconButton>
+                                        }
                                     </div>
                                 </div>
                             </TitleContent>
                             <ChildContent>
-                                <MudTable Items="@workflow.WorkflowActions" Dense="true">
-                                    <HeaderContent>
-                                        <MudTh>Action</MudTh>
-                                        <MudTh>Path</MudTh>
-                                        <MudTh>Method</MudTh>
-                                    </HeaderContent>
-                                    <RowTemplate>
-                                        <MudTd DataLabel="Name">
-                                            @context.Description
-                                        </MudTd>
-                                        @if (context.RequestRule is not null)
-                                        {
-                                            <MudTd DataLabel="Path">
-                                                @context.RequestRule.Path
+                                @if (workflow.WorkflowActions.Count > 0)
+                                {
+                                    <MudTable Items="@workflow.WorkflowActions" Dense="true">
+                                        <HeaderContent>
+                                            <MudTh>Action</MudTh>
+                                            <MudTh>Path</MudTh>
+                                            <MudTh>Method</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd DataLabel="Name">
+                                                @context.Description
                                             </MudTd>
-                                            <MudTd DataLabel="Method">
-                                                @context.RequestRule.MethodLabel
-                                            </MudTd>
-                                        }
-                                        else
-                                        {
-                                            <MudTd DataLabel="Path">
-                                                @context.Path
-                                            </MudTd>
-                                            <MudTd DataLabel="Method">
-                                                @context.MethodLabel
-                                            </MudTd>
-                                        }
-                                    </RowTemplate>
-                                </MudTable>
+                                            @if (context.RequestRule is not null)
+                                            {
+                                                <MudTd DataLabel="Path">
+                                                    @context.RequestRule.Path
+                                                </MudTd>
+                                                <MudTd DataLabel="Method">
+                                                    @context.RequestRule.MethodLabel
+                                                </MudTd>
+                                            }
+                                            else
+                                            {
+                                                <MudTd DataLabel="Path">
+                                                    @context.Path
+                                                </MudTd>
+                                                <MudTd DataLabel="Method">
+                                                    @context.MethodLabel
+                                                </MudTd>
+                                            }
+                                        </RowTemplate>
+                                    </MudTable>
+                                }
+                                else 
+                                { 
+                                    <MudPaper Class="py-2 px-10">
+                                        <MudText Align="Align.Center">You don't have any <b>Action</b> configured, start creating one to see all you can do with our <b>Workflows Module</b>.</MudText>
+                                    </MudPaper>
+                                }
                             </ChildContent>
                         </MudExpansionPanel>
                     }
