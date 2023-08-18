@@ -9,16 +9,18 @@ else
 {
     @if (RequestRules.Length > 0)
     {
-        <MudPaper>
-            <MudList>
-                @foreach (var requestRule in RequestRules)
-                {
-                    <MudListItem>
-                        <RequestRuleComponent RequestRule=@requestRule OnEdit="@(async () => await EditAsync(requestRule))"></RequestRuleComponent>
-                    </MudListItem>
-                }
-            </MudList>
-        </MudPaper>
+        <div class="h-inherit overflow-y-scroll">
+            <MudPaper>
+                <MudList>
+                    @foreach (var requestRule in RequestRules)
+                    {
+                        <MudListItem>
+                            <RequestRuleComponent RequestRule=@requestRule OnEdit="@(async () => await EditAsync(requestRule))"></RequestRuleComponent>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudPaper>
+        </div>
     }
     else
     {

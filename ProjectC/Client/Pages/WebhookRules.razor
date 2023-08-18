@@ -8,7 +8,7 @@
                 <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteWebhookRuleEventsAsync"></MudIconButton>
             </MudTooltip>
             <MudTooltip Text="Refresh Webhook Rule Events" Arrow="true" Placement="Placement.Left">
-                <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Default" OnClick="RefreshWebhookRuleEventsAsync    "></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Default" OnClick="RefreshWebhookRuleEventsAsync"></MudIconButton>
             </MudTooltip>
         </div>
         <div class="h-75">
@@ -19,7 +19,9 @@
         <div class="d-flex justify-end mb-5">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddWebhookRule">Add Webhook</MudButton>
         </div>
-        <WebhookRulesComponent @ref="WebhookRulesComponent"></WebhookRulesComponent>
+        <div class="h-75">
+            <WebhookRulesComponent @ref="WebhookRulesComponent"></WebhookRulesComponent>
+        </div>
     </MudItem>
 </MudGrid>
 

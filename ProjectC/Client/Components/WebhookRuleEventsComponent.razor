@@ -12,7 +12,7 @@ else
 {
     @if (RequestEvents.Count > 0)
     {
-        <div class="overflow-y-scroll">
+        <div class="h-inherit overflow-y-scroll">
             <MudList>
                 @foreach (var requestEvent in RequestEvents.OrderByDescending(x => x.ArrivalDate))
                 {
@@ -63,8 +63,7 @@ else
             if (response.IsSuccessStatusCode)
             {
                 Snackbar.Add("Request history deleted", Severity.Success);
-                RequestEvents = new List<RequestEventDto>();
-                StateHasChanged();
+                await this.RefreshWebhookRuleEventsAsync();
             }
             else
             {

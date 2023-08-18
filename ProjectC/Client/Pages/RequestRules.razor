@@ -19,7 +19,9 @@
         <div class="d-flex justify-end mb-5">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddRequestRuleAsync">Add Rule</MudButton>
         </div>
-        <RequestRulesComponent @ref="RequestRulesComponent"></RequestRulesComponent>
+        <div class="h-75">
+            <RequestRulesComponent @ref="RequestRulesComponent"></RequestRulesComponent>
+        </div>
     </MudItem>
 </MudGrid>
 

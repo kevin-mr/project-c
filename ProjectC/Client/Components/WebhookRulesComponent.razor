@@ -9,18 +9,20 @@ else
 {
     @if (WebhookRules.Length > 0)
     {
-        <MudPaper>
-            <MudList>
-                @foreach (var webhookRule in WebhookRules)
-                {
-                    <MudListItem>
-                        <WebhookRuleComponent WebhookRule=@webhookRule
-                                              OnEdit="@(async () => await EditAsync(webhookRule))"
-                                              OnViewEvents="@(async () => await ViewEventsAsync(webhookRule))"></WebhookRuleComponent>
-                    </MudListItem>
-                }
-            </MudList>
-        </MudPaper>
+        <div class="h-inherit overflow-y-scroll">
+            <MudPaper>
+                <MudList>
+                    @foreach (var webhookRule in WebhookRules)
+                    {
+                        <MudListItem>
+                            <WebhookRuleComponent WebhookRule=@webhookRule
+                                                  OnEdit="@(async () => await EditAsync(webhookRule))"
+                                                  OnViewEvents="@(async () => await ViewEventsAsync(webhookRule))"></WebhookRuleComponent>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudPaper>
+        </div>
     }
     else
     {

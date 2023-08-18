@@ -3,12 +3,15 @@
 
 <MudGrid Spacing="2" Class="mt-5">
     <MudItem sm="6">
-        <div class="mb-5">
+        <div class="mb-2 d-flex justify-space-between">
             <MudTooltip Text="Clear Request Events" Arrow="true" Placement="Placement.Right">
                 <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestEventsAsync"></MudIconButton>
             </MudTooltip>
+            <MudTooltip Text="Refresh Workflow Action Rule Events" Arrow="true" Placement="Placement.Left">
+                <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Default" OnClick="RefreshWebhookRuleEventsAsync"></MudIconButton>
+            </MudTooltip>
         </div>
-        <div class="overflow-y-scroll h-75">
+        <div class="h-75">
             <WorkflowActionEventsComponent @ref="WorkflowActionEventsComponent"></WorkflowActionEventsComponent>
         </div>
     </MudItem>
@@ -16,7 +19,9 @@
         <div class="d-flex justify-end mb-5">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddWorkflow">Add Workflow</MudButton>
         </div>
-        <WorkflowsComponent @ref="WorkflowsComponent"></WorkflowsComponent>
+        <div class="h-75">
+            <WorkflowsComponent @ref="WorkflowsComponent"></WorkflowsComponent>
+        </div>
     </MudItem>
 </MudGrid>
 
@@ -43,6 +48,14 @@
         if (WorkflowActionEventsComponent is not null)
         {
             await WorkflowActionEventsComponent.DeleteAsync();
+        }
+    }
+
+    private async Task RefreshWebhookRuleEventsAsync()
+    {
+        if (WorkflowActionEventsComponent is not null)
+        {
+            await WorkflowActionEventsComponent.RefreshWorkflowActionEventsAsync();
         }
     }
 }

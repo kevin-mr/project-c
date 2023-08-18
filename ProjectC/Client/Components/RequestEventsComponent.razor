@@ -12,7 +12,7 @@ else
 {
     @if (RequestEvents.Count > 0)
     {
-        <div class="overflow-y-scroll ">
+        <div class="h-inherit overflow-y-scroll">
             <MudList>
                 @foreach (var requestEvent in RequestEvents.OrderByDescending(x => x.ArrivalDate))
                 {
@@ -43,7 +43,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadRequestEventsAsync();
+        await RefreshRequestEventsAsync();
         await ConnectToHubAsync();
 
         await base.OnInitializedAsync();
@@ -84,7 +84,7 @@ else
             if (response.IsSuccessStatusCode)
             {
                 Snackbar.Add("Request Event deleted", Severity.Success);
-                await LoadRequestEventsAsync();
+                await RefreshRequestEventsAsync();
             }
             else
             {
@@ -93,7 +93,7 @@ else
         }
     }
 
-    private async Task LoadRequestEventsAsync()
+    private async Task RefreshRequestEventsAsync()
     {
         loading = true;
         StateHasChanged();

@@ -5,61 +5,72 @@
 {
     <MudProgressCircular Indeterminate="true" />
 }
-@if (Workflows.Count() > 0)
+else
 {
-    <MudPaper>
-        <MudExpansionPanels>
-            @foreach (var workflow in Workflows)
-            {
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <div class="d-flex justify-space-between align-center">
-                            <MudText Class="mt-1">@workflow.Name</MudText>
-                            <div class="d-flex align-center" @onclick:stopPropagation="true" @onclick:preventDefault="true">
-                                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflow))"></MudIconButton>
-                                <MudIconButton Icon="@Icons.Material.Filled.Storage" OnClick="@(async () => await ViewWorkflowStorageAsync(workflow))"></MudIconButton>
-                                <MudChip Class="mr-2" Variant="Variant.Text" Color="Color.Primary" @onclick="@(async () => await ViewWorkflowActionsAsync(workflow))">
-                                    @workflow.WorkflowActions.Count
-                                </MudChip>
-                            </div>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <MudTable Items="@workflow.WorkflowActions" Dense="true">
-                            <HeaderContent>
-                                <MudTh>Action</MudTh>
-                                <MudTh>Path</MudTh>
-                                <MudTh>Method</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="Name">
-                                    @context.Description
-                                </MudTd>
-                                @if (context.RequestRule is not null)
-                                {
-                                    <MudTd DataLabel="Path">
-                                        @context.RequestRule.Path
-                                    </MudTd>
-                                    <MudTd DataLabel="Method">
-                                        @context.RequestRule.MethodLabel
-                                    </MudTd>
-                                }
-                                else
-                                {
-                                    <MudTd DataLabel="Path">
-                                        @context.Path
-                                    </MudTd>
-                                    <MudTd DataLabel="Method">
-                                        @context.MethodLabel
-                                    </MudTd>
-                                }
-                            </RowTemplate>
-                        </MudTable>
-                    </ChildContent>
-                </MudExpansionPanel>
-            }
-        </MudExpansionPanels>
-    </MudPaper>
+    @if (Workflows.Count() > 0)
+    {
+        <div class="h-inherit overflow-y-scroll">
+            <MudPaper>
+                <MudExpansionPanels>
+                    @foreach (var workflow in Workflows)
+                    {
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <div class="d-flex justify-space-between align-center">
+                                    <MudText Class="mt-1">@workflow.Name</MudText>
+                                    <div class="d-flex align-center" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflow))"></MudIconButton>
+                                        <MudIconButton Icon="@Icons.Material.Filled.Storage" OnClick="@(async () => await ViewWorkflowStorageAsync(workflow))"></MudIconButton>
+                                        <MudChip Class="mr-2" Variant="Variant.Text" Color="Color.Primary" @onclick="@(async () => await ViewWorkflowActionsAsync(workflow))">
+                                            @workflow.WorkflowActions.Count
+                                        </MudChip>
+                                    </div>
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+                                <MudTable Items="@workflow.WorkflowActions" Dense="true">
+                                    <HeaderContent>
+                                        <MudTh>Action</MudTh>
+                                        <MudTh>Path</MudTh>
+                                        <MudTh>Method</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Name">
+                                            @context.Description
+                                        </MudTd>
+                                        @if (context.RequestRule is not null)
+                                        {
+                                            <MudTd DataLabel="Path">
+                                                @context.RequestRule.Path
+                                            </MudTd>
+                                            <MudTd DataLabel="Method">
+                                                @context.RequestRule.MethodLabel
+                                            </MudTd>
+                                        }
+                                        else
+                                        {
+                                            <MudTd DataLabel="Path">
+                                                @context.Path
+                                            </MudTd>
+                                            <MudTd DataLabel="Method">
+                                                @context.MethodLabel
+                                            </MudTd>
+                                        }
+                                    </RowTemplate>
+                                </MudTable>
+                            </ChildContent>
+                        </MudExpansionPanel>
+                    }
+                </MudExpansionPanels>
+            </MudPaper>
+        </div>
+    }
+    else
+    {
+        <MudPaper Class="pa-10">
+            <MudText Align="Align.Center">You don't have any events yet.</MudText>
+        </MudPaper>
+    }
 }
 
 @code {
@@ -115,13 +126,14 @@
     public async Task RefreshWorkflowsAsync()
     {
         loading = true;
+        StateHasChanged();
         var workflows = await Http.GetFromJsonAsync<WorkflowDto[]>("api/v1/workflow");
         if (workflows is not null)
         {
             Workflows = workflows;
-            loading = false;
-            StateHasChanged();
         }
+        loading = false;
+        StateHasChanged();
     }
 
     protected override async Task OnInitializedAsync()
