@@ -19,35 +19,33 @@
                                  Label="Search Request Rule"
                                  SearchFunc="@(async (value) => await Task.FromResult(SearchRequestRule(value)))"
                                  Value="RequestRule"
-                                 Text="@($" {RequestRule?.Path} - {RequestRule?.MethodLabel}")"
+                                 Text="@(RequestRule is not null ? $"{RequestRule.Path} - {RequestRule.MethodLabel}" : string.Empty)"
                                  ValueChanged="@OnRequestRuleSelected">
                     <ItemSelectedTemplate Context="requestRule">
                         <MudText>
-                            @($"{requestRule?.Path} - {requestRule?.MethodLabel}")
+                            @($"{requestRule.Path} - {requestRule.MethodLabel}")
                         </MudText>
                     </ItemSelectedTemplate>
                     <ItemTemplate Context="requestRule">
                         <MudText>
-                            @($"{requestRule?.Path} - {requestRule?.MethodLabel}")
+                            @($"{requestRule.Path} - {requestRule.MethodLabel}")
                         </MudText>
                     </ItemTemplate>
                 </MudAutocomplete>
-                <div class="my-3">
+                <div class="mt-16">
                     @if (RequestRule is not null && !WorkflowActionDisattached)
                     {
                         <MudPaper Outlined="true" Class="pa-3">
-                            <div class="d-flex justify-end">
-                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="DetachFromRequestRuleAsync"></MudIconButton>
-                            </div>
                             <div class="d-flex justify-space-between">
-                                <div>
-                                    <MudText>Path:</MudText>
+                                <div class="d-flex align-baseline">
+                                    <MudText Class="mr-2">Path:</MudText>
                                     <MudText Typo="Typo.body2">@RequestRule.Path</MudText>
                                 </div>
-                                <div>
-                                    <MudText>Method:</MudText>
+                                <div class="d-flex align-baseline">
+                                    <MudText Class="mr-2">Method:</MudText>
                                     <MudText Typo="Typo.body2">@RequestRule.MethodLabel</MudText>
                                 </div>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="DetachFromRequestRuleAsync"></MudIconButton>
                             </div>
                         </MudPaper>
                     }
@@ -67,26 +65,28 @@
                             <MudSelectItem Value="@RequestRuleMethodDto.DELETE">DELETE</MudSelectItem>
                         </MudSelect>
                     }
-                    <MudTextField @bind-Value="WorkflowAction.Description"
-                                  Label="Description"
-                                  For="@(() => WorkflowAction.Description)"
-                                  Variant="Variant.Text" />
                     <MudNumericField @bind-Value="WorkflowAction.ResponseStatus"
                                      Label="Status"
+                                     For="@(() => WorkflowAction.ResponseStatus)"
                                      Variant="Variant.Text" />
                     <MudNumericField @bind-Value="WorkflowAction.ResponseDelay"
                                      Label="Delay"
+                                     For="@(() => WorkflowAction.ResponseDelay)"
                                      Variant="Variant.Text" />
                     <div class="d-flex">
                         <MudTextField @bind-Value="WorkflowAction.ResponseHeaders"
-                                        Label="Headers"
-                                        Variant="Variant.Text"
-                                        Lines="5" />
+                                      Label="Headers"
+                                      Variant="Variant.Text"
+                                      Lines="5" />
                         <MudTextField @bind-Value="WorkflowAction.ResponseBody"
                                       Label="Body"
                                       Variant="Variant.Text"
                                       Lines="5" />
                     </div>
+                    <MudTextField @bind-Value="WorkflowAction.Description"
+                                  Label="Description"
+                                  For="@(() => WorkflowAction.Description)"
+                                  Variant="Variant.Text" />
                 </div>
             </MudForm>
         </div>

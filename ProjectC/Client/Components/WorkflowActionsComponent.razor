@@ -13,7 +13,11 @@
                         <MudExpansionPanel>
                             <TitleContent>
                                 <div class="d-flex justify-space-between align-center">
-                                    <MudText>@workflowAction.Description</MudText>
+                                    <MudText Class="flex-1">@workflowAction.Description</MudText>
+                                    <div class="flex-1">
+                                        <MudChip Variant="Variant.Text" Color="@(workflowAction.Method.GetMethodColor())">@workflowAction.MethodLabel</MudChip>
+                                    </div>
+                                    <MudText Class="flex-1">@workflowAction.Path</MudText>
                                     <div class="mr-3" @onclick:stopPropagation="true" @onclick:preventDefault="true">
                                         <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflowAction))"></MudIconButton>
                                     </div>
