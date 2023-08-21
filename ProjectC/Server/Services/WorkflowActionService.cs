@@ -62,8 +62,32 @@ namespace ProjectC.Server.Services
             var workflowAction = await context.WorkflowAction.FirstOrDefaultAsync(x => x.Id == id);
             if (workflowAction is not null)
             {
-                context.WorkflowAction.Remove(workflowAction);
-                await context.SaveChangesAsync();
+                var requestEvents = await context.RequestEvent
+                    .Where(x => x.WorkflowActionId == workflowAction.Id)
+                    .ToListAsync();
+                using var transaction = context.Database.BeginTransaction();
+                try
+                {
+                    if (requestEvents != null)
+                    {
+                        requestEvents.ForEach(x =>
+                        {
+                            x.WorkflowActionId = null;
+                            x.RequestRuleId = null;
+                        });
+                        context.RequestEvent.UpdateRange(requestEvents);
+                        await context.SaveChangesAsync();
+                    }
+
+                    context.WorkflowAction.Remove(workflowAction);
+                    await context.SaveChangesAsync();
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw new Exception("Invalid database operation", e);
+                }
             }
         }
 

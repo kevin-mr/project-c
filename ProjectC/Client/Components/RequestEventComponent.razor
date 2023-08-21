@@ -3,9 +3,9 @@
     <div class="d-flex justify-space-between align-center">
         <MudText Class="flex-1"><MudChip Variant="Variant.Outlined" Color="@RequestEvent.GetMethodColor()">@RequestEvent.Method</MudChip></MudText>
         <MudText Class="flex-1">@RequestEvent.Path 
-            @if (RequestEvent.WorkflowActionId is not null)
+            @if (RequestEvent.WorkflowAction is not null)
             {
-                <MudChip Text="Workflow Identifier" Size="Size.Small">W-@RequestEvent.WorkflowActionId</MudChip>
+                <MudChip Text="Workflow Identifier" Size="Size.Small">W-@RequestEvent.WorkflowAction.WorkflowId</MudChip>
             }
         </MudText>
         <MudText Class="flex-1">@RequestEvent.ArrivedTimeLabel()</MudText>

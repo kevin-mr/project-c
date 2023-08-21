@@ -30,6 +30,7 @@ namespace ProjectC.Shared.Models
         public string Body { get; set; }
 
         public int? WorkflowActionId { get; set; }
+        public WorkflowActionDto? WorkflowAction { get; set; }
         public int? RequestRuleId { get; set; }
         public int? WebhookRuleId { get; set; }
 

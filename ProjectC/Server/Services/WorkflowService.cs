@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProjectC.Client.Pages;
 using ProjectC.Server.Data;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Services.Interfaces;
+using ProjectC.Server.Utils;
 
 namespace ProjectC.Server.Services
 {
@@ -43,8 +45,36 @@ namespace ProjectC.Server.Services
             var workflow = await context.Workflow.FirstOrDefaultAsync(x => x.Id == id);
             if (workflow is not null)
             {
-                context.Workflow.Remove(workflow);
-                await context.SaveChangesAsync();
+                var requestEvents = await context.RequestEvent
+                    .Include(x => x.WorkflowAction)
+                    .Where(
+                        x => x.WorkflowAction != null && x.WorkflowAction.WorkflowId == workflow.Id
+                    )
+                    .ToListAsync();
+
+                using var transaction = context.Database.BeginTransaction();
+                try
+                {
+                    if (requestEvents != null)
+                    {
+                        requestEvents.ForEach(x =>
+                        {
+                            x.WorkflowActionId = null;
+                            x.RequestRuleId = null;
+                        });
+                        context.RequestEvent.UpdateRange(requestEvents);
+                        await context.SaveChangesAsync();
+                    }
+
+                    context.Workflow.Remove(workflow);
+                    await context.SaveChangesAsync();
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw new Exception("Invalid database operation", e);
+                }
             }
         }
 
