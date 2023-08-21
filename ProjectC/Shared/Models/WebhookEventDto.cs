@@ -11,6 +11,7 @@
             Body = string.Empty;
             JsonBody = string.Empty;
             Path = string.Empty;
+            WorkflowTriggers = new List<WorkflowTriggerDto>();
         }
 
         public int Id { get; set; }
@@ -25,5 +26,6 @@
         public string Body { get; set; }
 
         public int? WebhookRuleId { get; set; }
+        public IEnumerable<WorkflowTriggerDto> WorkflowTriggers { get; set; }
     }
 }

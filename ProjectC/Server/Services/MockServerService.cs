@@ -158,6 +158,7 @@ namespace ProjectC.Server.Services
             if (requestEvent is not null)
             {
                 requestEvent.RequestRuleId = requestRule.Id;
+                requestEvent.Path = requestRule.Path;
                 context.RequestEvent.Add(requestEvent);
                 await context.SaveChangesAsync();
 
@@ -198,6 +199,7 @@ namespace ProjectC.Server.Services
                 if (workflowAction.RequestRule is not null)
                 {
                     requestEvent.RequestRuleId = workflowAction.RequestRule.Id;
+                    requestEvent.Path = workflowAction.RequestRule.Path;
                 }
                 context.RequestEvent.Add(requestEvent);
                 await context.SaveChangesAsync();
@@ -270,6 +272,7 @@ namespace ProjectC.Server.Services
             if (requestEvent is not null)
             {
                 requestEvent.WebhookRuleId = webhookRule.Id;
+                requestEvent.Path = webhookRule.Path;
                 context.RequestEvent.Add(requestEvent);
                 await context.SaveChangesAsync();
 

@@ -19,6 +19,14 @@ namespace ProjectC.Server.Services
             return await context.WebhookRule.ToArrayAsync();
         }
 
+        public async Task<WebhookRule?> GetByIdAsync(int id)
+        {
+            return await context.WebhookRule
+                .Include(x => x.WebhookRuleEvents)
+                .Include(x => x.WebhookEvents)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task CreateAsync(WebhookRule webhookRule)
         {
             context.WebhookRule.Add(webhookRule);
@@ -44,8 +52,30 @@ namespace ProjectC.Server.Services
             var webhookRule = await context.WebhookRule.FirstOrDefaultAsync(x => x.Id == id);
             if (webhookRule is not null)
             {
-                context.WebhookRule.Remove(webhookRule);
-                await context.SaveChangesAsync();
+                var webhookRuleEvents = await context.RequestEvent
+                    .Include(x => x.WebhookRule)
+                    .Where(x => x.WebhookRuleId != null && x.WebhookRuleId == webhookRule.Id)
+                    .ToListAsync();
+
+                using var transaction = context.Database.BeginTransaction();
+                try
+                {
+                    if (webhookRuleEvents != null)
+                    {
+                        webhookRuleEvents.ForEach(x => x.WebhookRuleId = null);
+                        context.RequestEvent.UpdateRange(webhookRuleEvents);
+                        await context.SaveChangesAsync();
+                    }
+
+                    context.WebhookRule.Remove(webhookRule);
+                    await context.SaveChangesAsync();
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw new Exception("Invalid database operation", e);
+                }
             }
         }
     }

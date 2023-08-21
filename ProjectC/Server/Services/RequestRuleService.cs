@@ -21,6 +21,14 @@ namespace ProjectC.Server.Services
             return await context.RequestRule.ToArrayAsync();
         }
 
+        public async Task<RequestRule?> GetByIdAsync(int id)
+        {
+            return await context.RequestRule
+                .Include(x => x.RequestRuleEvents)
+                .Include(x => x.WorkflowActions)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task<IEnumerable<RequestRuleMethodCounter>> GetMethodCountersAsync()
         {
             return await context.RequestRule
@@ -58,8 +66,53 @@ namespace ProjectC.Server.Services
             var requestRule = await context.RequestRule.FirstOrDefaultAsync(x => x.Id == id);
             if (requestRule is not null)
             {
-                context.RequestRule.Remove(requestRule);
-                await context.SaveChangesAsync();
+                var requestRuleEvents = await context.RequestEvent
+                    .Include(x => x.RequestRule)
+                    .Where(
+                        x =>
+                            x.RequestRuleId != null
+                            && x.RequestRuleId == requestRule.Id
+                            && x.WorkflowActionId == null
+                    )
+                    .ToListAsync();
+                var workflowActions = await context.WorkflowAction
+                    .Include(x => x.RequestRule)
+                    .Where(x => x.RequestRuleId != null && x.RequestRuleId == requestRule.Id)
+                    .ToListAsync();
+
+                using var transaction = context.Database.BeginTransaction();
+                try
+                {
+                    if (requestRuleEvents != null)
+                    {
+                        requestRuleEvents.ForEach(x => x.RequestRuleId = null);
+                        context.RequestEvent.UpdateRange(requestRuleEvents);
+                        await context.SaveChangesAsync();
+                    }
+                    if (workflowActions != null)
+                    {
+                        workflowActions.ForEach(x =>
+                        {
+                            if (x.RequestRule != null)
+                            {
+                                x.Path = x.RequestRule.Path;
+                                x.Method = x.RequestRule.Method;
+                                x.PathRegex = RequestUtils.BuildRegexPath(x.RequestRule.Path);
+                            }
+                            x.RequestRuleId = null;
+                        });
+                        context.WorkflowAction.UpdateRange(workflowActions);
+                        await context.SaveChangesAsync();
+                    }
+                    context.RequestRule.Remove(requestRule);
+                    await context.SaveChangesAsync();
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw new Exception("Invalid database operation", e);
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using ProjectC.Client.Pages;
 using ProjectC.Server.Data;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Hubs;
@@ -36,22 +37,26 @@ namespace ProjectC.Server.Services
         {
             return await context.WebhookEvents
                 .Include(x => x.WebhookRule)
+                .Include(x => x.WorkflowTriggers)
                 .Where(x => x.WebhookRuleId == id)
                 .ToArrayAsync();
         }
 
         public async Task CopyAndSaveFromRequestEventAsync(int requestEventId)
         {
-            var requestEvent = await context.RequestEvent.FirstOrDefaultAsync(
-                x => x.Id == requestEventId
-            );
+            var requestEvent = await context.RequestEvent
+                .Include(x => x.WebhookRule)
+                .FirstOrDefaultAsync(x => x.Id == requestEventId);
             if (requestEvent is null)
             {
                 throw new Exception("Request event not found");
             }
+            if (requestEvent.WebhookRule is null)
+            {
+                throw new Exception("Invalid webhook event");
+            }
 
             var webhookEvent = mapper.Map<WebhookEvent>(requestEvent);
-
             context.WebhookEvents.Add(webhookEvent);
             await context.SaveChangesAsync();
         }

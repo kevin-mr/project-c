@@ -35,6 +35,14 @@ namespace ProjectC.Server.Controllers
             return requestRules.Select(x => mapper.Map<RequestRuleDto>(x)).ToArray();
         }
 
+        [HttpGet("{id}")]
+        public async Task<RequestRuleDto> GetByIdAsync(int id)
+        {
+            var requestRule = await requestRuleService.GetByIdAsync(id);
+
+            return mapper.Map<RequestRuleDto>(requestRule);
+        }
+
         [HttpGet("counter")]
         public async Task<IEnumerable<RequestRuleMethodCounterDto>> GetSummaryAsync()
         {

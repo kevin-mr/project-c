@@ -7,6 +7,7 @@ namespace ProjectC.Server.Data.Entities
         public RequestEvent()
         {
             Id = 0;
+            Path = string.Empty;
             Method = string.Empty;
             JsonHeaders = string.Empty;
             JsonBody = string.Empty;
@@ -14,6 +15,7 @@ namespace ProjectC.Server.Data.Entities
         }
 
         public int Id { get; set; }
+        public string Path { get; set; }
         public string Method { get; set; }
         public string JsonHeaders { get; set; }
         public string JsonBody { get; set; }

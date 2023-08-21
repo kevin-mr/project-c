@@ -13,12 +13,6 @@ namespace ProjectC.Server.Mappers
                     x => x.Path,
                     opt =>
                     {
-                        opt.PreCondition(
-                            x =>
-                                x.RequestRule is not null
-                                || x.WebhookRule is not null
-                                || x.WorkflowAction is not null
-                        );
                         opt.MapFrom(
                             x =>
                                 x.RequestRule != null
@@ -27,7 +21,7 @@ namespace ProjectC.Server.Mappers
                                         ? x.WebhookRule.Path
                                         : x.WorkflowAction != null
                                             ? x.WorkflowAction.Path
-                                            : string.Empty
+                                            : x.Path
                         );
                     }
                 )

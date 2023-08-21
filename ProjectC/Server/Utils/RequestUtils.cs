@@ -60,7 +60,7 @@ namespace ProjectC.Server.Utils
         {
             var headers = requestEvent.Headers.ToDictionary(x => x.Key, x => x.Value.ToArray());
 
-            return new Models.WebhookRequest
+            return new WebhookRequest
             {
                 Method = requestEvent.Method,
                 Headers = requestEvent.Headers.ToDictionary(

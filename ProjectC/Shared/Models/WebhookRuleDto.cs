@@ -9,6 +9,8 @@
             Path = string.Empty;
             Description = string.Empty;
             RedirectUrl = string.Empty;
+            WebhookRuleEvents = new List<RequestEventDto>();
+            WebhookEvents = new List<WebhookEventDto>();
         }
 
         public int Id { get; set; }
@@ -18,5 +20,8 @@
         public string? RedirectUrl { get; set; }
 
         public string MethodLabel => Method.ToString();
+
+        public IEnumerable<RequestEventDto> WebhookRuleEvents { get; set; }
+        public IEnumerable<WebhookEventDto> WebhookEvents { get; set; }
     }
 }

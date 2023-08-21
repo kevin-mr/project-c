@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using ProjectC.Server.Data.Entities;
 using ProjectC.Server.Services.Interfaces;
-using ProjectC.Server.Validators;
 using ProjectC.Shared.Models;
 
 namespace ProjectC.Server.Controllers
@@ -37,6 +35,14 @@ namespace ProjectC.Server.Controllers
             var webhookRules = await webhookRuleService.GetAsync();
 
             return webhookRules.Select(x => mapper.Map<WebhookRuleDto>(x)).ToArray();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<WebhookRuleDto> GetByIdAsync(int id)
+        {
+            var webhookRule = await webhookRuleService.GetByIdAsync(id);
+
+            return mapper.Map<WebhookRuleDto>(webhookRule);
         }
 
         [HttpGet("{id}/events")]

@@ -79,7 +79,10 @@
     {
         var result = await DialogService.ShowConfirmDialog(
             "Confirm",
-            "Are you sure you want to delete this Webhook Event?",
+            webhookEvent.WorkflowTriggers.Count() > 0
+                ? $"Are you sure you want to delete this Webhook Event? You have {webhookEvent.WorkflowTriggers.Count()} Workflow Trigger(s) associated, " +
+                    $"if you continue they are going to be automatically deleted too."
+                : "Are you sure you want to delete this Webhook Event?",
             "Delete",
             Color.Error);
         if (result)

@@ -6,6 +6,7 @@ namespace ProjectC.Server.Services.Interfaces
     public interface IRequestRuleService
     {
         Task<IEnumerable<RequestRule>> GetAsync();
+        Task<RequestRule?> GetByIdAsync(int id);
         Task<IEnumerable<RequestRuleMethodCounter>> GetMethodCountersAsync();
         Task CreateAsync(RequestRule request);
         Task UpdateAsync(RequestRule request);

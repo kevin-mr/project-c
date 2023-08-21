@@ -57,7 +57,7 @@ namespace ProjectC.Server.Services
             return await context.RequestEvent
                 .Include(x => x.RequestRule)
                 .Include(x => x.WorkflowAction)
-                .Where(x => x.RequestRuleId != null && x.WorkflowActionId != null)
+                .Where(x => x.WorkflowActionId != null)
                 .ToArrayAsync();
         }
 

@@ -12,6 +12,8 @@
             ResponseHeaders = string.Empty;
             ResponseBody = string.Empty;
             ResponseDelay = 0;
+            WorkflowActions = new List<WorkflowActionDto>();
+            RequestRuleEvents = new List<RequestEventDto>();
         }
 
         public int Id { get; set; }
@@ -24,5 +26,8 @@
         public string ResponseBody { get; set; }
 
         public string MethodLabel => Method.ToString();
+
+        public IEnumerable<WorkflowActionDto> WorkflowActions { get; set; }
+        public IEnumerable<RequestEventDto> RequestRuleEvents { get; set; }
     }
 }
