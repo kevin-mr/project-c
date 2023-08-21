@@ -5,7 +5,7 @@
         <MudText Class="flex-1">@RequestEvent.Path 
             @if (RequestEvent.WorkflowActionId is not null)
             {
-                <MudChip Text="Workflow">W</MudChip>
+                <MudChip Text="Workflow Identifier" Size="Size.Small">W-@RequestEvent.WorkflowActionId</MudChip>
             }
         </MudText>
         <MudText Class="flex-1">@RequestEvent.ArrivedTimeLabel()</MudText>

@@ -19,6 +19,7 @@
                             <td>
                                 <MudText Typo="Typo.body2">@WorkflowStorage.PropertyIdentifier</MudText>
                             </td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>
@@ -26,6 +27,10 @@
                             </td>
                             <td>
                                 <MudText Typo="Typo.body2">@WorkflowStorage.Data</MudText>
+                            </td>
+                            <td class="d-flex justify-end">
+                                <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Delete" Title="Delete" @onclick="ClearAsync" />
+                                <MudIcon Icon="@Icons.Material.Filled.Refresh" Title="View" @onclick="RefreshWorkflowStorageAsync" />
                             </td>
                         </tr>
                     </tbody>
@@ -38,25 +43,6 @@
         </div>
     </DialogContent>
     <DialogActions>
-        @if (WorkflowStorage is not null)
-        {
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Error"
-                       Disabled="@Clearing"
-                       OnClick="ClearAsync">
-                @if (Clearing)
-                {
-                    <div class="d-flex justify-space-between align-center">
-                        <div>Clearing</div>
-                        <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
-                    </div>
-                }
-                else
-                {
-                    <span>Clear</span>
-                }
-            </MudButton>
-        }
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
                    @onclick="@(async () => await ConfigAsync())">

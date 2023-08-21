@@ -17,7 +17,7 @@ else
                         <MudExpansionPanel>
                             <TitleContent>
                                 <div class="d-flex justify-space-between align-center">
-                                    <MudText Class="mt-1">@workflow.Name</MudText>
+                                    <MudText Class="mt-1 d-flex align-center"><MudChip Text="Workflow Identifier" Size="Size.Small">W-@workflow.Id</MudChip>@workflow.Name</MudText>
                                     <div class="d-flex align-center" @onclick:stopPropagation="true" @onclick:preventDefault="true">
                                         <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflow))"></MudIconButton>
                                         <MudIconButton Icon="@Icons.Material.Filled.Storage" OnClick="@(async () => await ViewWorkflowStorageAsync(workflow))"></MudIconButton>

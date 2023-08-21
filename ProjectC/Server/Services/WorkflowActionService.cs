@@ -46,6 +46,12 @@ namespace ProjectC.Server.Services
                     throw new Exception("Invalid data");
                 }
             }
+            else
+            {
+                workflowAction.Path = null;
+                workflowAction.PathRegex = null;
+                workflowAction.Method = null;
+            }
 
             context.WorkflowAction.Add(workflowAction);
             await context.SaveChangesAsync();
@@ -70,6 +76,9 @@ namespace ProjectC.Server.Services
             if (workflowAction.RequestRuleId > 0)
             {
                 currentWorkflowAction.RequestRuleId = workflowAction.RequestRuleId;
+                currentWorkflowAction.Path = null;
+                currentWorkflowAction.PathRegex = null;
+                currentWorkflowAction.Method = null;
             }
             else
             {

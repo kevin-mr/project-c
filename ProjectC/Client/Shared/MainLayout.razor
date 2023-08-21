@@ -6,11 +6,12 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar>
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        Project C
+    <MudAppBar Dense="true">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Custom.Brands.GitHub"/>
     </MudAppBar>
-    <MudDrawer @bind-Open="@DrawerOpen">
+    <MudDrawer @bind-Open="@DrawerOpen" Elevation="1" Variant="@DrawerVariant.Temporary">
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
@@ -34,7 +35,7 @@
 
     private void DrawerToggle()
     {
-        DrawerOpen = !DrawerOpen;
+        DrawerOpen = !DrawerOpen;   
     }
 
     private void OnDarkModeChanged()
