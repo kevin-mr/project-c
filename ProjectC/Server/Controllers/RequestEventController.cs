@@ -25,6 +25,12 @@ namespace ProjectC.Server.Controllers
             this.webhookEventService = webhookEventService;
         }
 
+        /// <summary>
+        /// Returns all Request Events
+        /// </summary>
+        /// <returns></returns>
+        /// <response code="200">Returns all Request Events</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet()]
         public async Task<IEnumerable<RequestEventDto>> GetAsync()
         {

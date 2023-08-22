@@ -10,6 +10,7 @@ using FluentValidation;
 using ProjectC.Server.Middlewares;
 using System.Text.Json.Serialization;
 using ProjectC.Server.BackgroudServices;
+using Microsoft.OpenApi.Models;
 
 namespace ProjectC
 {
@@ -28,6 +29,20 @@ namespace ProjectC
                 );
             ;
             builder.Services.AddRazorPages();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc(
+                    "v1",
+                    new OpenApiInfo
+                    {
+                        Version = "v1",
+                        Title = "Project C",
+                        Description = "Tool for Manual Integration Testing RESTful APIs"
+                    }
+                );
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+            });
 
             //SignalR
             builder.Services.AddSignalR();
@@ -66,6 +81,8 @@ namespace ProjectC
             if (app.Environment.IsDevelopment())
             {
                 app.UseWebAssemblyDebugging();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
             else
             {
