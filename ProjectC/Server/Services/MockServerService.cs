@@ -187,7 +187,10 @@ namespace ProjectC.Server.Services
                 Thread.Sleep(workflowAction.ResponseDelay.Value);
             }
             httpContext.Response.StatusCode = workflowAction.ResponseStatus ?? 500;
-
+            if (!string.IsNullOrEmpty(workflowAction.ResponseHeaders))
+            {
+                SetHeaders(httpContext, workflowAction.ResponseHeaders);
+            }
             var requestBody = await RequestUtils.ReadRequestBodyAsync(httpContext.Request);
             var requestEvent = RequestUtils.BuildRequestEventAsync(
                 httpContext.Request,
