@@ -28,6 +28,16 @@ namespace ProjectC
                             ReferenceHandler.IgnoreCycles
                 );
             ;
+            builder.Services.AddCors(
+                o =>
+                    o.AddPolicy(
+                        "AllowAnyOrigin",
+                        builder =>
+                        {
+                            builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                        }
+                    )
+            );
             builder.Services.AddRazorPages();
             builder.Services.AddSwaggerGen(options =>
             {
@@ -94,6 +104,8 @@ namespace ProjectC
 
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
+
+            app.UseCors("AllowAnyOrigin");
 
             app.UseMockServerHandler();
             app.UseWebhookHandler();
