@@ -63,6 +63,7 @@ namespace ProjectC.Server.Services
 
             var method = GetRequestRuleMethod(request.Method);
             var path = request.Path.Value.Remove(0, MOCK_SERVER_PREFIX.Length);
+            var queryString = request.QueryString.ToString();
 
             var requestRules = await context.RequestRule
                 .Select(
@@ -76,7 +77,12 @@ namespace ProjectC.Server.Services
                 )
                 .ToArrayAsync();
             var requestRule = requestRules.FirstOrDefault(
-                x => x.Method == method && Regex.IsMatch(path, x.PathRegex)
+                x =>
+                    x.Method == method
+                    && (
+                        Regex.IsMatch(path, x.PathRegex)
+                        || Regex.IsMatch(path + queryString, x.PathRegex)
+                    )
             );
             return requestRule is null
                 ? null
@@ -110,6 +116,7 @@ namespace ProjectC.Server.Services
 
             var method = GetRequestRuleMethod(request.Method);
             var path = request.Path.Value.Remove(0, MOCK_SERVER_PREFIX.Length);
+            var queryString = request.QueryString.ToString();
 
             var workflowActions = await context.WorkflowAction
                 .Include(x => x.RequestRule)
@@ -127,7 +134,12 @@ namespace ProjectC.Server.Services
                 )
                 .ToArrayAsync();
             var workflowAction = workflowActions.FirstOrDefault(
-                x => x.Method == method && Regex.IsMatch(path, x.PathRegex)
+                x =>
+                    x.Method == method
+                    && (
+                        Regex.IsMatch(path, x.PathRegex)
+                        || Regex.IsMatch(path + queryString, x.PathRegex)
+                    )
             );
 
             return workflowAction is null

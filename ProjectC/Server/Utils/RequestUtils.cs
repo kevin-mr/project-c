@@ -107,7 +107,12 @@ namespace ProjectC.Server.Utils
 
         public static string BuildRegexPath(string path)
         {
-            return path.Contains("{number}") ? path.Replace("{number}", "[0-9]+") : path;
+            var regexPath = path;
+            regexPath = regexPath.Contains("{number}")
+                ? regexPath.Replace("{number}", "[0-9]+")
+                : regexPath;
+            regexPath = regexPath.Contains("?") ? regexPath.Replace("?", "\\?") : regexPath;
+            return regexPath;
         }
     }
 }
