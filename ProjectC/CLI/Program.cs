@@ -72,6 +72,7 @@ namespace ProjectC.CLI
             try
             {
                 await hubConnection.StartAsync();
+                PrintSuccesMessage("Server hub successfully connection ");
             }
             catch (Exception)
             {
