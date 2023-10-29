@@ -137,11 +137,11 @@ namespace ProjectC.Server.Services
         {
             try
             {
-                var data = JsonSerializer.Deserialize<dynamic>(requestEvent.Body);
                 if (string.IsNullOrEmpty(workflowStorage.Data))
                 {
                     workflowStorage.Data = EMPTY_STORAGE_DATA;
                 }
+                var data = JsonSerializer.Deserialize<dynamic>(requestEvent.Body);
                 var storage = JsonSerializer.Deserialize<List<dynamic>>(workflowStorage.Data);
                 if (data is not null && storage is not null)
                 {
@@ -168,11 +168,11 @@ namespace ProjectC.Server.Services
         {
             try
             {
-                var data = JsonSerializer.Deserialize<dynamic>(requestEvent.Body);
                 if (string.IsNullOrEmpty(workflowStorage.Data))
                 {
                     workflowStorage.Data = EMPTY_STORAGE_DATA;
                 }
+                var data = JsonSerializer.Deserialize<dynamic>(requestEvent.Body);
                 var storage = JsonSerializer.Deserialize<List<dynamic>>(workflowStorage.Data);
                 if (data is not null && storage is not null)
                 {

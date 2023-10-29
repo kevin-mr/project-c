@@ -112,7 +112,7 @@ namespace ProjectC.Server.Utils
                 ? regexPath.Replace("{number}", "[0-9]+")
                 : regexPath;
             regexPath = regexPath.Contains("?") ? regexPath.Replace("?", "\\?") : regexPath;
-            return regexPath;
+            return $"^{regexPath}$";
         }
     }
 }
