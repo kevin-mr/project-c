@@ -81,12 +81,15 @@ namespace ProjectC.Server.Data
                 .HasForeignKey<WorkflowStorage>(x => x.WorkflowId);
 
             modelBuilder.Entity<WorkflowAction>().ToTable("WorkflowAction");
-            modelBuilder
+            _ = modelBuilder
                 .Entity<WorkflowAction>()
                 .Property(x => x.Method)
                 .HasConversion(
                     x => x.ToString(),
-                    x => (RequestRuleMethod)Enum.Parse(typeof(RequestRuleMethod), x)
+                    x =>
+                        !string.IsNullOrEmpty(x)
+                            ? (RequestRuleMethod)Enum.Parse(typeof(RequestRuleMethod), x)
+                            : null
                 );
             modelBuilder
                 .Entity<WorkflowAction>()

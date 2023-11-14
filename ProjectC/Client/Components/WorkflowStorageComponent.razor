@@ -56,7 +56,6 @@
     public WorkflowDto Workflow { get; set; } = new WorkflowDto();
 
     private WorkflowStorageDto? WorkflowStorage;
-    private bool Clearing = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,8 +92,6 @@
                 Color.Error);
             if (result)
             {
-                Clearing = true;
-
                 var response = await Http.PostAsync($"api/v1/workflow-storage/{WorkflowStorage.Id}/clear", null);
                 if (response.IsSuccessStatusCode)
                 {
@@ -105,8 +102,6 @@
                 {
                     Snackbar.Add("Storage data couldn't be cleared", Severity.Error);
                 }
-
-                Clearing = false;
             }
         }
     }

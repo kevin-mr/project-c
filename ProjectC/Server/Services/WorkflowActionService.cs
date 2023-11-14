@@ -28,7 +28,7 @@ namespace ProjectC.Server.Services
                 .Include(x => x.RequestRule)
                 .Include(x => x.WorkflowTriggers)
                 .ThenInclude(x => x.WebhookEvent)
-                .ThenInclude(x => x.WebhookRule)
+                .ThenInclude(x => x!.WebhookRule)
                 .ToArrayAsync();
         }
 
