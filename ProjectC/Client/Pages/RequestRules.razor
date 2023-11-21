@@ -31,7 +31,9 @@
 
     private async Task AddRequestRuleAsync()
     {
-        var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>("Request Rule", DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
+        var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>(
+            "Request Rule", 
+            DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
         var result = await dialog.Result;
 
         if (!result.Canceled)
