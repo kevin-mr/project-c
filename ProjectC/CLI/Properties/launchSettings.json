@@ -2,8 +2,8 @@
   "profiles": {
     "ProjectC.CLI": {
       "commandName": "Project",
-      //"commandLineArgs": "--url https://localhost:7026"
-      "commandLineArgs": "--url https://project-c-prod.azurewebsites.net"
+      "commandLineArgs": "--url https://localhost:7026"
+      //"commandLineArgs": "--url https://project-c-prod.azurewebsites.net"
     }
   }
 }
