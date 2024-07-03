@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "jsoneditor@9.10.2",
+      "destination": "wwwroot/js/jsoneditor/"
+    }
+  ,
+{
+  "provider": "cdnjs",
+  "library": "jquery-jsonview@1.2.3",
+  "destination": "wwwroot/js/jquery-jsonview/"
+}
+,
+{
+  "provider": "cdnjs",
+  "library": "jquery@3.7.0",
+  "destination": "wwwroot/js/jquery/"
+}
+]
+}

@@ -1,0 +1,28 @@
+﻿@page "/settings"
+@inject SettingsService SettingsService
+
+<MudPaper Class="mt-10">
+    <div class="pa-10">
+        <MudSwitch Checked="@DarkMode" 
+                   CheckedChanged="OnCheckedChanged" 
+                   T="bool" 
+                   Color="Color.Primary" 
+                   Label="Dark Mode" />
+    </div>
+</MudPaper>
+
+@code {
+    private bool DarkMode;
+
+    protected override void OnInitialized()
+    {
+        DarkMode = SettingsService.DarkMode;
+        base.OnInitialized();
+    }
+
+    private void OnCheckedChanged(bool value)
+    {
+        DarkMode = value;
+        SettingsService.DarkMode = value;
+    }
+}

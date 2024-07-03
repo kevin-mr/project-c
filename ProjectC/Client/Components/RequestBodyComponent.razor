@@ -1,0 +1,57 @@
+﻿@inject IJSRuntime JSRuntime
+
+<MudTabs>
+    <MudTabPanel>
+        <TabContent>
+            Raw
+        </TabContent>
+        <ChildContent>
+            @if (!string.IsNullOrEmpty(Body.Trim()))
+            {
+                <p class="py-10">
+                    @Body
+                </p>
+            }
+            else
+            {
+                <MudText Class="pt-10" Align="Align.Center">No Content</MudText>
+            }
+        </ChildContent>
+    </MudTabPanel>
+    <MudTabPanel>
+        <TabContent>
+            Pretty
+        </TabContent>
+        <ChildContent>
+            @if (!string.IsNullOrEmpty(JsonBody.Trim()))
+            {
+                <pre class="py-10">
+                    @JsonBody
+                </pre>
+            }
+            else
+            {
+                <MudText Class="pt-10" Align="Align.Center">No Content</MudText>
+            }
+        </ChildContent>
+    </MudTabPanel>
+</MudTabs>
+
+@code {
+    [Parameter]
+    public string Body { get; set; } = string.Empty;
+
+    [Parameter]
+    public string JsonBody { get; set; } = string.Empty;
+
+    //TODO
+    //ElementReference JsonEditorContainer;
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    if (firstRender)
+    //    {
+    //        await JSRuntime.InvokeVoidAsync("BlazorInterop.LoadJsonEditor", JsonEditorContainer, Body);
+    //    }
+    //    await base.OnAfterRenderAsync(firstRender);
+    //}
+}

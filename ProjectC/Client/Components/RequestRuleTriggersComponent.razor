@@ -1,0 +1,94 @@
+﻿@using AutoMapper;
+@inject HttpClient Http
+@inject IMapper mapper
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <div class="pa-5">
+            <MudSimpleTable Dense="true">
+                <tbody>
+                    @foreach (var requestRuleTrigger in RequestRuleTriggers)
+                    {
+                        <tr>
+                            <td>
+                                <MudText Class="flex-1">@requestRuleTrigger.Description</MudText>
+                            </td>
+                            <td>
+                                <MudText Class="flex-1">@requestRuleTrigger.WebhookRuleDescription</MudText>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-end">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(requestRuleTrigger))"></MudIconButton>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   @onclick="@(async () => await AddAsync())">
+            Add Action
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public RequestRuleVariantDto RequestRuleVariant { get; set; } = new RequestRuleVariantDto();
+
+    [Parameter]
+    public List<RequestRuleTriggerDto> RequestRuleTriggers { get; set; } = new List<RequestRuleTriggerDto>();
+
+    private async Task EditAsync(RequestRuleTriggerDto requestRuleTrigger)
+    {
+        var parameters = new DialogParameters
+        {
+            ["RequestRuleVariant"] = RequestRuleVariant,
+            ["RequestRuleTrigger"] = requestRuleTrigger
+        };
+        var dialog = await DialogService.ShowAsync<RequestRuleTriggerEditFormComponent>("Workflow Trigger", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshRequestRuleTriggersAsync();
+        }
+    }
+
+    private async Task AddAsync()
+    {
+        var parameters = new DialogParameters
+        {
+            ["RequestRuleVariant"] = RequestRuleVariant,
+            ["RequestRuleTrigger"] = new RequestRuleTriggerDto(),
+        };
+        var dialog = await DialogService.ShowAsync<RequestRuleTriggerEditFormComponent>("Workflow Trigger", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshRequestRuleTriggersAsync();
+        }
+    }
+
+    public async Task RefreshRequestRuleTriggersAsync()
+    {
+        var requestRuleTriggers = await Http.GetFromJsonAsync<RequestRuleTriggerDto[]>($"api/v1/request-rule-variant/{RequestRuleVariant.Id}/trigger");
+        if (requestRuleTriggers is not null)
+        {
+            RequestRuleTriggers = requestRuleTriggers.ToList();
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshRequestRuleTriggersAsync();
+        await base.OnInitializedAsync();
+    }
+}

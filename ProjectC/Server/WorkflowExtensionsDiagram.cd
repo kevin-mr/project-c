@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="ProjectC.Server.Controllers.RequestRuleTriggerController">
+    <Position X="1.5" Y="1.25" Width="4.75" />
+    <Members>
+      <Method Name="RequestRuleTriggerController" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIIAAAAAAAAAAAAAAAAAAgAAAAAIIAEAIA=</HashCode>
+      <FileName>Controllers\RequestRuleTriggerController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="mapper" />
+      <Field Name="requestRuleTriggerService" />
+      <Field Name="requestRuleTriggerValidator" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Services.RequestRuleTriggerService">
+    <Position X="12.25" Y="3" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAACAAAgAAAAAIIAAAIA=</HashCode>
+      <FileName>Services\RequestRuleTriggerService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="context" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Server.Validators.RequestRuleTriggerValidator">
+    <Position X="4.5" Y="9.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Validators\RequestRuleTriggerValidator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Server.Data.ProjectCDbContext">
+    <Position X="7.25" Y="7.5" Width="4.5" />
+    <Members>
+      <Property Name="RequestEvent" Hidden="true" />
+      <Property Name="RequestRule" Hidden="true" />
+      <Property Name="WebhookEvents" Hidden="true" />
+      <Property Name="WebhookRule" Hidden="true" />
+      <Property Name="Workflow" Hidden="true" />
+      <Property Name="RequestRuleVariant" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAgAAAAAAEEIAAAAAAAAAQAAQAIAg=</HashCode>
+      <FileName>Data\ProjectCDbContext.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="WorkflowStorage" />
+      <Property Name="RequestRuleTrigger" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Microsoft.EntityFrameworkCore.DbSet&lt;TEntity&gt;" Collapsed="true">
+    <Position X="13.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Server.Data.Entities.RequestRuleTrigger">
+    <Position X="10.5" Y="9.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAgAAAAAAAAAAgAAIAAAAAACAAAAAABAAA=</HashCode>
+      <FileName>Data\Entities\RequestRuleTrigger.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FluentValidation.AbstractValidator&lt;T&gt;" Collapsed="true">
+    <Position X="4.75" Y="8.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Server.Mappers.RequestRuleTriggerProfile">
+    <Position X="1.25" Y="8.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappers\RequestRuleTriggerProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Shared.Mappers.RequestRuleTriggerDtoProfile">
+    <Position X="1" Y="11.75" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+  </Class>
+  <Class Name="AutoMapper.Profile" Collapsed="true">
+    <Position X="1.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Shared.Models.CreateRequestRuleTriggerDto">
+    <Position X="7.5" Y="12" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ProjectC.Shared.Models.EditRequestRuleTriggerDto">
+    <Position X="7.5" Y="14.5" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ProjectC.Shared.Models.RequestRuleTriggerDto">
+    <Position X="4" Y="14.5" Width="3.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ProjectC.Server.Controllers.WorkflowStorageController">
+    <Position X="1.5" Y="3.5" Width="4.75" />
+    <Members>
+      <Method Name="WorkflowStorageController" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAIAAAAAAAAAAAAABAAAAgAAAAAKIAAAIA=</HashCode>
+      <FileName>Controllers\WorkflowStorageController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="mapper" />
+      <Field Name="workflowStorageService" />
+      <Field Name="workflowStorageValidator" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Services.WorkflowStorageService">
+    <Position X="7.25" Y="3.25" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>AAAKAAAAAACAAQAAIAAAAEAAABAAAAgABAAAMIAAAIA=</HashCode>
+      <FileName>Services\WorkflowStorageService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="context" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Server.Data.Entities.WorkflowStorage">
+    <Position X="7.5" Y="9.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAIAABCAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\Entities\WorkflowStorage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Shared.Models.CreateWorkflowStorageDto">
+    <Position X="10.25" Y="12" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ProjectC.Shared.Models.EditWorkflowStorageDto">
+    <Position X="10.25" Y="14.5" Width="2.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ProjectC.Shared.Models.WorkflowStorageDto">
+    <Position X="12.75" Y="12" Width="2.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ProjectC.Shared.Mappers.WorkflowStorageDtoProfile">
+    <Position X="1" Y="13" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ProjectC.Server.Mappers.WorkflowStorageProfile">
+    <Position X="1.25" Y="10.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappers\WorkflowStorageProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Server.Validators.WorkflowStorageValidator">
+    <Position X="4.5" Y="10.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Validators\WorkflowStorageValidator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Client.Validators.WorkflowStorageDtoValidator">
+    <Position X="1" Y="14.5" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ProjectC.Client.Validators.RequestRuleTriggerDtoValidator">
+    <Position X="4.25" Y="12.25" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Interface Name="ProjectC.Server.Services.Interfaces.IRequestRuleTriggerService" Collapsed="true">
+    <Position X="13.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAACAAAgAAAAAIIAAAIA=</HashCode>
+      <FileName>Services\Interfaces\IRequestRuleTriggerService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="FluentValidation.IValidator&lt;T&gt;" Collapsed="true">
+    <Position X="4.5" Y="7" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="AutoMapper.IMapper" Collapsed="true">
+    <Position X="1.75" Y="6.25" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="ProjectC.Server.Services.Interfaces.IWorkflowStorageService" Collapsed="true">
+    <Position X="10.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAEAAABAAAAgAAAAAIIAAAIA=</HashCode>
+      <FileName>Services\Interfaces\IWorkflowStorageService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

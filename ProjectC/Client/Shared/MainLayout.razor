@@ -1,0 +1,51 @@
+﻿@inherits LayoutComponentBase
+@inject SettingsService SettingsService
+
+<MudThemeProvider @bind-IsDarkMode=@DarkMode Theme=@Theme/>
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Dense="true">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Custom.Brands.GitHub"/>
+    </MudAppBar>
+    <MudDrawer @bind-Open="@DrawerOpen" Elevation="1" Variant="@DrawerVariant.Temporary">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {        
+    private bool DrawerOpen = false;
+    private MudTheme Theme = new();
+    private bool DarkMode;
+
+    protected override void OnInitialized()
+    {
+        DarkMode = SettingsService.DarkMode;
+        SettingsService.OnChangeDarkMode += OnDarkModeChanged;
+        base.OnInitialized();
+    }
+
+    private void DrawerToggle()
+    {
+        DrawerOpen = !DrawerOpen;   
+    }
+
+    private void OnDarkModeChanged()
+    {
+        this.DarkMode = SettingsService.DarkMode;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        SettingsService.OnChangeDarkMode -= OnDarkModeChanged;
+    }
+}

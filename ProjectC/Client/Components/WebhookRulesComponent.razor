@@ -1,0 +1,87 @@
+﻿@inject HttpClient Http
+@inject IDialogService DialogService
+
+@if (loading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-2" />
+}
+else
+{
+    @if (WebhookRules.Length > 0)
+    {
+        <div class="h-inherit overflow-y-scroll">
+            <MudPaper>
+                <MudList>
+                    @foreach (var webhookRule in WebhookRules)
+                    {
+                        <MudListItem>
+                            <WebhookRuleComponent WebhookRule=@webhookRule
+                                                  OnEdit="@(async () => await EditAsync(webhookRule))"
+                                                  OnViewEvents="@(async () => await ViewEventsAsync(webhookRule))"></WebhookRuleComponent>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudPaper>
+        </div>
+    }
+    else
+    {
+        <MudPaper Class="pa-10">
+            <MudText Align="Align.Center">You don't have any <b>Webhook Rule</b>, start creating one to see all you can do with our <b>Webhook Module</b>.</MudText>
+        </MudPaper>
+    }
+}
+
+@code {
+    private WebhookRuleDto[] WebhookRules = Array.Empty<WebhookRuleDto>();
+    private bool loading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshWebhookRulesAsync();
+        await base.OnInitializedAsync();
+    }
+
+    public async Task RefreshWebhookRulesAsync()
+    {
+        loading = true;
+        StateHasChanged();
+        var webhookRules = await Http.GetFromJsonAsync<WebhookRuleDto[]>("api/v1/webhook");
+        if (webhookRules is not null)
+        {
+            WebhookRules = webhookRules;
+        }
+        loading = false;
+        StateHasChanged();
+    }
+
+    private async Task EditAsync(WebhookRuleDto webhookRule)
+    {
+        var parameters = new DialogParameters
+        {
+            ["WebhookRule"] = webhookRule
+        };
+        var dialog = await DialogService.ShowAsync<WebhookRuleEditFormComponent>("Webhook Rule", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWebhookRulesAsync();
+        }
+    }
+
+    private async Task ViewEventsAsync(WebhookRuleDto webhookRule)
+    {
+        var parameters = new DialogParameters
+        {
+            ["WebhookRule"] = webhookRule
+        };
+        var dialog = await DialogService.ShowAsync<WebhookEventsComponent>("Webhook Events", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWebhookRulesAsync();
+        }
+    }
+}

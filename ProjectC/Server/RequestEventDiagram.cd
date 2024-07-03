@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="ProjectC.Server.Controllers.RequestEventController">
+    <Position X="0.5" Y="0.5" Width="4.5" />
+    <Members>
+      <Method Name="DeleteByRequestRuleVariantAsync" Hidden="true" />
+      <Method Name="GetByRequestRuleVariantAsync" Hidden="true" />
+      <Method Name="RequestEventController" Hidden="true" />
+      <Method Name="ResentRequestAsync" Hidden="true" />
+      <Method Name="SaveWebhookEventRequestAsync" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAgAAIAAAAAIAAEAAACAACBAAgAAAAIAAAAJA=</HashCode>
+      <FileName>Controllers\RequestEventController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="mapper" />
+      <Field Name="requestEventService" />
+      <Field Name="webhookEventService" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Services.RequestEventService">
+    <Position X="4" Y="3.5" Width="3.5" />
+    <Members>
+      <Method Name="DeleteByRequestRuleAsync" Hidden="true" />
+      <Method Name="DeleteByWebhookRuleAsync" Hidden="true" />
+      <Method Name="DeleteByRequestRuleVariantAsync" Hidden="true" />
+      <Method Name="GetByRequestRuleAsync" Hidden="true" />
+      <Method Name="GetByWebhookRuleAsync" Hidden="true" />
+      <Method Name="GetByRequestRuleVariantAsync" Hidden="true" />
+      <Method Name="RequestEventService" Hidden="true" />
+      <Method Name="ResendRequestAsync" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAACIAAAAAAIAAAAAIAAEAAACAACBABAAAAAIAAAAIA=</HashCode>
+      <FileName>Services\RequestEventService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="context" />
+      <Field Name="mapper" />
+      <Field Name="webhookRuleHubContext" />
+    </ShowAsAssociation>
+    <Lollipop Position="1.19" />
+  </Class>
+  <Class Name="ProjectC.Server.Services.WebhookEventService">
+    <Position X="7.75" Y="3.5" Width="3.5" />
+    <Members>
+      <Method Name="CopyAndSaveFromRequestEventAsync" Hidden="true" />
+      <Method Name="GetByWebhookRuleIdAsync" Hidden="true" />
+      <Method Name="ResendAsync" Hidden="true" />
+      <Method Name="WebhookEventService" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAIAAAAAAQAAAAAAAAAAAhAAAAAIAAgAIA=</HashCode>
+      <FileName>Services\WebhookEventService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="context" />
+      <Field Name="mapper" />
+      <Field Name="webhookRuleHubContext" />
+    </ShowAsAssociation>
+    <Lollipop Position="1.092" />
+  </Class>
+  <Class Name="ProjectC.Server.Data.ProjectCDbContext">
+    <Position X="4.25" Y="6.25" Width="3.75" />
+    <Members>
+      <Method Name="ProjectCDbContext" Hidden="true" />
+      <Property Name="RequestRule" Hidden="true" />
+      <Property Name="WebhookEvents" Hidden="true" />
+      <Property Name="WebhookRule" Hidden="true" />
+      <Property Name="Workflow" Hidden="true" />
+      <Property Name="RequestRuleVariant" Hidden="true" />
+      <Property Name="WorkflowStorage" Hidden="true" />
+      <Property Name="RequestRuleTrigger" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAgAAAAAAEEIAAAAAAAAAQAAQAIAg=</HashCode>
+      <FileName>Data\ProjectCDbContext.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="RequestEvent" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Hubs.RequestHub">
+    <Position X="9" Y="10" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Hubs\RequestHub.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.AspNetCore.SignalR.Hub" Collapsed="true">
+    <Position X="9.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ProjectC.Server.Mappers.RequestEventProfile" Collapsed="true">
+    <Position X="1.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappers\RequestEventProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AutoMapper.Profile" Collapsed="true">
+    <Position X="1.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Microsoft.EntityFrameworkCore.DbSet&lt;TEntity&gt;" Collapsed="true">
+    <Position X="1.75" Y="9" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Server.Data.Entities.RequestEvent">
+    <Position X="1.75" Y="9.75" Width="3" />
+    <Members>
+      <Property Name="RequestRule" Hidden="true" />
+      <Property Name="RequestRuleId" Hidden="true" />
+      <Property Name="WebhookRule" Hidden="true" />
+      <Property Name="WebhookRuleId" Hidden="true" />
+      <Property Name="RequestRuleVariant" Hidden="true" />
+      <Property Name="RequestRuleVariantId" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AIACAAAAAAAAAAIAQAAhAAgACIAAAAABAAgQAAAAIAA=</HashCode>
+      <FileName>Data\Entities\RequestEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Shared.Models.RequestEventDto">
+    <Position X="5.25" Y="9.5" Width="3.25" />
+    <Members>
+      <Property Name="RequestRuleVariantDescription" Hidden="true" />
+      <Property Name="RequestRuleVariantId" Hidden="true" />
+    </Members>
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="ProjectC.Server.Services.Interfaces.IRequestEventService" Collapsed="true">
+    <Position X="5.75" Y="2.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAIAAAAAIAAEAAACAACBAAAAAAAIAAAAIA=</HashCode>
+      <FileName>Services\Interfaces\IRequestEventService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ProjectC.Server.Services.Interfaces.IWebhookEventService" Collapsed="true">
+    <Position X="9.25" Y="2.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAAAAgAAAAAIAAgAIA=</HashCode>
+      <FileName>Services\Interfaces\IWebhookEventService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="AutoMapper.IMapper" Collapsed="true">
+    <Position X="1.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Microsoft.AspNetCore.SignalR.IHubContext&lt;THub&gt;" Collapsed="true">
+    <Position X="8.75" Y="7.75" Width="2.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="ProjectC.Shared.Models.IRequestEventDto" Collapsed="true">
+    <Position X="5.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

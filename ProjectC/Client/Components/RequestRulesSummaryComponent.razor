@@ -1,0 +1,68 @@
+﻿@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject SettingsService SettingsService
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Mock Server</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Explore" OnClick="GoToRequestRules" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudChart ChartType="ChartType.Donut" Width="50%" InputData="@Data" InputLabels="@Labels">
+            <CustomGraphics>
+                <text class="donut-inner-text" x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" fill="@(DarkMode ? "white" : "black")" font-size="5">Total</text>
+                <text class="donut-inner-text" x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" fill="@(DarkMode ? "white" : "black")" font-size="5">@Data.Sum().ToString()</text>
+            </CustomGraphics>
+        </MudChart>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private string[] Labels = { "GET", "POST", "PUT", "DELETE" };
+    private double[] Data = Array.Empty<double>();
+    private RequestRuleMethodCounterDto[] RequestRulesCounters = Array.Empty<RequestRuleMethodCounterDto>();
+    private bool DarkMode;
+
+    protected override async Task OnInitializedAsync()
+    {
+        DarkMode = SettingsService.DarkMode;
+        SettingsService.OnChangeDarkMode += OnDarkModeChanged;
+        await LoadRequestRulesMethodCountersAsync();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadRequestRulesMethodCountersAsync()
+    {
+        var requestRulesCounters = await Http.GetFromJsonAsync<RequestRuleMethodCounterDto[]>("api/v1/request/counter");
+        if (requestRulesCounters is not null)
+        {
+            RequestRulesCounters = requestRulesCounters;
+            var getCounter = requestRulesCounters.FirstOrDefault(x => x.Method == RequestRuleMethodDto.GET)?.Counter ?? 0;
+            var postCounter = requestRulesCounters.FirstOrDefault(x => x.Method == RequestRuleMethodDto.POST)?.Counter ?? 0;
+            var putCounter = requestRulesCounters.FirstOrDefault(x => x.Method == RequestRuleMethodDto.PUT)?.Counter ?? 0;
+            var deleteCounter = requestRulesCounters.FirstOrDefault(x => x.Method == RequestRuleMethodDto.DELETE)?.Counter ?? 0;
+            Data = new double[] { getCounter, postCounter, putCounter, deleteCounter };
+            StateHasChanged();
+        }
+    }
+
+    private void GoToRequestRules()
+    {
+        NavigationManager.NavigateTo("/request-rules");
+    }
+
+    private void OnDarkModeChanged()
+    {
+        this.DarkMode = SettingsService.DarkMode;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        SettingsService.OnChangeDarkMode -= OnDarkModeChanged;
+    }
+}

@@ -1,0 +1,305 @@
+﻿@using AutoMapper;
+@inject HttpClient Http
+@inject IMapper mapper
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <div class="pa-5">
+            @if (InvalidRequestRule)
+            {
+                <MudAlert Severity="Severity.Error">
+                    Please, Select a Request Rule
+                </MudAlert>
+            }
+            <MudForm Model="@RequestRuleVariant" @ref=Form Validation="@(RequestRuleVariantValidator.ValidateValue)">
+                <MudAutocomplete @ref="RequestRuleMudAutocompleteComponent"
+                                 T="RequestRuleDto"
+                                 Label="Search Request Rule"
+                                 SearchFunc="@(async (value) => await Task.FromResult(SearchRequestRule(value)))"
+                                 Value="RequestRule"
+                                 Text="@(RequestRule is not null ? $"{RequestRule.Path} - {RequestRule.MethodLabel}" : string.Empty)"
+                                 ValueChanged="@OnRequestRuleSelected">
+                    <ItemSelectedTemplate Context="requestRule">
+                        <MudText>
+                            @($"{requestRule.Path} - {requestRule.MethodLabel}")
+                        </MudText>
+                    </ItemSelectedTemplate>
+                    <ItemTemplate Context="requestRule">
+                        <MudText>
+                            @($"{requestRule.Path} - {requestRule.MethodLabel}")
+                        </MudText>
+                    </ItemTemplate>
+                </MudAutocomplete>
+                <div class="mt-16">
+                    @if (RequestRule is not null && !RequestRuleVariantDisattached)
+                    {
+                        <MudPaper Outlined="true" Class="pa-3">
+                            <div class="d-flex justify-space-between">
+                                <div class="d-flex align-baseline">
+                                    <MudText Class="mr-2">Path:</MudText>
+                                    <MudText Typo="Typo.body2">@RequestRule.Path</MudText>
+                                </div>
+                                <div class="d-flex align-baseline">
+                                    <MudText Class="mr-2">Method:</MudText>
+                                    <MudText Typo="Typo.body2">@RequestRule.MethodLabel</MudText>
+                                </div>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="DetachFromRequestRuleAsync"></MudIconButton>
+                            </div>
+                        </MudPaper>
+                    }
+                    @if (RequestRuleVariantDisattached)
+                    {
+                        <MudTextField @bind-Value="RequestRuleVariant.Path"
+                                      For="@(() => RequestRuleVariant.Path)"
+                                      Label="Path"
+                                      Variant="Variant.Text" />
+                        <MudSelect @bind-Value="RequestRuleVariant.Method"
+                                   For="@(() => RequestRuleVariant.Method)"
+                                   Label="Method"
+                                   Variant="Variant.Text">
+                            <MudSelectItem Value="@RequestRuleMethodDto.GET">GET</MudSelectItem>
+                            <MudSelectItem Value="@RequestRuleMethodDto.POST">POST</MudSelectItem>
+                            <MudSelectItem Value="@RequestRuleMethodDto.PUT">PUT</MudSelectItem>
+                            <MudSelectItem Value="@RequestRuleMethodDto.DELETE">DELETE</MudSelectItem>
+                        </MudSelect>
+                    }
+                    <MudNumericField @bind-Value="RequestRuleVariant.ResponseStatus"
+                                     Label="Status"
+                                     For="@(() => RequestRuleVariant.ResponseStatus)"
+                                     Variant="Variant.Text" />
+                    <MudNumericField @bind-Value="RequestRuleVariant.ResponseDelay"
+                                     Label="Delay"
+                                     For="@(() => RequestRuleVariant.ResponseDelay)"
+                                     Variant="Variant.Text" />
+                    <div class="d-flex">
+                        <MudTextField @bind-Value="RequestRuleVariant.ResponseHeaders"
+                                      Label="Headers"
+                                      Variant="Variant.Text"
+                                      Lines="5" />
+                        <MudTextField @bind-Value="RequestRuleVariant.ResponseBody"
+                                      Label="Body"
+                                      Variant="Variant.Text"
+                                      Lines="5" />
+                    </div>
+                    <MudTextField @bind-Value="RequestRuleVariant.Description"
+                                  Label="Description"
+                                  For="@(() => RequestRuleVariant.Description)"
+                                  Variant="Variant.Text" />
+                </div>
+            </MudForm>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        @if (RequestRuleVariant.Id != 0)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Error"
+                       Disabled="@Deleting"
+                       OnClick="Delete">
+                @if (Deleting)
+                {
+                    <div class="d-flex justify-space-between align-center">
+                        <div>Deleting</div>
+                        <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                    </div>
+                }
+                else
+                {
+                    <span>Delete</span>
+                }
+            </MudButton>
+        }
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Disabled="@Saving"
+                   OnClick="Save">
+            @if (Saving)
+            {
+                <div class="d-flex justify-space-between align-center">
+                    <div>Saving</div>
+                    <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                </div>
+            }
+            else
+            {
+                <span>Save</span>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    public MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public WorkflowDto Workflow { get; set; } = new WorkflowDto();
+
+    [Parameter]
+    public RequestRuleVariantDto RequestRuleVariant { get; set; } = new RequestRuleVariantDto();
+
+    private RequestRuleDto[] RequestRules = Array.Empty<RequestRuleDto>();
+    private RequestRuleDto? RequestRule = null;
+    private MudAutocomplete<RequestRuleDto>? RequestRuleMudAutocompleteComponent;
+    private MudForm? Form;
+    private RequestRuleVariantDtoValidator RequestRuleVariantValidator = new RequestRuleVariantDtoValidator();
+    private bool Deleting = false;
+    private bool Saving = false;
+    private bool InvalidRequestRule = false;
+    private bool RequestRuleVariantDisattached = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var requestRules = await Http.GetFromJsonAsync<RequestRuleDto[]>("api/v1/request");
+        if (requestRules is not null)
+        {
+            RequestRules = requestRules;
+        }
+        if (RequestRuleVariant.Id > 0)
+        {
+            if (RequestRuleVariant.RequestRuleId > 0)
+            {
+                var requestRule = RequestRules.FirstOrDefault(x => x.Id == RequestRuleVariant.RequestRuleId);
+                if (requestRule is not null)
+                {
+                    RequestRule = requestRule;
+                }
+            }
+            else
+            {
+                RequestRuleVariantDisattached = true;
+            }
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Save()
+    {
+        Saving = true;
+
+        if (Form is null)
+        {
+            Snackbar.Add("Form couldn't be loaded", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        await Form.Validate();
+        InvalidRequestRule = RequestRuleVariant.RequestRuleId == 0;
+        if (!Form.IsValid || InvalidRequestRule)
+        {
+            Snackbar.Add("Invalid request rule variant data", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        if (RequestRuleVariant.Id != 0)
+        {
+            var response = await Http.PutAsJsonAsync<EditRequestRuleVariantDto>("api/v1/request-rule-variant", mapper.Map<EditRequestRuleVariantDto>(RequestRuleVariant));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Request rule variant successfully updated", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Request rule variant couldn't be updated", Severity.Error);
+            }
+        }
+        else
+        {
+            RequestRuleVariant.WorkflowId = Workflow.Id;
+            var response = await Http.PostAsJsonAsync<CreateRequestRuleVariantDto>("api/v1/request-rule-variant", mapper.Map<CreateRequestRuleVariantDto>(RequestRuleVariant));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Request rule variant successfully created", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Request rule variant couldn't be created", Severity.Error);
+            }
+        }
+
+        Saving = false;
+    }
+
+    private async Task Delete()
+    {
+        var result = await DialogService.ShowConfirmDialog(
+            "Confirm",
+            "Are you sure you want to delete this Workflow Action?",
+            "Delete",
+            Color.Error);
+        if (result)
+        {
+            Deleting = true;
+
+            var response = await Http.DeleteAsync($"api/v1/request-rule-variant/{RequestRuleVariant.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Request rule variant successfully deleted", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Request rule variant couldn't be deleted", Severity.Error);
+            }
+
+            Deleting = false;
+        }
+    }
+
+    private IEnumerable<RequestRuleDto> SearchRequestRule(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return RequestRules;
+        }
+        return RequestRules.Where(x => x.Path.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private void OnRequestRuleSelected(RequestRuleDto requestRule)
+    {
+        RequestRule = requestRule;
+
+        RequestRuleVariant.RequestRuleId = RequestRule.Id;
+        RequestRuleVariant.ResponseStatus = RequestRule.ResponseStatus;
+        RequestRuleVariant.ResponseDelay = RequestRule.ResponseDelay;
+        RequestRuleVariant.ResponseHeaders = RequestRule.ResponseHeaders;
+        RequestRuleVariant.ResponseBody = RequestRule.ResponseBody;
+
+        if (RequestRuleVariant.RequestRuleId == 0)
+        {
+            InvalidRequestRule = true;
+        }
+        else
+        {
+            RequestRuleVariantDisattached = false;
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task DetachFromRequestRuleAsync()
+    {
+        var result = await DialogService.ShowConfirmDialog(
+            "Disattach From Request Rule To Edit",
+            "If you detach this request rule variant from the request rule, it's going to be completely independent and it's not going to react to changes to the original request rule.",
+            "Yes",
+            Color.Warning);
+        if(result)
+        {
+            RequestRuleVariantDisattached = true;
+            if(RequestRule is not null)
+            {
+                RequestRuleVariant.Path = RequestRule.Path;
+                RequestRuleVariant.Method = RequestRule.Method;
+            }
+            RequestRuleVariant.RequestRuleId = null;
+        }
+    }
+}

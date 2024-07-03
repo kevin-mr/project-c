@@ -1,0 +1,23 @@
+﻿<MudDialog>
+    <DialogContent>
+        <div class="pa-5">
+            <MudText Typo="Typo.h5">
+                Headers
+            </MudText>
+            <div class="mt-3 h-30 overflow-y-scroll">
+                <RequestHeadersComponent Headers="RequestEvent.Headers"></RequestHeadersComponent>
+            </div>
+            <div class="mt-5">
+                <MudText Typo="Typo.h5">
+                    Body
+                </MudText>
+                <RequestBodyComponent Body=@RequestEvent.Body JsonBody=@RequestEvent.JsonBody></RequestBodyComponent>
+            </div>
+        </div>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [Parameter] 
+    public IRequestEventDto RequestEvent { get; set; } = new RequestEventDto();
+}

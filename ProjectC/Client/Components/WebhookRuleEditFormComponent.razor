@@ -1,0 +1,215 @@
+﻿@using AutoMapper;
+@inject HttpClient Http
+@inject IMapper mapper
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <div class="pa-5">
+            @if (!CanDelete)
+            {
+                <MudAlert Severity="Severity.Warning">
+                    You have @WebhookRule.WebhookEvents.Count() event(s) archived, you need to delete them first in order to continue.
+                </MudAlert>
+            }
+            <MudForm Model="@WebhookRule" @ref=Form Validation="@(WebhookRuleValidator.ValidateValue)">
+                <MudSelect @bind-Value="WebhookRule.Method"
+                           Label="Method"
+                           Variant="Variant.Text">
+                    <MudSelectItem Value="@WebhookRuleMethodDto.POST">POST</MudSelectItem>
+                    <MudSelectItem Value="@WebhookRuleMethodDto.PUT">PUT</MudSelectItem>
+                </MudSelect>
+                <MudTextField @bind-Value="WebhookRule.Path"
+                              Label="Path"
+                              For="@(() => WebhookRule.Path)"
+                              Variant="Variant.Text" />
+                <MudTextField @bind-Value="WebhookRule.Description"
+                              Label="Description"
+                              For="@(() => WebhookRule.Description)"
+                              Variant="Variant.Text" />
+                <MudTextField @bind-Value="WebhookRule.RedirectUrl"
+                              Label="Redirect Url"
+                              Variant="Variant.Text" />
+            </MudForm>
+            <div class="mt-3">
+                @if (WebhookRule is not null)
+                {
+                    var eventsCounter = WebhookRule.WebhookRuleEvents.Count();
+                    var archivedEventsCounter = WebhookRule.WebhookEvents.Count();
+                    @if (eventsCounter > 0)
+                    {
+                        <MudChip Color="Color.Info" Class="me-1" Variant="Variant.Text">
+                            Events - @eventsCounter
+                        </MudChip>
+                    }
+                    @if (archivedEventsCounter > 0)
+                    {
+                        <MudChip Color="Color.Info" Class="me-1" Variant="Variant.Text">
+                            Archived - @archivedEventsCounter
+                        </MudChip>
+                    }
+                }
+            </div>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        @if (WebhookRule.Id != 0)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Error"
+                       Disabled="@(Deleting || !CanDelete)"
+                       OnClick="Delete">
+                @if (Deleting)
+                {
+                    <div class="d-flex justify-space-between align-center">
+                        <div>Deleting</div>
+                        <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                    </div>
+                }
+                else
+                {
+                    <span>Delete</span>
+                }
+            </MudButton>
+        }
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Disabled="@Saving"
+                   OnClick="Save">
+            @if (Saving)
+            {
+                <div class="d-flex justify-space-between align-center">
+                    <div>Saving</div>
+                    <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                </div>
+            }
+            else
+            {
+                <span>Save</span>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    public MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public WebhookRuleDto WebhookRule { get; set; } = new WebhookRuleDto();
+
+    private MudForm? Form;
+    private WebhookRuleDtoValidator WebhookRuleValidator = new WebhookRuleDtoValidator();
+    private bool Deleting = false;
+    private bool Saving = false;
+    private bool CanDelete = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadWebhookRuleAsync();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Save()
+    {
+        Saving = true;
+
+        if (Form is null)
+        {
+            Snackbar.Add("Form couldn't be loaded", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        await Form.Validate();
+        if (!Form.IsValid)
+        {
+            Snackbar.Add("Invalid webhook rule data", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        if (WebhookRule.Id != 0)
+        {
+            var response = await Http.PutAsJsonAsync<EditWebhookRuleDto>("api/v1/webhook", mapper.Map<EditWebhookRuleDto>(WebhookRule));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Webhook rule successfully updated", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Webhook rule couldn't be updated", Severity.Error);
+            }
+        }
+        else
+        {
+            var response = await Http.PostAsJsonAsync<CreateWebhookRuleDto>("api/v1/webhook", mapper.Map<CreateWebhookRuleDto>(WebhookRule));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Webhook rule successfully created", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Webhook rule couldn't be created", Severity.Error);
+            }
+        }
+
+        Saving = false;
+    }
+
+    private async Task Delete()
+    {
+        if(WebhookRule.WebhookEvents.Count() > 0)
+        {
+            CanDelete = false;
+            return;
+        }
+
+        var result = await DialogService.ShowConfirmDialog(
+            "Confirm",
+            "Are you sure you want to delete this Webhook Rule?",
+            "Delete",
+            Color.Error);
+        if (result)
+        {
+            Deleting = true;
+
+            var response = await Http.DeleteAsync($"api/v1/webhook/{WebhookRule.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Webhook rule successfully deleted", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Webhook rule couldn't be deleted", Severity.Error);
+            }
+
+            Deleting = false;
+            CanDelete = true;
+        }
+    }
+
+    private async Task LoadWebhookRuleAsync()
+    {
+        if (WebhookRule.Id > 0)
+        {
+            try
+            {
+                var webhookRule = await Http.GetFromJsonAsync<WebhookRuleDto>($"api/v1/webhook/{WebhookRule.Id}");
+                if (webhookRule is not null)
+                {
+                    WebhookRule = webhookRule;
+                }
+            }
+            catch (Exception)
+            {
+                Snackbar.Add("Webhook rule couldn't be find", Severity.Error);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+        }
+    }
+}

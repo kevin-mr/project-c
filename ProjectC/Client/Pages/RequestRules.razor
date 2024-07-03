@@ -1,0 +1,63 @@
+﻿@page "/request-rules"
+@inject IDialogService DialogService
+
+<MudGrid Spacing="2" Class="mt-5">
+    <MudItem sm="6">
+        <div class="mb-2 d-flex justify-space-between">
+            <MudTooltip Text="Clear Request Rule Events" Arrow="true" Placement="Placement.Right">
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestRuleEventsAsync"></MudIconButton>
+            </MudTooltip>
+            <MudTooltip Text="Refresh Request Rule Events" Arrow="true" Placement="Placement.Left">
+                <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Default" OnClick="RefreshRequestRuleEventsAsync    "></MudIconButton>
+            </MudTooltip>
+        </div>
+        <div class="h-75">
+            <RequestRuleEventsComponent @ref="RequestEventsComponent"></RequestRuleEventsComponent>
+        </div>
+    </MudItem>
+    <MudItem sm="6">
+        <div class="d-flex justify-end mb-5">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddRequestRuleAsync">Add Rule</MudButton>
+        </div>
+        <div class="h-75">
+            <RequestRulesComponent @ref="RequestRulesComponent"></RequestRulesComponent>
+        </div>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private RequestRulesComponent? RequestRulesComponent;
+    private RequestRuleEventsComponent? RequestEventsComponent;
+
+    private async Task AddRequestRuleAsync()
+    {
+        var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>(
+            "Request Rule", 
+            DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            if (RequestRulesComponent is not null)
+            {
+                await RequestRulesComponent.RefreshRequestRulesAsync();
+            }
+        }
+    }
+
+    private async Task DeleteRequestRuleEventsAsync()
+    {
+        if (RequestEventsComponent is not null)
+        {
+            await RequestEventsComponent.DeleteAsync();
+        }
+    }
+
+    private async Task RefreshRequestRuleEventsAsync()
+    {
+        if (RequestEventsComponent is not null)
+        {
+            await RequestEventsComponent.RefreshRequestRuleEventsAsync();
+        }
+    }
+}

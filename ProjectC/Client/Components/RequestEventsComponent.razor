@@ -1,0 +1,136 @@
+﻿@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.SignalR.Client
+
+@if (loading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-2" />
+}
+else
+{
+    @if (RequestEvents.Count > 0)
+    {
+        <div class="h-inherit overflow-y-scroll">
+            <MudList>
+                @foreach (var requestEvent in RequestEvents.OrderByDescending(x => x.ArrivalDate))
+                {
+                    <MudDivider />
+                    <MudListItem>
+                        <RequestEventComponent RequestEvent=@requestEvent
+                                               OnView="@(async () => await ViewAsync(requestEvent))"
+                                               OnResend="@(async () => await ResendAsync(requestEvent))"
+                                               OnDelete="@(async () => await DeleteAsync(requestEvent))"></RequestEventComponent>
+                    </MudListItem>
+                    <MudDivider />
+                }
+            </MudList>
+        </div>
+    }
+    else
+    {
+        <MudPaper Class="pa-10">
+            <MudText Align="Align.Center">You don't have any events yet.</MudText>
+        </MudPaper>
+    }
+}
+
+@code {
+    private HubConnection? hubConnection;
+    private List<RequestEventDto> RequestEvents = new List<RequestEventDto>();
+    private bool loading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshRequestEventsAsync();
+        await ConnectToHubAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task ViewAsync(RequestEventDto requestEvent)
+    {
+        var parameters = new DialogParameters
+        {
+            ["RequestEvent"] = requestEvent
+        };
+        await DialogService.ShowAsync<ViewRequestEventComponent>("Request Details", parameters, DialogUtils.DefaultDialogOptions);
+    }
+
+    private async Task ResendAsync(RequestEventDto requestEvent)
+    {
+        var response = await Http.PostAsJsonAsync("api/v1/request-event/webhook-rule/resend", requestEvent);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Request successfully resend", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Request couldn't be resend", Severity.Error);
+        }
+    }
+
+    private async Task DeleteAsync(RequestEventDto requestEvent)
+    {
+        var result = await DialogService.ShowConfirmDialog(
+           "Confirm",
+           "Are you sure you want to delete this Request Event?",
+           "Delete",
+           Color.Error);
+        if (result)
+        {
+            var response = await Http.DeleteAsync($"api/v1/request-event/{requestEvent.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Request Event deleted", Severity.Success);
+                await RefreshRequestEventsAsync();
+            }
+            else
+            {
+                Snackbar.Add("Request Event couldn't be deleted", Severity.Error);
+            }
+        }
+    }
+
+    private async Task RefreshRequestEventsAsync()
+    {
+        loading = true;
+        StateHasChanged();
+        var requestEvents = await Http.GetFromJsonAsync<RequestEventDto[]>("api/v1/request-event");
+        if (requestEvents is not null)
+        {
+            RequestEvents = requestEvents.ToList();
+        }
+        loading = false;
+        StateHasChanged();
+    }
+
+    private bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+    private async Task ConnectToHubAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/request-events"))
+            .Build();
+
+        hubConnection.On<RequestEventDto>("RequestEventCaught", (requestEvent) =>
+        {
+            if (requestEvent is not null)
+            {
+                RequestEvents.Add(requestEvent);
+                StateHasChanged();
+            }
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    private async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

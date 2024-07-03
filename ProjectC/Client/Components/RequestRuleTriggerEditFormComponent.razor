@@ -1,0 +1,219 @@
+﻿@using AutoMapper;
+@inject HttpClient Http
+@inject IMapper mapper
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        @if (InvalidWebhookEvent)
+        {
+            <MudAlert Severity="Severity.Error">
+                Please, Select a Webhook Event
+            </MudAlert>
+        }
+        <MudForm Model="@RequestRuleTrigger" @ref=Form Validation="@(RequestRuleTriggerValidator.ValidateValue)">
+            <MudAutocomplete @ref="WebhookEventMudAutocompleteComponent"
+                             T="WebhookEventDto"
+                             Label="Search Webhook Event"
+                             SearchFunc="@(async (value) => await Task.FromResult(SearchRequestRule(value)))"
+                             Value="WebhookEvent"
+                             Text="@(WebhookEvent is not null ? $"{WebhookEvent.WebhookRuleDescription} - {WebhookEvent.Path}" : string.Empty)"
+                             ValueChanged="@OnRequestRuleSelected">
+                <ItemSelectedTemplate Context="webhookEvent">
+                    <MudText>
+                        @($"{webhookEvent?.WebhookRuleDescription} - {webhookEvent?.Path}")
+                    </MudText>
+                </ItemSelectedTemplate>
+                <ItemTemplate Context="webhookEvent">
+                    <MudText>
+                        @($"{webhookEvent?.WebhookRuleDescription} - {webhookEvent?.Path}")
+                    </MudText>
+                </ItemTemplate>
+            </MudAutocomplete>
+            <MudTextField @bind-Value="RequestRuleTrigger.Description"
+                          Label="Description"
+                          For="@(() => RequestRuleTrigger.Description)"
+                          Variant="Variant.Text" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        @if (RequestRuleTrigger.Id != 0)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Error"
+                       Disabled="@Deleting"
+                       OnClick="Delete">
+                @if (Deleting)
+                {
+                    <div class="d-flex justify-space-between align-center">
+                        <div>Deleting</div>
+                        <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                    </div>
+                }
+                else
+                {
+                    <span>Delete</span>
+                }
+            </MudButton>
+        }
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Disabled="@Saving"
+                   OnClick="Save">
+            @if (Saving)
+            {
+                <div class="d-flex justify-space-between align-center">
+                    <div>Saving</div>
+                    <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                </div>
+            }
+            else
+            {
+                <span>Save</span>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    public MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public RequestRuleVariantDto RequestRuleVariant { get; set; } = new RequestRuleVariantDto();
+
+    [Parameter]
+    public RequestRuleTriggerDto RequestRuleTrigger { get; set; } = new RequestRuleTriggerDto();
+
+    private WebhookEventDto[] WebhookEvents = Array.Empty<WebhookEventDto>();
+    private WebhookEventDto? WebhookEvent = null;
+    private MudAutocomplete<WebhookEventDto>? WebhookEventMudAutocompleteComponent;
+    private MudForm? Form;
+    private RequestRuleTriggerDtoValidator RequestRuleTriggerValidator = new RequestRuleTriggerDtoValidator();
+    private bool Deleting = false;
+    private bool Saving = false;
+    private bool InvalidWebhookEvent = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var webhookEvents = await Http.GetFromJsonAsync<WebhookEventDto[]>("api/v1/webhook-event");
+        if (webhookEvents is not null)
+        {
+            WebhookEvents = webhookEvents;
+        }
+        if (RequestRuleTrigger.Id > 0)
+        {
+            if (RequestRuleTrigger.WebhookEventId > 0)
+            {
+                var webhookEvent = WebhookEvents.FirstOrDefault(x => x.Id == RequestRuleTrigger.WebhookEventId);
+                if (webhookEvent is not null)
+                {
+                    WebhookEvent = webhookEvent;
+                }
+            }
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Save()
+    {
+        Saving = true;
+
+        if (Form is null)
+        {
+            Snackbar.Add("Form couldn't be loaded", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        await Form.Validate();
+        InvalidWebhookEvent = RequestRuleTrigger.WebhookEventId == 0;
+        if (!Form.IsValid || InvalidWebhookEvent)
+        {
+            Snackbar.Add("Invalid request rule trigger data", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        if (RequestRuleTrigger.Id != 0)
+        {
+            var response = await Http.PutAsJsonAsync<EditRequestRuleTriggerDto>("api/v1/request-rule-trigger", mapper.Map<EditRequestRuleTriggerDto>(RequestRuleTrigger));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Request rule trigger successfully updated", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Request rule trigger couldn't be updated", Severity.Error);
+            }
+        }
+        else
+        {
+            RequestRuleTrigger.RequestRuleVariantId = RequestRuleVariant.Id;
+            var response = await Http.PostAsJsonAsync<CreateRequestRuleTriggerDto>("api/v1/request-rule-trigger", mapper.Map<CreateRequestRuleTriggerDto>(RequestRuleTrigger));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Request rule trigger successfully created", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Request rule trigger couldn't be created", Severity.Error);
+            }
+        }
+
+        Saving = false;
+    }
+
+    private async Task Delete()
+    {
+        var result = await DialogService.ShowConfirmDialog(
+            "Confirm",
+            "Are you sure you want to delete this Workflow Trigger?",
+            "Delete",
+            Color.Error);
+        if (result)
+        {
+            Deleting = true;
+
+            var response = await Http.DeleteAsync($"api/v1/request-rule-trigger/{RequestRuleTrigger.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Request rule trigger successfully deleted", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Request rule trigger couldn't be deleted", Severity.Error);
+            }
+
+            Deleting = false;
+        }
+    }
+
+    private IEnumerable<WebhookEventDto> SearchRequestRule(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return WebhookEvents;
+        }
+        return WebhookEvents.Where(x => x.Path.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private void OnRequestRuleSelected(WebhookEventDto webhookEvent)
+    {
+        WebhookEvent = webhookEvent;
+
+        RequestRuleTrigger.WebhookEventId = webhookEvent.Id;
+
+        if (RequestRuleTrigger.WebhookEventId == 0)
+        {
+            InvalidWebhookEvent = true;
+        }
+
+        StateHasChanged();
+    }
+}

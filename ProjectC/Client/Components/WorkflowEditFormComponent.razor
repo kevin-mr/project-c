@@ -1,0 +1,141 @@
+﻿@using AutoMapper;
+@inject HttpClient Http
+@inject IMapper mapper
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <div class="pa-5">
+            <MudForm Model="@Workflow" @ref=Form Validation="@(WorkflowValidator.ValidateValue)">
+                <MudTextField @bind-Value="Workflow.Name"
+                              Label="Name"
+                              For="@(() => Workflow.Name)"
+                              Variant="Variant.Text" />
+            </MudForm>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        @if (Workflow.Id != 0)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Error"
+                       Disabled="Deleting"
+                       OnClick="Delete">
+                @if (Deleting)
+                {
+                    <div class="d-flex justify-space-between align-center">
+                        <div>Deleting</div>
+                        <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                    </div>
+                }
+                else
+                {
+                    <span>Delete</span>
+                }
+            </MudButton>
+        }
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Disabled="Saving"
+                   OnClick="Save">
+            @if (Saving)
+            {
+                <div class="d-flex justify-space-between align-center">
+                    <div>Saving</div>
+                    <MudProgressCircular Class="ml-2" Size="Size.Small" Indeterminate="true" />
+                </div>
+            }
+            else
+            {
+                <span>Save</span>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    public MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public WorkflowDto Workflow { get; set; } = new WorkflowDto();
+
+    private MudForm? Form;
+    private WorkflowDtoValidator WorkflowValidator = new WorkflowDtoValidator();
+    private bool Deleting = false;
+    private bool Saving = false;
+
+    private async Task Save()
+    {
+        Saving = true;
+
+        if (Form is null)
+        {
+            Snackbar.Add("Form couldn't be loaded", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        await Form.Validate();
+        if (!Form.IsValid)
+        {
+            Snackbar.Add("Invalid workflow data", Severity.Warning);
+            Saving = false;
+            return;
+        }
+
+        if (Workflow.Id != 0)
+        {
+            var response = await Http.PutAsJsonAsync<EditWorkflowDto>("api/v1/workflow", mapper.Map<EditWorkflowDto>(Workflow));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Workflow successfully updated", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Workflow couldn't be updated", Severity.Error);
+            }
+        }
+        else
+        {
+            var response = await Http.PostAsJsonAsync<CreateWorkflowDto>("api/v1/workflow", mapper.Map<CreateWorkflowDto>(Workflow));
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Workflow successfully created", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Workflow couldn't be created", Severity.Error);
+            }
+        }
+
+        Saving = false;
+    }
+
+    private async Task Delete()
+    {
+        var result = await DialogService.ShowConfirmDialog(
+            "Confirm",
+            "Are you sure you want to delete this Workflow?",
+            "Delete",
+            Color.Error);
+        if (result)
+        {
+            var response = await Http.DeleteAsync($"api/v1/workflow/{Workflow.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Workflow successfully deleted", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add("Workflow couldn't be deleted", Severity.Error);
+            }
+
+            Deleting = false;
+        }
+    }
+}

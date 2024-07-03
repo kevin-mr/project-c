@@ -1,0 +1,236 @@
+﻿@using AutoMapper;
+@inject HttpClient Http
+@inject IMapper mapper
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        @if (RequestRuleVariants.Count > 0)
+        {
+            <MudExpansionPanels>
+                    @foreach (var requestRuleVariant in RequestRuleVariants)
+                    {
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <div class="d-flex justify-space-between align-center">
+                                    <MudText Class="flex-1">@requestRuleVariant.Description</MudText>
+                                    @if (requestRuleVariant.RequestRule is not null)
+                                    {
+                                        <div class="flex-1">
+                                            <MudChip Variant="Variant.Text" Color="@(requestRuleVariant.RequestRule.Method.GetMethodColor())">@requestRuleVariant.RequestRule.MethodLabel</MudChip>
+                                        </div>
+                                        <MudText Class="flex-1">@requestRuleVariant.RequestRule.Path</MudText>
+                                    }
+                                    else
+                                    {
+                                        <div class="flex-1">
+                                            <MudChip Variant="Variant.Text" Color="@(requestRuleVariant.Method.GetMethodColor())">@requestRuleVariant.MethodLabel</MudChip>
+                                        </div>
+                                        <MudText Class="flex-1">@requestRuleVariant.Path</MudText>
+                                    }
+                                    <div class="mr-3" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(requestRuleVariant))"></MudIconButton>
+                                    </div>
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+                                <MudSimpleTable Dense="true">
+                                    <tbody>
+                                        @if (requestRuleVariant.RequestRule is not null)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <MudText>Path:</MudText>
+                                                </td>
+                                                <td>
+                                                    <MudText Typo="Typo.body2">@requestRuleVariant.RequestRule.Path</MudText>
+                                                </td>
+                                                <td>
+                                                    <MudText>Method:</MudText>
+                                                </td>
+                                                <td>
+                                                    <MudText Typo="Typo.body2">@requestRuleVariant.RequestRule.Method</MudText>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <MudText>Path:</MudText>
+                                                </td>
+                                                <td>
+                                                    <MudText Typo="Typo.body2">@requestRuleVariant.Path</MudText>
+                                                </td>
+                                                <td>
+                                                    <MudText>Method:</MudText>
+                                                </td>
+                                                <td>
+                                                    <MudText Typo="Typo.body2">@requestRuleVariant.MethodLabel</MudText>
+                                                </td>
+                                            </tr>
+                                        }
+                                        <tr>
+                                            <td>
+                                                <MudText>Status:</MudText>
+                                            </td>
+                                            <td>
+                                                <MudText Typo="Typo.body2">@requestRuleVariant.ResponseStatus</MudText>
+                                            </td>
+                                            <td>
+                                                <MudText>Delay:</MudText>
+                                            </td>
+                                            <td>
+                                                <MudText Typo="Typo.body2">@requestRuleVariant.ResponseDelay</MudText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <MudText>Body:</MudText>
+                                            </td>
+                                            <td>
+                                                <MudText Typo="Typo.body2" Class="h-30 overflow-y-scroll">
+                                                    @requestRuleVariant.ResponseBody
+                                                </MudText>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </MudSimpleTable>
+                                <div class="d-flex justify-end mt-3">
+                                    <MudButton Variant="Variant.Outlined"
+                                               Color="Color.Primary"
+                                               Size="Size.Small"
+                                               Class="mb-3"
+                                               OnClick="@(async () => await AddTriggerAsync(requestRuleVariant))">
+                                        Add Trigger
+                                    </MudButton>
+                                </div>
+                                <MudTable Items="requestRuleVariant.RequestRuleTriggers" Dense="true">
+                                    <HeaderContent>
+                                        <MudTh>Webhook Rule</MudTh>
+                                        <MudTh>Description</MudTh>
+                                        <MudTh>Actions</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Webhook Rule">
+                                            @context.WebhookRuleDescription
+                                        </MudTd>
+                                        <MudTd DataLabel="Description">
+                                            @context.Description
+                                        </MudTd>
+                                        <MudTd DataLabel="Actions">
+                                            <div class="d-flex justify-end">
+                                                <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                               OnClick="@(async () => await EditTriggerAsync(requestRuleVariant, @context))"></MudIconButton>
+                                            </div>
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </ChildContent>
+                        </MudExpansionPanel>
+                    }
+                </MudExpansionPanels>
+        }
+        else
+        {
+            <MudPaper Class="py-2 px-10">
+                <MudText Align="Align.Center">You don't have any <b>Action</b> configured, start creating one to see all you can do with our <b>Workflows Module</b>.</MudText>
+            </MudPaper>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Primary"
+                   @onclick="@(async () => await AddAsync())">
+            Add Action
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public WorkflowDto Workflow { get; set; } = new WorkflowDto();
+
+    [Parameter]
+    public List<RequestRuleVariantDto> RequestRuleVariants { get; set; } = new List<RequestRuleVariantDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshRequestRuleVariantsAsync();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task EditAsync(RequestRuleVariantDto requestRuleVariant)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Workflow"] = Workflow,
+            ["RequestRuleVariant"] = requestRuleVariant
+        };
+        var dialog = await DialogService.ShowAsync<RequestRuleVariantEditFormComponent>("Workflow Action", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshRequestRuleVariantsAsync();
+        }
+    }
+
+    private async Task AddAsync()
+    {
+        var parameters = new DialogParameters
+        {
+            ["Workflow"] = Workflow,
+            ["RequestRuleVariant"] = new RequestRuleVariantDto(),
+        };
+        var dialog = await DialogService.ShowAsync<RequestRuleVariantEditFormComponent>("Workflow Action", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshRequestRuleVariantsAsync();
+        }
+    }
+
+    public async Task RefreshRequestRuleVariantsAsync()
+    {
+        var requestRuleVariants = await Http.GetFromJsonAsync<RequestRuleVariantDto[]>($"api/v1/workflow/{Workflow.Id}/action");
+        if (requestRuleVariants is not null)
+        {
+            RequestRuleVariants = requestRuleVariants.ToList();
+            StateHasChanged();
+        }
+    }
+
+    private async Task EditTriggerAsync(RequestRuleVariantDto requestRuleVariant,RequestRuleTriggerDto requestRuleTrigger)
+    {
+        var parameters = new DialogParameters
+        {
+            ["RequestRuleVariant"] = requestRuleVariant,
+            ["RequestRuleTrigger"] = requestRuleTrigger
+        };
+        var dialog = await DialogService.ShowAsync<RequestRuleTriggerEditFormComponent>("Workflow Trigger", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshRequestRuleVariantsAsync();
+        }
+    }
+
+    private async Task AddTriggerAsync(RequestRuleVariantDto requestRuleVariant)
+    {
+        var parameters = new DialogParameters
+        {
+            ["RequestRuleVariant"] = requestRuleVariant,
+            ["RequestRuleTrigger"] = new RequestRuleTriggerDto(),
+        };
+        var dialog = await DialogService.ShowAsync<RequestRuleTriggerEditFormComponent>("Workflow Trigger", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshRequestRuleVariantsAsync();
+        }
+    }
+}

@@ -1,0 +1,70 @@
+﻿@inject HttpClient Http
+@inject IDialogService DialogService
+
+@if (loading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-2"/>
+}
+else
+{
+    @if (RequestRules.Length > 0)
+    {
+        <div class="h-inherit overflow-y-scroll">
+            <MudPaper>
+                <MudList>
+                    @foreach (var requestRule in RequestRules)
+                    {
+                        <MudListItem>
+                            <RequestRuleComponent RequestRule=@requestRule OnEdit="@(async () => await EditAsync(requestRule))"></RequestRuleComponent>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudPaper>
+        </div>
+    }
+    else
+    {
+        <MudPaper Class="pa-10">
+            <MudText Align="Align.Center">You don't have any <b>Request Rule</b>, start creating one to see all you can do with our <b>Mock Server</b>.</MudText>
+        </MudPaper>
+    }
+}
+
+@code {
+    private RequestRuleDto[] RequestRules = Array.Empty<RequestRuleDto>();
+    private bool loading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshRequestRulesAsync();
+        await base.OnInitializedAsync();
+    }
+
+    public async Task RefreshRequestRulesAsync()
+    {
+        loading = true;
+        StateHasChanged();
+        var requestRules = await Http.GetFromJsonAsync<RequestRuleDto[]>("api/v1/request");
+        if (requestRules is not null)
+        {
+            RequestRules = requestRules;
+        }
+        loading = false;
+        StateHasChanged();
+    }
+
+    private async Task EditAsync(RequestRuleDto requestRule)
+    {
+        var parameters = new DialogParameters
+        {
+            ["RequestRule"] = requestRule
+        };
+        var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>("Request Rule", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshRequestRulesAsync();
+        }
+    }
+}

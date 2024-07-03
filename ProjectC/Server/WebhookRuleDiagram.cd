@@ -1,0 +1,308 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="ProjectC.Server.Controllers.RequestEventController">
+    <Position X="0.5" Y="0.5" Width="4.5" />
+    <Members>
+      <Method Name="DeleteByWebhookRuleAsync" Hidden="true" />
+      <Method Name="DeleteByRequestRuleVariantAsync" Hidden="true" />
+      <Method Name="GetByWebhookRuleAsync" Hidden="true" />
+      <Method Name="GetByRequestRuleVariantAsync" Hidden="true" />
+      <Method Name="RequestEventController" Hidden="true" />
+      <Method Name="ResentRequestAsync" Hidden="true" />
+      <Method Name="SaveWebhookEventRequestAsync" Hidden="true" />
+    </Members>
+    <AssociationLine Name="webhookEventService" Type="ProjectC.Server.Services.Interfaces.IWebhookEventService" ManuallyRouted="true">
+      <Path>
+        <Point X="5" Y="1.75" />
+        <Point X="5.167" Y="1.75" Type="JumpStart" />
+        <Point X="5.333" Y="1.75" Type="JumpEnd" />
+        <Point X="7.5" Y="1.75" />
+        <Point X="7.5" Y="2.5" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAgAAIAAAAAIAAEAAACAACBAAgAAAAIAAAAJA=</HashCode>
+      <FileName>Controllers\RequestEventController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="mapper" />
+      <Field Name="webhookEventService" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Data.ProjectCDbContext">
+    <Position X="6" Y="7.25" Width="3.75" />
+    <Members>
+      <Property Name="RequestRule" Hidden="true" />
+      <Property Name="WebhookEvents" Hidden="true" />
+      <Property Name="WebhookRule" Hidden="true" />
+      <Property Name="Workflow" Hidden="true" />
+      <Property Name="RequestRuleVariant" Hidden="true" />
+      <Property Name="WorkflowStorage" Hidden="true" />
+      <Property Name="RequestRuleTrigger" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAgAAAAAAEEIAAAAAAAAAQAAQAIAg=</HashCode>
+      <FileName>Data\ProjectCDbContext.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="RequestEvent" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Hubs.RequestHub">
+    <Position X="10.25" Y="2.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Hubs\RequestHub.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.AspNetCore.SignalR.Hub" Collapsed="true">
+    <Position X="10.5" Y="5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ProjectC.Server.Mappers.RequestEventProfile" Collapsed="true">
+    <Position X="3" Y="8" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappers\RequestEventProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AutoMapper.Profile" Collapsed="true">
+    <Position X="2" Y="5.5" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Microsoft.EntityFrameworkCore.DbSet&lt;TEntity&gt;" Collapsed="true">
+    <Position X="10.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Server.Data.Entities.RequestEvent">
+    <Position X="8.25" Y="9" Width="3" />
+    <Members>
+      <Property Name="RequestRule" Hidden="true" />
+      <Property Name="RequestRuleId" Hidden="true" />
+      <Property Name="WebhookRule" Hidden="true" />
+      <Property Name="WebhookRuleId" Hidden="true" />
+      <Property Name="RequestRuleVariant" Hidden="true" />
+      <Property Name="RequestRuleVariantId" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AIACAAAAAAAAAAIAQAAhAAgACIAAAAABAAgQAAAAIAA=</HashCode>
+      <FileName>Data\Entities\RequestEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Shared.Models.RequestEventDto">
+    <Position X="11.75" Y="8.25" Width="3.25" />
+    <Members>
+      <Property Name="WebhookRuleId" Hidden="true" />
+      <Property Name="RequestRuleVariantDescription" Hidden="true" />
+      <Property Name="RequestRuleVariantId" Hidden="true" />
+    </Members>
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Server.Services.WebhookEventService">
+    <Position X="5.75" Y="3.5" Width="4.25" />
+    <Members>
+      <Method Name="WebhookEventService" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAIAAAAAAQAAAAAAAAAAAhAAAAAIAAgAIA=</HashCode>
+      <FileName>Services\WebhookEventService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="context" />
+      <Field Name="mapper" />
+      <Field Name="webhookRuleHubContext" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Server.Hubs.WebhookRuleHub">
+    <Position X="12.5" Y="4.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAACAAAAAAAA=</HashCode>
+      <FileName>Hubs\WebhookRuleHub.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Server.Data.Entities.WebhookEvent">
+    <Position X="12.25" Y="16" Width="3" />
+    <Members>
+      <Property Name="RequestRuleTriggers" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>CIACAAAAAAAAAAAAQAAhAAAACIAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>Data\Entities\WebhookEvent.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="WebhookRule" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Data.Entities.WebhookRule">
+    <Position X="6.75" Y="14.5" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AAACACAAAAAgAAIAAgAgAAAAAAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Data\Entities\WebhookRule.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Method" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Controllers.WebhookRuleController">
+    <Position X="1.25" Y="10.25" Width="4" />
+    <Members>
+      <Method Name="WebhookRuleController" Hidden="true" />
+    </Members>
+    <AssociationLine Name="webhookEventService" Type="ProjectC.Server.Services.Interfaces.IWebhookEventService" ManuallyRouted="true">
+      <Path>
+        <Point X="5.156" Y="10.25" />
+        <Point X="5.156" Y="3.12" />
+        <Point X="6.224" Y="3.12" />
+        <Point X="6.224" Y="2.918" />
+        <Point X="6.75" Y="2.918" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAEEAAAAIAAAAAAAAQAAAAAAAAAgAAAAAIIAAIJA=</HashCode>
+      <FileName>Controllers\WebhookRuleController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="mapper" />
+      <Field Name="webhookRuleService" />
+      <Field Name="webhookRuleValidator" />
+      <Field Name="webhookEventService" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Controllers.WebhookEventController">
+    <Position X="9" Y="0.5" Width="5.75" />
+    <AssociationLine Name="webhookEventService" Type="ProjectC.Server.Services.Interfaces.IWebhookEventService">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-1.395" Y="0.11" Height="0.182" Width="1.705" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAAAAAIAAAAAAAAAAAAAAAAAAIAAAAJA=</HashCode>
+      <FileName>Controllers\WebhookEventController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="mapper" />
+      <Field Name="webhookEventService" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Services.WebhookRuleService">
+    <Position X="1.75" Y="13.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAIIAAIIA=</HashCode>
+      <FileName>Services\WebhookRuleService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="context" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Shared.Models.CreateWebhookRuleDto">
+    <Position X="1.75" Y="16.5" Width="3.25" />
+    <TypeIdentifier />
+    <ShowAsAssociation>
+      <Property Name="Method" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Shared.Models.EditWebhookRuleDto">
+    <Position X="5" Y="19.25" Width="3.25" />
+    <TypeIdentifier />
+    <ShowAsAssociation>
+      <Property Name="Method" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Shared.Models.WebhookEventDto">
+    <Position X="12" Y="12.25" Width="3" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Shared.Models.WebhookRequestDto">
+    <Position X="12.5" Y="19" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ProjectC.Shared.Models.WebhookRuleDto">
+    <Position X="8.75" Y="19" Width="3.25" />
+    <TypeIdentifier />
+    <ShowAsAssociation>
+      <Property Name="Method" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ProjectC.Server.Mappers.WebhookRuleProfile">
+    <Position X="3" Y="6.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappers\WebhookRuleProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Server.Validators.WebhookRuleValidator">
+    <Position X="6.75" Y="13" Width="2.25" />
+    <InheritanceLine Type="FluentValidation.AbstractValidator&lt;T&gt;" FixedToPoint="true">
+      <Path>
+        <Point X="7" Y="12.062" />
+        <Point X="7" Y="12.625" />
+        <Point X="7.438" Y="12.625" />
+        <Point X="7.438" Y="13" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Validators\WebhookRuleValidator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FluentValidation.AbstractValidator&lt;T&gt;" Collapsed="true">
+    <Position X="6.25" Y="11.5" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ProjectC.Server.Mappers.WebhookRequestProfile" Collapsed="true">
+    <Position X="2.25" Y="9.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappers\WebhookRequestProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectC.Shared.Models.WebhookRuleMethodDto">
+    <Position X="7.25" Y="17.25" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Interface Name="AutoMapper.IMapper" Collapsed="true">
+    <Position X="1" Y="4" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Microsoft.AspNetCore.SignalR.IHubContext&lt;THub&gt;" Collapsed="true">
+    <Position X="10.75" Y="6" Width="2.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="ProjectC.Shared.Models.IRequestEventDto" Collapsed="true">
+    <Position X="13.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="FluentValidation.IValidator&lt;T&gt;" Collapsed="true">
+    <Position X="6.25" Y="9.25" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="ProjectC.Server.Services.Interfaces.IWebhookEventService" Collapsed="true">
+    <Position X="6.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAAAAgAAAAAIAAgAIA=</HashCode>
+      <FileName>Services\Interfaces\IWebhookEventService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ProjectC.Server.Services.Interfaces.IWebhookRuleService" Collapsed="true">
+    <Position X="2.5" Y="12.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAIIAAIIA=</HashCode>
+      <FileName>Services\Interfaces\IWebhookRuleService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="ProjectC.Server.Data.Entities.WebhookRuleMethod" Collapsed="true">
+    <Position X="9.5" Y="12.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\Entities\WebhookRuleMethod.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

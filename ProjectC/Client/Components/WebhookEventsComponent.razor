@@ -1,0 +1,112 @@
+﻿@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject HttpClient Http
+
+<MudDialog>
+    <DialogContent>
+        @if (WebhookEvents.Count > 0)
+        {
+            <MudSimpleTable Dense="true">
+                <tbody>
+                    @foreach (var webhookEvent in WebhookEvents)
+                    {
+                        <tr>
+                            <td>
+                                <MudText><MudChip Variant="Variant.Outlined" Color="@webhookEvent.GetMethodColor()">@webhookEvent.Method</MudChip></MudText>
+                            </td>
+                            <td>
+                                <MudText Class="flex-1">@webhookEvent.Path</MudText>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-end">
+                                    <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Send" Title="Resend" @onclick="@(async () => await ResendAsync(webhookEvent))" />
+                                    <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Preview" Title="View" @onclick="@(async () => await ViewAsync(webhookEvent))" />
+                                    <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Delete" Title="Delete" @onclick="@(async () => await DeleteAsync(webhookEvent))" />
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        }
+        else
+        {
+            <MudPaper Class="py-2 px-10">
+                <MudText Align="Align.Center">You don't have any <b>Workflow Event</b> archived, you can save them from the events list.</MudText>
+            </MudPaper>
+        }
+    </DialogContent>
+    <DialogActions>
+
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public WebhookRuleDto WebhookRule { get; set; } = new WebhookRuleDto();
+
+    private List<WebhookEventDto> WebhookEvents = new List<WebhookEventDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadWebhookEventsAsync();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task ViewAsync(WebhookEventDto webhookEvent)
+    {
+        var parameters = new DialogParameters
+        {
+            ["RequestEvent"] = webhookEvent
+        };
+        await DialogService.ShowAsync<ViewRequestEventComponent>("Request Details", parameters, DialogUtils.DefaultDialogOptions);
+    }
+
+    private async Task ResendAsync(WebhookEventDto webhookEvent)
+    {
+        var response = await Http.PostAsync($"api/v1/webhook-event/{webhookEvent.Id}/resend", null);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Webhook event successfully resend", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Webhook event couldn't be resend", Severity.Error);
+        }
+    }
+
+    private async Task DeleteAsync(WebhookEventDto webhookEvent)
+    {
+        var result = await DialogService.ShowConfirmDialog(
+            "Confirm",
+            webhookEvent.RequestRuleTriggers.Count() > 0
+                ? $"Are you sure you want to delete this Webhook Event? You have {webhookEvent.RequestRuleTriggers.Count()} Workflow Trigger(s) associated, " +
+                    $"if you continue they are going to be automatically deleted too."
+                : "Are you sure you want to delete this Webhook Event?",
+            "Delete",
+            Color.Error);
+        if (result)
+        {
+            var response = await Http.DeleteAsync($"api/v1/webhook-event/{webhookEvent.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Webhook event deleted", Severity.Success);
+                await LoadWebhookEventsAsync();
+            }
+            else
+            {
+                Snackbar.Add("Webhook event couldn't be deleted", Severity.Error);
+            }
+        }
+    }
+
+    private async Task LoadWebhookEventsAsync()
+    {
+        var webhookEvents = await Http.GetFromJsonAsync<WebhookEventDto[]>($"api/v1/webhook/{WebhookRule.Id}/events");
+        if (webhookEvents is not null)
+        {
+            WebhookEvents = webhookEvents.ToList();
+            StateHasChanged();
+        }
+    }
+}

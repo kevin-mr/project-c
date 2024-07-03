@@ -1,0 +1,101 @@
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using ProjectC.Server.Services.Interfaces;
+using ProjectC.Shared.Models;
+
+namespace ProjectC.Server.Controllers
+{
+    [ApiController()]
+    [Route("api/v1/request-event")]
+    public class RequestEventController : ControllerBase
+    {
+        private readonly IMapper mapper;
+        private readonly IRequestEventService requestEventService;
+        private readonly IWebhookEventService webhookEventService;
+
+        public RequestEventController(
+            IMapper mapper,
+            IRequestEventService requestEventService,
+            IWebhookEventService webhookEventService
+        )
+        {
+            this.mapper = mapper;
+            this.requestEventService = requestEventService;
+            this.webhookEventService = webhookEventService;
+        }
+
+        /// <summary>
+        /// Returns all Request Events
+        /// </summary>
+        /// <returns></returns>
+        /// <response code="200">Returns all Request Events</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet()]
+        public async Task<IEnumerable<RequestEventDto>> GetAsync()
+        {
+            var requestEvents = await requestEventService.GetAsync();
+
+            return requestEvents.Select(x => mapper.Map<RequestEventDto>(x)).ToArray();
+        }
+
+        [HttpGet("request-rule")]
+        public async Task<IEnumerable<RequestEventDto>> GetByRequestRuleAsync()
+        {
+            var requestEvents = await requestEventService.GetByRequestRuleAsync();
+
+            return requestEvents.Select(x => mapper.Map<RequestEventDto>(x)).ToArray();
+        }
+
+        [HttpGet("webhook-rule")]
+        public async Task<IEnumerable<RequestEventDto>> GetByWebhookRuleAsync()
+        {
+            var requestEvents = await requestEventService.GetByWebhookRuleAsync();
+
+            return requestEvents.Select(x => mapper.Map<RequestEventDto>(x)).ToArray();
+        }
+
+        [HttpGet("request-rule-variant")]
+        public async Task<IEnumerable<RequestEventDto>> GetByRequestRuleVariantAsync()
+        {
+            var requestEvents = await requestEventService.GetByRequestRuleVariantAsync();
+
+            return requestEvents.Select(x => mapper.Map<RequestEventDto>(x)).ToArray();
+        }
+
+        [HttpPost("webhook-rule/resend")]
+        public Task ResentRequestAsync(RequestEventDto requestEvent)
+        {
+            return requestEventService.ResendRequestAsync(requestEvent.Id);
+        }
+
+        [HttpPost("webhook-rule/save-event")]
+        public Task SaveWebhookEventRequestAsync(RequestEventDto requestEvent)
+        {
+            return webhookEventService.CopyAndSaveFromRequestEventAsync(requestEvent.Id);
+        }
+
+        [HttpDelete("{id}")]
+        public Task DeleteAsync(int id)
+        {
+            return requestEventService.DeleteAsync(id);
+        }
+
+        [HttpDelete("request-rule")]
+        public Task DeleteByRequestRuleAsync()
+        {
+            return requestEventService.DeleteByRequestRuleAsync();
+        }
+
+        [HttpDelete("webhook-rule")]
+        public Task DeleteByWebhookRuleAsync()
+        {
+            return requestEventService.DeleteByWebhookRuleAsync();
+        }
+
+        [HttpDelete("request-rule-variant")]
+        public Task DeleteByRequestRuleVariantAsync()
+        {
+            return requestEventService.DeleteByRequestRuleVariantAsync();
+        }
+    }
+}

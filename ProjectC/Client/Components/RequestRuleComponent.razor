@@ -1,0 +1,23 @@
+﻿@if (RequestRule is not null)
+{
+    <div class="d-flex justify-space-between align-center">
+        <div class="flex-1">
+            <MudChip Variant="Variant.Text" Color="@(RequestRule.Method.GetMethodColor())">@RequestRule.MethodLabel</MudChip>
+        </div>
+        <MudText Class="flex-1">@RequestRule.Path</MudText>
+        <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync())"></MudIconButton>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public RequestRuleDto? RequestRule { get; set; }
+
+    [Parameter]
+    public EventCallback OnEdit { get; set; }
+
+    private async Task EditAsync()
+    {
+        await OnEdit.InvokeAsync();
+    }
+}

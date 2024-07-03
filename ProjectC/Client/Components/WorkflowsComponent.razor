@@ -1,0 +1,160 @@
+﻿@inject HttpClient Http
+@inject IDialogService DialogService
+
+@if (loading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-2" />
+}
+else
+{
+    @if (Workflows.Count() > 0)
+    {
+        <div class="h-inherit overflow-y-scroll">
+            <MudPaper>
+                <MudExpansionPanels>
+                    @foreach (var workflow in Workflows)
+                    {
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <div class="d-flex justify-space-between align-center">
+                                    <MudText Class="mt-1 d-flex align-center"><MudChip Text="Workflow Identifier" Size="Size.Small">W-@workflow.Id</MudChip>@workflow.Name</MudText>
+                                    <div class="d-flex align-center" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflow))"></MudIconButton>
+                                        <MudIconButton Icon="@Icons.Material.Filled.Storage" OnClick="@(async () => await ViewWorkflowStorageAsync(workflow))"></MudIconButton>
+                                        @if (workflow.RequestRuleVariants.Count > 0)
+                                        {
+                                            <MudChip Class="mr-2" Variant="Variant.Text" Color="Color.Primary" @onclick="@(async () => await ViewRequestRuleVariantsAsync(workflow))">
+                                                @workflow.RequestRuleVariants.Count
+                                            </MudChip>
+                                        }
+                                        else
+                                        {
+                                            <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(async () => await ViewRequestRuleVariantsAsync(workflow))"></MudIconButton>
+                                        }
+                                    </div>
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+                                @if (workflow.RequestRuleVariants.Count > 0)
+                                {
+                                    <MudTable Items="@workflow.RequestRuleVariants" Dense="true">
+                                        <HeaderContent>
+                                            <MudTh>Action</MudTh>
+                                            <MudTh>Path</MudTh>
+                                            <MudTh>Method</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd DataLabel="Name">
+                                                @context.Description
+                                            </MudTd>
+                                            @if (context.RequestRule is not null)
+                                            {
+                                                <MudTd DataLabel="Path">
+                                                    @context.RequestRule.Path
+                                                </MudTd>
+                                                <MudTd DataLabel="Method">
+                                                    @context.RequestRule.MethodLabel
+                                                </MudTd>
+                                            }
+                                            else
+                                            {
+                                                <MudTd DataLabel="Path">
+                                                    @context.Path
+                                                </MudTd>
+                                                <MudTd DataLabel="Method">
+                                                    @context.MethodLabel
+                                                </MudTd>
+                                            }
+                                        </RowTemplate>
+                                    </MudTable>
+                                }
+                                else 
+                                { 
+                                    <MudPaper Class="py-2 px-10">
+                                        <MudText Align="Align.Center">You don't have any <b>Action</b> configured, start creating one to see all you can do with our <b>Workflows Module</b>.</MudText>
+                                    </MudPaper>
+                                }
+                            </ChildContent>
+                        </MudExpansionPanel>
+                    }
+                </MudExpansionPanels>
+            </MudPaper>
+        </div>
+    }
+    else
+    {
+        <MudPaper Class="pa-10">
+            <MudText Align="Align.Center">You don't have any events yet.</MudText>
+        </MudPaper>
+    }
+}
+
+@code {
+    private WorkflowDto[] Workflows = Array.Empty<WorkflowDto>();
+    private bool loading = false;
+
+    private async Task EditAsync(WorkflowDto workflow)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Workflow"] = workflow
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowEditFormComponent>("Workflow", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowsAsync();
+        }
+    }
+
+    private async Task ViewRequestRuleVariantsAsync(WorkflowDto workflow)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Workflow"] = workflow,
+            ["RequestRuleVariants"] = workflow.RequestRuleVariants,
+        };
+        var dialog = await DialogService.ShowAsync<RequestRuleVariantsComponent>("Workflow Actions", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowsAsync();
+        }
+    }
+
+    private async Task ViewWorkflowStorageAsync(WorkflowDto workflow)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Workflow"] = workflow,
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowStorageComponent>("Workflow Storage", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowsAsync();
+        }
+    }
+
+    public async Task RefreshWorkflowsAsync()
+    {
+        loading = true;
+        StateHasChanged();
+        var workflows = await Http.GetFromJsonAsync<WorkflowDto[]>("api/v1/workflow");
+        if (workflows is not null)
+        {
+            Workflows = workflows;
+        }
+        loading = false;
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshWorkflowsAsync();
+        await base.OnInitializedAsync();
+    }
+}

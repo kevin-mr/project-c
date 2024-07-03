@@ -1,0 +1,59 @@
+﻿@if (RequestEvent is not null)
+{
+    <div class="d-flex justify-space-between align-center">
+        <MudText Class="flex-1"><MudChip Variant="Variant.Outlined" Color="@RequestEvent.GetMethodColor()">@RequestEvent.Method</MudChip></MudText>
+        <MudText Class="flex-1">@RequestEvent.Path 
+            @if (RequestEvent.RequestRuleVariant is not null)
+            {
+                <MudChip Text="Workflow Identifier" Size="Size.Small">W-@RequestEvent.RequestRuleVariant.WorkflowId</MudChip>
+            }
+        </MudText>
+        <MudText Class="flex-1">@RequestEvent.ArrivedTimeLabel()</MudText>
+        <div>
+            @if (RequestEvent.WebhookRuleId is not null)
+            {
+                <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Send" Title="Resend" @onclick="Resend" />
+                <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Save" Title="Archive" @onclick="Save" />
+            }
+            <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Preview" Title="View" @onclick="View" />
+            <MudIcon Icon="@Icons.Material.Filled.Delete" Title="Delete" @onclick="Delete" />
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public RequestEventDto? RequestEvent { get; set; }
+
+    [Parameter]
+    public EventCallback OnView { get; set; }
+
+    [Parameter]
+    public EventCallback OnResend { get; set; }
+
+    [Parameter]
+    public EventCallback OnSave { get; set; }
+
+    [Parameter]
+    public EventCallback OnDelete { get; set; }
+
+    private async Task View()
+    {
+        await OnView.InvokeAsync();
+    }
+
+    private async Task Resend()
+    {
+        await OnResend.InvokeAsync();
+    }
+
+    private async Task Save()
+    {
+        await OnSave.InvokeAsync();
+    }
+
+    private async Task Delete()
+    {
+        await OnDelete.InvokeAsync();
+    }
+}

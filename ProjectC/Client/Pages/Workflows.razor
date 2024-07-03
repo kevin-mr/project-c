@@ -1,0 +1,61 @@
+﻿@page "/workflows"
+@inject IDialogService DialogService
+
+<MudGrid Spacing="2" Class="mt-5">
+    <MudItem sm="6">
+        <div class="mb-2 d-flex justify-space-between">
+            <MudTooltip Text="Clear Request Events" Arrow="true" Placement="Placement.Right">
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteRequestEventsAsync"></MudIconButton>
+            </MudTooltip>
+            <MudTooltip Text="Refresh Workflow Action Rule Events" Arrow="true" Placement="Placement.Left">
+                <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Default" OnClick="RefreshWebhookRuleEventsAsync"></MudIconButton>
+            </MudTooltip>
+        </div>
+        <div class="h-75">
+            <RequestRuleVariantEventsComponent @ref="RequestRuleVariantEventsComponent"></RequestRuleVariantEventsComponent>
+        </div>
+    </MudItem>
+    <MudItem sm="6">
+        <div class="d-flex justify-end mb-5">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddWorkflow">Add Workflow</MudButton>
+        </div>
+        <div class="h-75">
+            <WorkflowsComponent @ref="WorkflowsComponent"></WorkflowsComponent>
+        </div>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private WorkflowsComponent? WorkflowsComponent;
+    private RequestRuleVariantEventsComponent? RequestRuleVariantEventsComponent;
+
+    private async Task AddWorkflow()
+    {
+        var dialog = await DialogService.ShowAsync<ProjectC.Client.Components.WorkflowEditFormComponent>("Workflow", DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            if (WorkflowsComponent is not null)
+            {
+                await WorkflowsComponent.RefreshWorkflowsAsync();
+            }
+        }
+    }
+
+    private async Task DeleteRequestEventsAsync()
+    {
+        if (RequestRuleVariantEventsComponent is not null)
+        {
+            await RequestRuleVariantEventsComponent.DeleteAsync();
+        }
+    }
+
+    private async Task RefreshWebhookRuleEventsAsync()
+    {
+        if (RequestRuleVariantEventsComponent is not null)
+        {
+            await RequestRuleVariantEventsComponent.RefreshRequestRuleVariantEventsAsync();
+        }
+    }
+}

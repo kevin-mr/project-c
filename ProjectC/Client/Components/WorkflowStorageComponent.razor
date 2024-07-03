@@ -1,0 +1,119 @@
+﻿@using AutoMapper;
+@using System.Text.Json;
+@inject HttpClient Http
+@inject IMapper mapper
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <div class="pa-5">
+            @if (WorkflowStorage is not null)
+            {
+                <MudSimpleTable>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <MudText>Identifier:</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body2">@WorkflowStorage.PropertyIdentifier</MudText>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <MudText>Data:</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body2">@WorkflowStorage.Data</MudText>
+                            </td>
+                            <td class="d-flex justify-end">
+                                <MudIcon Class="mr-3" Icon="@Icons.Material.Filled.Delete" Title="Delete" @onclick="ClearAsync" />
+                                <MudIcon Icon="@Icons.Material.Filled.Refresh" Title="View" @onclick="RefreshWorkflowStorageAsync" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </MudSimpleTable>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Warning">Please configure your storage before you can use it.</MudAlert>
+            }
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   @onclick="@(async () => await ConfigAsync())">
+            Config Storage
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public WorkflowDto Workflow { get; set; } = new WorkflowDto();
+
+    private WorkflowStorageDto? WorkflowStorage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshWorkflowStorageAsync();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task ConfigAsync()
+    {
+        var parameters = new DialogParameters
+        {
+            ["Workflow"] = Workflow,
+            ["WorkflowStorage"] = WorkflowStorage != null && WorkflowStorage.Id > 0
+                ? WorkflowStorage
+                : new WorkflowStorageDto(),
+        };
+        var dialog = await DialogService.ShowAsync<WorkflowStorageEditFormComponent>("Workflow Storage", parameters, DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshWorkflowStorageAsync();
+        }
+    }
+
+    private async Task ClearAsync()
+    {
+        if (WorkflowStorage is not null)
+        {
+            var result = await DialogService.ShowConfirmDialog(
+                "Confirm",
+                "Are you sure you want to clear the Storage data?",
+                "Clear",
+                Color.Error);
+            if (result)
+            {
+                var response = await Http.PostAsync($"api/v1/workflow-storage/{WorkflowStorage.Id}/clear", null);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Storage data successfully cleared", Severity.Success);
+                    await RefreshWorkflowStorageAsync();
+                }
+                else
+                {
+                    Snackbar.Add("Storage data couldn't be cleared", Severity.Error);
+                }
+            }
+        }
+    }
+
+    public async Task RefreshWorkflowStorageAsync()
+    {
+        try
+        {
+            var workflowStorage = await Http.GetFromJsonAsync<WorkflowStorageDto>($"api/v1/workflow/{Workflow.Id}/storage");
+            WorkflowStorage = workflowStorage;
+            StateHasChanged();
+        }
+        catch (Exception) {}
+    }
+}

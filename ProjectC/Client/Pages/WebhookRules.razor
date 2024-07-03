@@ -1,0 +1,61 @@
+﻿@page "/webhook-rules"
+@inject IDialogService DialogService
+
+<MudGrid Spacing="2" Class="mt-5">
+    <MudItem sm="6">
+        <div class="mb-2 d-flex justify-space-between">
+            <MudTooltip Text="Clear Webhook Rule Events" Arrow="true" Placement="Placement.Right">
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="DeleteWebhookRuleEventsAsync"></MudIconButton>
+            </MudTooltip>
+            <MudTooltip Text="Refresh Webhook Rule Events" Arrow="true" Placement="Placement.Left">
+                <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Default" OnClick="RefreshWebhookRuleEventsAsync"></MudIconButton>
+            </MudTooltip>
+        </div>
+        <div class="h-75">
+            <WebhookRuleEventsComponent @ref="WebhookRuleEventsComponent"></WebhookRuleEventsComponent>
+        </div>
+    </MudItem>
+    <MudItem sm="6">
+        <div class="d-flex justify-end mb-5">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddWebhookRule">Add Webhook</MudButton>
+        </div>
+        <div class="h-75">
+            <WebhookRulesComponent @ref="WebhookRulesComponent"></WebhookRulesComponent>
+        </div>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private WebhookRulesComponent? WebhookRulesComponent;
+    private WebhookRuleEventsComponent? WebhookRuleEventsComponent;
+
+    private async Task AddWebhookRule()
+    {
+        var dialog = await DialogService.ShowAsync<WebhookRuleEditFormComponent>("Webhook Rule", DialogUtils.DefaultDialogOptions);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            if (WebhookRulesComponent is not null)
+            {
+                await WebhookRulesComponent.RefreshWebhookRulesAsync();
+            }
+        }
+    }
+
+    private async Task DeleteWebhookRuleEventsAsync()
+    {
+        if (WebhookRuleEventsComponent is not null)
+        {
+            await WebhookRuleEventsComponent.DeleteAsync();
+        }
+    }
+
+    private async Task RefreshWebhookRuleEventsAsync()
+    {
+        if (WebhookRuleEventsComponent is not null)
+        {
+            await WebhookRuleEventsComponent.RefreshWebhookRuleEventsAsync();
+        }
+    }
+}
