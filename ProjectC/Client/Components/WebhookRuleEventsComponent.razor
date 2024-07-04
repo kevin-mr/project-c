@@ -147,7 +147,7 @@ else
     private async Task ConnectToHubAsync()
     {
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/webhook-rule-events"))
+            .WithUrl(Navigation.ToAbsoluteUri("webhook-rule-events"))
             .Build();
 
         hubConnection.On<RequestEventDto>("WebhookRuleEventCaught", (requestEvent) =>

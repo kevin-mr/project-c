@@ -119,7 +119,7 @@ else
     private async Task ConnectToHubAsync()
     {
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/request-rule-events"))
+            .WithUrl(Navigation.ToAbsoluteUri("request-rule-events"))
             .Build();
 
         hubConnection.On<RequestEventDto>("RequestRuleEventCaught", (requestEvent) =>

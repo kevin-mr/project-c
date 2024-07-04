@@ -9,13 +9,26 @@
         </MudItem>
     </MudItem>
     <MudItem xs="6">
-        <div class="mb-2">
+        <div class="mb-2 d-flex justify-space-between">
             <MudText Typo="Typo.h6">Latest Request Events</MudText>
+            <MudTooltip Text="Refresh Events" Arrow="true" Placement="Placement.Left">
+                <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Default" OnClick="RefreshEventsAsync"></MudIconButton>
+            </MudTooltip>
         </div>
         <div class="h-75">
-            <RequestEventsComponent></RequestEventsComponent>
+            <RequestEventsComponent @ref="RequestEventsComponent"></RequestEventsComponent>
         </div>
     </MudItem>
 </MudGrid>
 
-@code {}
+@code {
+    private RequestEventsComponent? RequestEventsComponent;
+
+    private async Task RefreshEventsAsync()
+    {
+        if (RequestEventsComponent is not null)
+        {
+            await RequestEventsComponent.RefreshRequestEventsAsync();
+        }
+    }
+}

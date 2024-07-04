@@ -49,6 +49,19 @@ else
         await base.OnInitializedAsync();
     }
 
+    public async Task RefreshRequestEventsAsync()
+    {
+        loading = true;
+        StateHasChanged();
+        var requestEvents = await Http.GetFromJsonAsync<RequestEventDto[]>("api/v1/request-event");
+        if (requestEvents is not null)
+        {
+            RequestEvents = requestEvents.ToList();
+        }
+        loading = false;
+        StateHasChanged();
+    }
+
     private async Task ViewAsync(RequestEventDto requestEvent)
     {
         var parameters = new DialogParameters
@@ -93,25 +106,12 @@ else
         }
     }
 
-    private async Task RefreshRequestEventsAsync()
-    {
-        loading = true;
-        StateHasChanged();
-        var requestEvents = await Http.GetFromJsonAsync<RequestEventDto[]>("api/v1/request-event");
-        if (requestEvents is not null)
-        {
-            RequestEvents = requestEvents.ToList();
-        }
-        loading = false;
-        StateHasChanged();
-    }
-
     private bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
 
     private async Task ConnectToHubAsync()
     {
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/request-events"))
+            .WithUrl(Navigation.ToAbsoluteUri("request-events"))
             .Build();
 
         hubConnection.On<RequestEventDto>("RequestEventCaught", (requestEvent) =>
