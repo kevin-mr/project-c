@@ -45,7 +45,7 @@
             }
             else if (totalSeconds < 86400)
             {
-                return $"{totalSeconds / 3600} minutes ago";
+                return $"{totalSeconds / 3600} hours ago";
             }
             else
             {

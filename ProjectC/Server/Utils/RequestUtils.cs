@@ -16,7 +16,7 @@ namespace ProjectC.Server.Utils
             var requestEvent = new RequestEvent
             {
                 Method = request.Method,
-                ArrivalDate = DateTime.Now,
+                ArrivalDate = DateTime.UtcNow,
             };
 
             try
