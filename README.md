@@ -30,7 +30,7 @@ To get started with the project, follow these steps:
 2. **Configure the Database**:
 
 - Install and configure SQL Server or SQL Server Express if not already installed.
-- Create a new database named `ProjectC-DB`.
+- Create a new database `[your_database_name]`.
 
 3. **Database Connection Configuration**:
 
@@ -38,12 +38,12 @@ To get started with the project, follow these steps:
   ```
   {
     "ConnectionStrings": {
-      "DefaultConnection": "Server=localhost;Database=your_database_name;Trusted_Connection=True;MultipleActiveResultSets=true"
+      "DefaultConnection": "Data Source=(localdb)\\MSSQLLocalDB;Database=your_database_name;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;User Id=your_user_id;password=your_password;"
     },
     // Other configurations...
   }
   ```
-- Replace `Server`, `Database`, and any other necessary settings with your SQL Server configuration.
+- Replace `your_database_name`, `your_user_id` ,`your_password`, and any other necessary settings with your SQL Server configuration.
 
 4. **Run Database Migrations**:
 
@@ -53,6 +53,7 @@ To get started with the project, follow these steps:
   dotnet ef database update
 
 - This command applies any pending migrations to the database.
+- If you have any problem running the migrations, check ef [official docs](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
 
 5. **Build and Run the Project**:
 
@@ -75,4 +76,4 @@ If you encounter any issues while setting up or running the project, please chec
 - Verify database connection strings and configurations in appsettings.json.
 - Check for any build or runtime errors in Visual Studio or Visual Studio Code.
 
-If your issue is not resolved, please submit an issue to the repository.
+If your issue is not resolved, please submit an [issue](https://github.com/kevin-mr/project-c/issues/new/choose) to the repository.
