@@ -6,7 +6,8 @@ Welcome to the repository for **PROJECT C**. This guide will help you set up the
 
 - Create Mock Server endpoints to emulate a RESTful API behavior for testing during development.
 - Capture Webhook events to redirect them to local environments using our CLI tool.
-- Create variants of the simulated endpoints in the Mock Server to test multiple scenarios simultaneously.
+- Define variants of the simulated endpoints in the Mock Server to test multiple scenarios simultaneously.
+- Generate responses dynamically from temporal storage and previous request data 
 
 ## Prerequisites
 
