@@ -17,7 +17,7 @@
                 <MudAutocomplete @ref="RequestRuleMudAutocompleteComponent"
                                  T="RequestRuleDto"
                                  Label="Search Request Rule"
-                                 SearchFunc="@(async (value) => await Task.FromResult(SearchRequestRule(value)))"
+                                 SearchFunc="@(async (value, cancellationToken) => await Task.FromResult(SearchRequestRule(value)))"
                                  Value="RequestRule"
                                  Text="@(RequestRule is not null ? $"{RequestRule.Path} - {RequestRule.MethodLabel}" : string.Empty)"
                                  ValueChanged="@OnRequestRuleSelected">

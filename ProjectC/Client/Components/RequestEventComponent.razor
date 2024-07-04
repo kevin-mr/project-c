@@ -1,11 +1,11 @@
 ﻿@if (RequestEvent is not null)
 {
     <div class="d-flex justify-space-between align-center">
-        <MudText Class="flex-1"><MudChip Variant="Variant.Outlined" Color="@RequestEvent.GetMethodColor()">@RequestEvent.Method</MudChip></MudText>
+        <MudText Class="flex-1"><MudChip T="string" Variant="Variant.Outlined" Color="@RequestEvent.GetMethodColor()">@RequestEvent.Method</MudChip></MudText>
         <MudText Class="flex-1">@RequestEvent.Path 
             @if (RequestEvent.RequestRuleVariant is not null)
             {
-                <MudChip Text="Workflow Identifier" Size="Size.Small">W-@RequestEvent.RequestRuleVariant.WorkflowId</MudChip>
+                <MudChip T="string" Text="Workflow Identifier" Size="Size.Small">W-@RequestEvent.RequestRuleVariant.WorkflowId</MudChip>
             }
         </MudText>
         <MudText Class="flex-1">@RequestEvent.ArrivedTimeLabel()</MudText>

@@ -54,7 +54,7 @@
         var dialog = await DialogService.ShowAsync<RequestRuleTriggerEditFormComponent>("Workflow Trigger", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await RefreshRequestRuleTriggersAsync();
         }
@@ -70,7 +70,7 @@
         var dialog = await DialogService.ShowAsync<RequestRuleTriggerEditFormComponent>("Workflow Trigger", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await RefreshRequestRuleTriggersAsync();
         }

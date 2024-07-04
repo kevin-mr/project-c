@@ -2,7 +2,7 @@
 {
     <div class="d-flex justify-space-between align-center">
         <div class="flex-1">
-            <MudChip Variant="Variant.Text" Color="@(RequestRule.Method.GetMethodColor())">@RequestRule.MethodLabel</MudChip>
+            <MudChip T="string" Variant="Variant.Text" Color="@(RequestRule.Method.GetMethodColor())">@RequestRule.MethodLabel</MudChip>
         </div>
         <MudText Class="flex-1">@RequestRule.Path</MudText>
         <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync())"></MudIconButton>

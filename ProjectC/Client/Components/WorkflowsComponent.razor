@@ -17,13 +17,13 @@ else
                         <MudExpansionPanel>
                             <TitleContent>
                                 <div class="d-flex justify-space-between align-center">
-                                    <MudText Class="mt-1 d-flex align-center"><MudChip Text="Workflow Identifier" Size="Size.Small">W-@workflow.Id</MudChip>@workflow.Name</MudText>
+                                    <MudText Class="mt-1 d-flex align-center"><MudChip T="string" Text="Workflow Identifier" Size="Size.Small">W-@workflow.Id</MudChip>@workflow.Name</MudText>
                                     <div class="d-flex align-center" @onclick:stopPropagation="true" @onclick:preventDefault="true">
                                         <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="@(async () => await EditAsync(workflow))"></MudIconButton>
                                         <MudIconButton Icon="@Icons.Material.Filled.Storage" OnClick="@(async () => await ViewWorkflowStorageAsync(workflow))"></MudIconButton>
                                         @if (workflow.RequestRuleVariants.Count > 0)
                                         {
-                                            <MudChip Class="mr-2" Variant="Variant.Text" Color="Color.Primary" @onclick="@(async () => await ViewRequestRuleVariantsAsync(workflow))">
+                                            <MudChip T="string" Class="mr-2" Variant="Variant.Text" Color="Color.Primary" @onclick="@(async () => await ViewRequestRuleVariantsAsync(workflow))">
                                                 @workflow.RequestRuleVariants.Count
                                             </MudChip>
                                         }
@@ -102,7 +102,7 @@ else
         var dialog = await DialogService.ShowAsync<WorkflowEditFormComponent>("Workflow", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await RefreshWorkflowsAsync();
         }
@@ -118,7 +118,7 @@ else
         var dialog = await DialogService.ShowAsync<RequestRuleVariantsComponent>("Workflow Actions", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await RefreshWorkflowsAsync();
         }
@@ -133,7 +133,7 @@ else
         var dialog = await DialogService.ShowAsync<WorkflowStorageComponent>("Workflow Storage", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await RefreshWorkflowsAsync();
         }

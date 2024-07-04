@@ -47,13 +47,13 @@
                     var variantsCounter = RequestRule.RequestRuleVariants.Count();
                     @if (eventsCounter > 0)
                     {
-                        <MudChip Color="Color.Info" Class="me-1" Variant="Variant.Text">
+                        <MudChip T="string" Color="Color.Info" Class="me-1" Variant="Variant.Text">
                             Events - @variantsCounter
                         </MudChip>
                     }
                     @if (variantsCounter > 0)
                     {
-                        <MudChip Color="Color.Info" Class="me-1" Variant="Variant.Text">
+                        <MudChip T="string" Color="Color.Info" Class="me-1" Variant="Variant.Text">
                             Actions - @variantsCounter
                         </MudChip>
                     }

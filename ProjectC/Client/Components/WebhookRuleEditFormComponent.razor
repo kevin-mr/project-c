@@ -39,13 +39,13 @@
                     var archivedEventsCounter = WebhookRule.WebhookEvents.Count();
                     @if (eventsCounter > 0)
                     {
-                        <MudChip Color="Color.Info" Class="me-1" Variant="Variant.Text">
+                        <MudChip T="string" Color="Color.Info" Class="me-1" Variant="Variant.Text">
                             Events - @eventsCounter
                         </MudChip>
                     }
                     @if (archivedEventsCounter > 0)
                     {
-                        <MudChip Color="Color.Info" Class="me-1" Variant="Variant.Text">
+                        <MudChip T="string" Color="Color.Info" Class="me-1" Variant="Variant.Text">
                             Archived - @archivedEventsCounter
                         </MudChip>
                     }

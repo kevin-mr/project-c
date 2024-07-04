@@ -13,7 +13,7 @@ else
     @if (RequestEvents.Count > 0)
     {
         <div class="h-inherit overflow-y-scroll">
-            <MudList>
+            <MudList T="string">
                 @foreach (var requestEvent in RequestEvents.OrderByDescending(x => x.ArrivalDate))
                 {
                     <MudDivider />

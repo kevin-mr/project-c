@@ -34,7 +34,7 @@
         var dialog = await DialogService.ShowAsync<ProjectC.Client.Components.WorkflowEditFormComponent>("Workflow", DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             if (WorkflowsComponent is not null)
             {

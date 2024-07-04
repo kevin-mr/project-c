@@ -2,7 +2,7 @@
 {
     <div class="d-flex justify-space-between align-center">
         <div Class="flex-1">
-            <MudChip Variant="Variant.Text" Color="@(WebhookRule.Method.GetMethodColor())">@WebhookRule.MethodLabel</MudChip>
+            <MudChip T="string" Variant="Variant.Text" Color="@(WebhookRule.Method.GetMethodColor())">@WebhookRule.MethodLabel</MudChip>
         </div>
         <MudText Class="flex-1">@WebhookRule.Path</MudText>
         <MudText Class="flex-1">@WebhookRule.Description</MudText>

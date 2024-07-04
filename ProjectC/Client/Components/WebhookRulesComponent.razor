@@ -11,14 +11,16 @@ else
     {
         <div class="h-inherit overflow-y-scroll">
             <MudPaper>
-                <MudList>
+                <MudList T="string">
                     @foreach (var webhookRule in WebhookRules)
                     {
+                        <MudDivider />
                         <MudListItem>
                             <WebhookRuleComponent WebhookRule=@webhookRule
                                                   OnEdit="@(async () => await EditAsync(webhookRule))"
                                                   OnViewEvents="@(async () => await ViewEventsAsync(webhookRule))"></WebhookRuleComponent>
                         </MudListItem>
+                        <MudDivider />
                     }
                 </MudList>
             </MudPaper>
@@ -64,7 +66,7 @@ else
         var dialog = await DialogService.ShowAsync<WebhookRuleEditFormComponent>("Webhook Rule", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await RefreshWebhookRulesAsync();
         }
@@ -79,7 +81,7 @@ else
         var dialog = await DialogService.ShowAsync<WebhookEventsComponent>("Webhook Events", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await RefreshWebhookRulesAsync();
         }

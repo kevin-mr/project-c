@@ -75,7 +75,7 @@
         var dialog = await DialogService.ShowAsync<WorkflowStorageEditFormComponent>("Workflow Storage", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await RefreshWorkflowStorageAsync();
         }

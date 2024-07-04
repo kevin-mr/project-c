@@ -16,7 +16,7 @@
             <MudAutocomplete @ref="WebhookEventMudAutocompleteComponent"
                              T="WebhookEventDto"
                              Label="Search Webhook Event"
-                             SearchFunc="@(async (value) => await Task.FromResult(SearchRequestRule(value)))"
+                             SearchFunc="@(async (value, cancellationToken) => await Task.FromResult(SearchRequestRule(value)))"
                              Value="WebhookEvent"
                              Text="@(WebhookEvent is not null ? $"{WebhookEvent.WebhookRuleDescription} - {WebhookEvent.Path}" : string.Empty)"
                              ValueChanged="@OnRequestRuleSelected">

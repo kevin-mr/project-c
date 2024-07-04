@@ -17,14 +17,14 @@
                                     @if (requestRuleVariant.RequestRule is not null)
                                     {
                                         <div class="flex-1">
-                                            <MudChip Variant="Variant.Text" Color="@(requestRuleVariant.RequestRule.Method.GetMethodColor())">@requestRuleVariant.RequestRule.MethodLabel</MudChip>
+                                            <MudChip T="string" Variant="Variant.Text" Color="@(requestRuleVariant.RequestRule.Method.GetMethodColor())">@requestRuleVariant.RequestRule.MethodLabel</MudChip>
                                         </div>
                                         <MudText Class="flex-1">@requestRuleVariant.RequestRule.Path</MudText>
                                     }
                                     else
                                     {
                                         <div class="flex-1">
-                                            <MudChip Variant="Variant.Text" Color="@(requestRuleVariant.Method.GetMethodColor())">@requestRuleVariant.MethodLabel</MudChip>
+                                            <MudChip T="string" Variant="Variant.Text" Color="@(requestRuleVariant.Method.GetMethodColor())">@requestRuleVariant.MethodLabel</MudChip>
                                         </div>
                                         <MudText Class="flex-1">@requestRuleVariant.Path</MudText>
                                     }
@@ -170,7 +170,7 @@
         var dialog = await DialogService.ShowAsync<RequestRuleVariantEditFormComponent>("Workflow Action", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await RefreshRequestRuleVariantsAsync();
         }
@@ -186,7 +186,7 @@
         var dialog = await DialogService.ShowAsync<RequestRuleVariantEditFormComponent>("Workflow Action", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await RefreshRequestRuleVariantsAsync();
         }
@@ -212,7 +212,7 @@
         var dialog = await DialogService.ShowAsync<RequestRuleTriggerEditFormComponent>("Workflow Trigger", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await RefreshRequestRuleVariantsAsync();
         }
@@ -228,7 +228,7 @@
         var dialog = await DialogService.ShowAsync<RequestRuleTriggerEditFormComponent>("Workflow Trigger", parameters, DialogUtils.DefaultDialogOptions);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await RefreshRequestRuleVariantsAsync();
         }

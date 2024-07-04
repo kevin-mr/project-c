@@ -11,12 +11,14 @@ else
     {
         <div class="h-inherit overflow-y-scroll">
             <MudPaper>
-                <MudList>
+                <MudList T="string">
                     @foreach (var requestRule in RequestRules)
                     {
+                        <MudDivider />
                         <MudListItem>
                             <RequestRuleComponent RequestRule=@requestRule OnEdit="@(async () => await EditAsync(requestRule))"></RequestRuleComponent>
                         </MudListItem>
+                        <MudDivider />
                     }
                 </MudList>
             </MudPaper>
@@ -62,7 +64,7 @@ else
         var dialog = await DialogService.ShowAsync<RequestRuleEditFormComponent>("Request Rule", parameters, DialogUtils.DefaultDialogOptionsWidth(MaxWidth.Medium));
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result is not null && !result.Canceled)
         {
             await RefreshRequestRulesAsync();
         }
