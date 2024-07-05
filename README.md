@@ -6,7 +6,8 @@ Welcome to the repository for **PROJECT C**. This guide will help you set up the
 
 - Create Mock Server endpoints to emulate a RESTful API behavior for testing during development.
 - Capture Webhook events to redirect them to local environments using our CLI tool.
-- Create variants of the simulated endpoints in the Mock Server to test multiple scenarios simultaneously.
+- Define variants of the simulated endpoints in the Mock Server to test multiple scenarios simultaneously.
+- Generate responses dynamically from temporal storage and previous request data 
 
 ## Prerequisites
 
@@ -29,7 +30,7 @@ To get started with the project, follow these steps:
 2. **Configure the Database**:
 
 - Install and configure SQL Server or SQL Server Express if not already installed.
-- Create a new database named `ProjectC-DB`.
+- Create a new database `[your_database_name]`.
 
 3. **Database Connection Configuration**:
 
@@ -37,12 +38,12 @@ To get started with the project, follow these steps:
   ```
   {
     "ConnectionStrings": {
-      "DefaultConnection": "Server=localhost;Database=your_database_name;Trusted_Connection=True;MultipleActiveResultSets=true"
+      "DefaultConnection": "Data Source=(localdb)\\MSSQLLocalDB;Database=your_database_name;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;User Id=your_user_id;password=your_password;"
     },
     // Other configurations...
   }
   ```
-- Replace `Server`, `Database`, and any other necessary settings with your SQL Server configuration.
+- Replace `your_database_name`, `your_user_id` ,`your_password`, and any other necessary settings with your SQL Server configuration.
 
 4. **Run Database Migrations**:
 
@@ -52,6 +53,7 @@ To get started with the project, follow these steps:
   dotnet ef database update
 
 - This command applies any pending migrations to the database.
+- If you have any problem running the migrations, check ef [official docs](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
 
 5. **Build and Run the Project**:
 
@@ -66,6 +68,22 @@ Once the project is running, you can access the Blazor application in your web b
 
 - https://localhost:7026 (or another port if configured differently)
 
+7. **CLI Tool**
+
+To redirect webhook events to a local environment, follow these steps:
+
+- Publish Your Project to the Cloud: Utilize any cloud provider such as Azure that offers a public URL.
+
+- Run the CLI Project: Execute the CLI project and specify the server URL as a parameter.
+
+  ```bash
+  project-c --url [server_url]
+
+Replace [server_url] with your actual server URL, e.g., https://localhost:7026.
+
+- Alternatively, Use the [NuGet Package Version](https://www.nuget.org/packages/ProjectC.CLI/): If preferred,
+you can also use the NuGet package version of the project. The command remains the same.
+
 ## Troubleshooting
 
 If you encounter any issues while setting up or running the project, please check the following:
@@ -74,4 +92,4 @@ If you encounter any issues while setting up or running the project, please chec
 - Verify database connection strings and configurations in appsettings.json.
 - Check for any build or runtime errors in Visual Studio or Visual Studio Code.
 
-If your issue is not resolved, please submit an issue to the repository.
+If your issue is not resolved, please submit an [issue](https://github.com/kevin-mr/project-c/issues/new/choose) to the repository.
