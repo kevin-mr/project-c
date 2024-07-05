@@ -68,6 +68,22 @@ Once the project is running, you can access the Blazor application in your web b
 
 - https://localhost:7026 (or another port if configured differently)
 
+7. **CLI Tool**
+
+To redirect webhook events to a local environment, follow these steps:
+
+- Publish Your Project to the Cloud: Utilize any cloud provider such as Azure that offers a public URL.
+
+- Run the CLI Project: Execute the CLI project and specify the server URL as a parameter.
+
+  ```bash
+  project-c --url [server_url]
+
+Replace [server_url] with your actual server URL, e.g., https://localhost:7026.
+
+- Alternatively, Use the [NuGet Package Version](https://www.nuget.org/packages/ProjectC.CLI/): If preferred,
+you can also use the NuGet package version of the project. The command remains the same.
+
 ## Troubleshooting
 
 If you encounter any issues while setting up or running the project, please check the following:
